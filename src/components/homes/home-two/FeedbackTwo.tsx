@@ -13,7 +13,7 @@ import feedbackThumb_3 from "@/assets/images/media/img_22.jpg";
 
 interface DataType {
    id: number;
-   desc: JSX.Element;
+   desc: React.ReactElement;
    title: string;
    country: string;
    thumb: StaticImageData

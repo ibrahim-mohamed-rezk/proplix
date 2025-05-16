@@ -6,11 +6,11 @@ import Count from "@/components/common/Count";
 
 interface ContentType {
    sub_title: string;
-   desc_1: JSX.Element;
+   desc_1: React.ReactElement;
    title_1: string;
    title_2: string;
-   desc_2: JSX.Element;
-   desc_3: JSX.Element;
+   desc_2: React.ReactElement;
+   desc_3: React.ReactElement;
 }
 
 const feature_content: ContentType = {

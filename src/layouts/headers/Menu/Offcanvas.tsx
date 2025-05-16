@@ -15,7 +15,7 @@ interface DataType {
    thumb: StaticImageData;
    carousel_thumb: string[];
    price: number;
-   sub?: JSX.Element;
+   sub?: React.ReactElement;
    address: string;
 }[];
 

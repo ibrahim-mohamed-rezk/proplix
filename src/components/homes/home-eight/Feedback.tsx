@@ -10,8 +10,8 @@ import icon from "@/assets/images/icon/icon_29.svg"
 interface DataType {
    id: number;
    avatar: StaticImageData;
-   title: JSX.Element;
-   desc: JSX.Element;
+   title: React.ReactElement;
+   desc: React.ReactElement;
 }
 
 const feedback_data: DataType[] = [

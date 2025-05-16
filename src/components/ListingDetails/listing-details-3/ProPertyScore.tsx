@@ -9,7 +9,7 @@ interface DataType {
    id: number;
    icon: StaticImageData;
    title: string;
-   desc: JSX.Element;
+   desc: React.ReactElement;
 }[];
 
 const score_data: DataType[] = [

@@ -19,7 +19,7 @@ interface DataType {
    date: string;
    total_rating: string;
    rating: string[];
-   desc: JSX.Element;
+   desc: React.ReactElement;
    img_slider?: StaticImageData[]
 }[]
 

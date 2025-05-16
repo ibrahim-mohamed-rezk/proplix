@@ -17,7 +17,7 @@ interface DataType {
    thumb: StaticImageData;
    img_slider: string[];
    total_img: number;
-   price: JSX.Element;
+   price: React.ReactElement;
    address: string;
    category: string;
 }[];

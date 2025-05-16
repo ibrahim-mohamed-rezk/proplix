@@ -1,12 +1,13 @@
 import FooterFour from "@/layouts/footers/FooterFour"
-// import HeaderFour from "@/layouts/headers/HeaderFour"
 import BlogDetailsArea from "./BlogDetailsArea"
 import FancyBanner from "@/components/common/FancyBanner"
+import HeaderOne from "@/layouts/headers/HeaderOne"
 
-const BlogDetails = () => {
+const BlogDetails = ({ token }: { token: string | null }) => {
+
    return (
       <>
-         {/* <HeaderFour /> */}
+         <HeaderOne token={token} />
          <BlogDetailsArea />
          <FancyBanner />
          <FooterFour />

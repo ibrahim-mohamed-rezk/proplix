@@ -8,7 +8,7 @@ interface DataType {
    id: number;
    icon: StaticImageData;
    title: string;
-   desc: JSX.Element;
+   desc: React.ReactElement;
 }
 
 const feature_data: DataType[] = [

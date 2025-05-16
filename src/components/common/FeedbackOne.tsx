@@ -1,4 +1,5 @@
 "use client"
+import React from "react";
 import Image, { StaticImageData } from "next/image";
 import Slider from "react-slick";
 
@@ -7,11 +8,11 @@ import feedbackImg_2 from "@/assets/images/media/img_02.jpg";
 import feedbackImg_3 from "@/assets/images/media/img_03.jpg";
 
 interface DataType {
-   id: number;
-   blockquote: JSX.Element;
-   name: string;
-   country: string;
-   img: StaticImageData;
+  id: number;
+  blockquote: React.ReactElement;
+  name: string;
+  country: string;
+  img: StaticImageData;
 }
 
 const feedback_data: DataType[] = [

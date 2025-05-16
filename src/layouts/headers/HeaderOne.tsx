@@ -5,7 +5,7 @@ import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 
-const HeaderOne = ({ style, token }: { style?: boolean; token?: string }) => {
+const HeaderOne = ({ style, token }: { style?: boolean; token?: string | null }) => {
   const { sticky } = UseSticky();
   const logout = async () => {
     await axios.post("/api/auth/logout", {

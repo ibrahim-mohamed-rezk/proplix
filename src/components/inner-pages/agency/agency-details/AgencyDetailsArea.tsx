@@ -13,8 +13,8 @@ interface ContentType {
    title_1: string;
    title_2: string;
    desc_1: string;
-   desc_2: JSX.Element;
-   desc_3: JSX.Element;
+   desc_2: React.ReactElement;
+   desc_3: React.ReactElement;
    desc_4: string;
    table_data: {
       table_td_1: string;

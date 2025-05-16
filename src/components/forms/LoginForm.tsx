@@ -69,7 +69,7 @@ const LoginForm = () => {
       );
 
       reset();
-      toast("Login successfully", { position: "top-center" });
+      toast.success("Login successfully", { position: "top-center" });
 
       const closeModalBTN = document.getElementById("close-login-modal");
       if (closeModalBTN) {
@@ -77,7 +77,7 @@ const LoginForm = () => {
       }
        reset();
       // Navigate to home page after successful login
-      window.location.href = "/"; 
+      window.location.reload(); 
     } catch (error) {
       toast.error("Login failed. Please check your credentials.");
       throw error;

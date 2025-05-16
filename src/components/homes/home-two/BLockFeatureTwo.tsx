@@ -6,7 +6,7 @@ import BLockFeatureThree from "./BLockFeatureThree";
 import featureShape from "@/assets/images/shape/shape_21.svg";
 
 interface ContentType {
-   title: JSX.Element;
+   title: React.ReactElement;
    desc: string;
    icon: string[];
 }

@@ -15,8 +15,8 @@ import FancyBanner from "@/components/common/FancyBanner"
 import { cookies } from "next/headers"
 
 
-const HomeOne = () => {
-  const token = cookies().get("token")?.value;
+const HomeOne = async () => {
+  const token = (await cookies()).get("token")?.value;
   return (
     <>
       <HeaderOne token={token} style={false} />
@@ -34,7 +34,7 @@ const HomeOne = () => {
       <FancyBannerThree />
       <FooterOne style={false} />
     </>
-  )
-}
+  );
+};
 
 export default HomeOne

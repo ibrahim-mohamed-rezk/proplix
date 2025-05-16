@@ -1,11 +1,11 @@
 "use client";
 import menu_data from "@/data/home-data/MenuData";
-import Link from "next/link.js";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 
 import logo from "@/assets/images/logo/logo_01.svg";
+import { Link } from "@/i18n/routing";
 
 const NavMenu = () => {
     const pathname = usePathname();
@@ -101,7 +101,7 @@ const NavMenu = () => {
           </li>
         ))}
         <li className="nav-item ">
-          <Link className="nav-link" href="/blogs?type=all">
+          <Link className="nav-link" href="/blogs">
             Blogs
           </Link>
         </li>

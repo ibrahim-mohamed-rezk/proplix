@@ -12,10 +12,10 @@ interface ContentType {
    title_1: string;
    title_2: string;
    title_3: string;
-   desc_1: JSX.Element;
-   desc_2: JSX.Element;
-   desc_3: JSX.Element;
-   desc_4: JSX.Element;
+   desc_1: React.ReactElement;
+   desc_2: React.ReactElement;
+   desc_3: React.ReactElement;
+   desc_4: React.ReactElement;
    service_features: {
       icon: StaticImageData;
       title: string;

@@ -8,7 +8,7 @@ interface DataType {
    tag: string;
    title: string;
    address: string;
-   property_info?: JSX.Element[];
+   property_info?: React.ReactElement[];
    icon?: string[];
    item_bg_img:string;
    class_name?:string;

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { ToastContainer } from "react-toastify";
 import { animationCreate } from "@/utils/utils";
 import ScrollToTop from "@/components/common/ScrollToTop";
+import { ToastContainer } from "react-toastify";
 
 if (typeof window !== "undefined") {
     require("bootstrap/dist/js/bootstrap");
@@ -23,7 +23,11 @@ const Wrapper = ({ children }: any) => {
     return <>
         {children}
         <ScrollToTop />
-        <ToastContainer position="top-center" />
+        <ToastContainer 
+            position="top-center"
+            hideProgressBar={true}
+            theme="dark"
+        />
     </>;
 }
 

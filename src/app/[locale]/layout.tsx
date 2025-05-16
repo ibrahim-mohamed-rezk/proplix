@@ -1,13 +1,17 @@
-import "../styles/index.scss";
+import "../../styles/index.scss";
 import StoreProvider from "@/redux/StoreProvider";
+import { NextIntlClientProvider } from "next-intl";
 // import { cookies } from "next/headers";
 // import { redirect } from "next/navigation";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   // const token = cookies().get("token")?.value;
 
   // if (!token) {
@@ -15,7 +19,7 @@ export default function RootLayout({
   // }
 
   return (
-    <html lang="en">
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <head>
         <meta
           name="keywords"
@@ -51,9 +55,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="main-page-wrapper">
-          <StoreProvider>{children}</StoreProvider>
-        </div>
+        <NextIntlClientProvider locale={locale}>
+          <div className="main-page-wrapper">
+            <StoreProvider>{children}</StoreProvider>
+          </div>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
