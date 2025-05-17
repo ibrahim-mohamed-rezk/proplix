@@ -24,6 +24,7 @@ const HomeOne = async () => {
       <Feedback />
       <BLockFeatureOne />
       <BLockFeatureTwo />
+      {/* location */}
       <BLockFeatureThree />
       <Property />
       <FancyBannerOne style={false} />
