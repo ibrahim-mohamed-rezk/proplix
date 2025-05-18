@@ -15,18 +15,26 @@ import FancyBanner from "@/components/common/FancyBanner";
 import { cookies } from "next/headers";
 import { getData } from "@/libs/server/backendServer";
 
-const HomeOne = async () => {
+const HomeOne = async ({ locale }: {locale:string }) => {
   const token = (await cookies()).get("token")?.value;
   const feachData = async () => {
     try {
-      const response = await getData("home", {}, {});
+      const response = await getData(
+        "home",
+        {},
+        {
+          lang: locale,
+        }
+      );
       return response.data;
     } catch (error) {
       throw error;
     }
   };
   const homeData = await feachData();
-  
+
+  console.log(homeData);
+
   return (
     <>
       <HeaderOne token={token} style={false} />
@@ -36,9 +44,9 @@ const HomeOne = async () => {
       <BLockFeatureTwo />
       {/* location */}
       <BLockFeatureThree />
-      <Property />
+      <Property listings={homeData.data.property_listings} loading={false} />
       <FancyBannerOne style={false} />
-      <AgentArea style={false} />
+      <AgentArea style={false} agents={homeData.data.agents} loading={false} />
       <BLockFeatureFour />
       <BLockFeatureFive style={false} />
       <FancyBanner style={false} />

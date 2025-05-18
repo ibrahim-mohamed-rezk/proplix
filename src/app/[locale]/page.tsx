@@ -4,12 +4,13 @@ import Wrapper from "@/layouts/Wrapper";
 export const metadata = {
   title: "Homy - Real Estate React Next js Template",
 };
-const index = () => {
+const index = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params;
   return (
     <Wrapper>
-      <HomeOne />
+      <HomeOne locale={locale} />
     </Wrapper>
-  )
-}
+  );
+};
 
 export default index
