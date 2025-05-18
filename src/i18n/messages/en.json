@@ -1,6 +1,69 @@
 {
+  "home": {
+    "banner": {
+      "title": "Get the ideal home for your family",
+      "description": "We’ve more than 745,000 apartments, place & plot."
+    }
+  },
   "blogs": {
     "all": "All",
     "no_blogs_found": "No blogs found"
+  },
+  "Feature": {
+    "block_feature_one": {
+      "title": "Our Featured",
+      "title_span": "Services",
+      "description": "Discover what makes our real estate platform stand out from the rest"
+    },
+    "Buy a home": "Buy a home",
+    "Find Home": "Find Home",
+    "Explore homy's 2 million+ homes and uncover your ideal living space.": "Explore homy's 2 million+ homes and uncover your ideal living space.",
+    "RENT A HOME": "RENT A HOME",
+    "Rent Home": "Rent Home",
+    "Discover a rental you'll love on homy, thanks to 35+ filters and tailored keywords.": "Discover a rental you'll love on homy, thanks to 35+ filters and tailored keywords.",
+    "SELL PROPERTY": "SELL PROPERTY",
+    "Sell Property": "Sell Property",
+    "List, sell, thrive – with our top-notch real estate agency. It's super easy & fun.": "List, sell, thrive – with our top-notch real estate agency. It's super easy & fun."
+  },
+  "Feature2": {
+    "title": "Secure your family's dream home.",
+    "description": "Years Experience <br />with proud.",
+    "completed_project": "Completed Project",
+    "happy_customers": "Happy Customers",
+    "loan_and_low_interest_facility": "Loan & low Interest facility",
+    "over_100k_property_and_update_regularly": "Over 100k+ property & update regularly",
+      "expert_agent_consultation": "Expert agent consultation",
+    "more_details": "More Details",
+    "request_a_callback": "Request a Callback"
+  },
+  "Feature3": {
+    "title": "Explore Popular Locations",
+    "description": "Explore the latest listings & projects in diverse areas"
+  },
+  "Feature4": {
+    "title": "New Listings",
+    "title_span": "Featured",
+    "description": "Explore latest & featured properties for sale."
+  },
+  "Feature5": {
+    "Monthly": "Monthly",
+    "title": "Featured Properties",
+    "title_span": "Monthly",
+    "description": "Don't miss this monthly exclusive deal for you.",
+    "more_details": "More Details",
+    "tag": "FOR SALE",
+    "address": "Address",
+    "price": "Price",
+    "sqft": "Sqft",
+    "bed": "Bed",
+    "bath": "Bath",
+    "check_full_details": "Check Full Details"
+  },
+  "Feature6": {
+    "agents": "Agents",
+    "meet_our_professional_real_estate_agents_ready_to_help_you": "Meet our professional real estate agents ready to help you",
+    "loading_agents": "Loading agents...",
+    "meet_entire_team": "Meet Entire Team"
   }
+
 }

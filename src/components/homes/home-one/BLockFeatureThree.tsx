@@ -99,6 +99,7 @@ import Slider from "react-slick";
 import titleShape from "@/assets/images/shape/title_shape_02.svg";
 // adjust the path to wherever you put your axios file:
 import { getData } from "@/libs/server/backendServer";
+import { useTranslations } from "next-intl";    
 
 interface Area {
   id: number;
@@ -108,6 +109,7 @@ interface Area {
 }
 
 export default function BLockFeatureThree() {
+  const t = useTranslations("Feature3");
   const [areas, setAreas] = useState<Area[]>([]);
   const sliderRef = useRef<Slider | null>(null);
 
@@ -149,12 +151,12 @@ export default function BLockFeatureThree() {
       <div className="container">
         <div className="title-one text-center mb-75 xl-mb-50 md-mb-30 wow fadeInUp">
           <h3>
-            Explore Popular <span>Locations{" "}
+            {t("title")} <span>
             <Image src={titleShape} alt="" className="lazy-img" />
             </span>
           </h3>
           <p className="fs-22">
-            Explore the latest listings & projects in diverse areas
+            {t("description")}
           </p>
         </div>
 
@@ -172,7 +174,7 @@ export default function BLockFeatureThree() {
                 <div className="content text-center w-100 tran3s">
                   <h5 className="text-white fw-normal">{area.name}</h5>
                   <p className="text-white fw-light">
-                    {area.count_of_properties} properties
+                    {t("count_of_properties", { count: area.count_of_properties })}
                   </p>
                 </div>
                 <Link href={`/listing?areaId=${area.id}`} className="stretched-link" />

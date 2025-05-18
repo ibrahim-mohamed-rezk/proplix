@@ -1,6 +1,63 @@
 {
+  "home": {
+    "banner": {
+      "title": "الحصول على المنزل المثالي لأسرتك",
+      "description": "لدينا أكثر من 745,000 فيلات ومنازل وأراضي"
+    }
+  },
   "blogs": {
     "all": "الكل",
     "no_blogs_found": "لا يوجد منشورات"
+  },
+  "Feature": {
+    "block_feature_one": {
+      "title": "خدماتنا",
+      "title_span": "المميزة",
+      "description": "اكتشف ما يميز منصتنا العقارية عن غيرها"
+    },
+    "Buy a home": "شراء منزل",
+    "Find Home": "ابحث عن منزل",
+    "Explore homy's 2 million+ homes and uncover your ideal living space.": "استكشف أكثر من 2 مليون منزل على منصتنا واعثر على مساحة المعيشة المثالية لك.",
+    "RENT A HOME": "استئجار منزل",
+    "Rent Home": "استأجر منزلاً",
+    "Discover a rental you'll love on homy, thanks to 35+ filters and tailored keywords.": "اكتشف عقاراً للإيجار ستحبه على منصتنا، بفضل أكثر من 35 فلتر وكلمات رئيسية مخصصة.",
+    "SELL PROPERTY": "بيع عقار",
+    "Sell Property": "بيع عقار",
+    "List, sell, thrive – with our top-notch real estate agency. It's super easy & fun.": "اعرض، بع، وازدهر - مع وكالتنا العقارية المتميزة. الأمر سهل وممتع للغاية."
+  },
+  "Feature2": {
+    "title": "أمن عقارك المنام",
+    "description": "سنقوم بتأمين عقارك المنام لأسرتك",
+    "completed_project": "مشاريع مكتملة",
+    "happy_customers": "عملاء سعداء",
+    "loan_and_low_interest_facility": "منحة القرض ومعدلات الفائدة المنخفضة",
+    "over_100k_property_and_update_regularly": "أكثر من 100,000 عقار وتحديث منتظم",
+    "expert_agent_consultation": "استشارة الوكيل الخبير",
+    "more_details": "المزيد من التفاصيل",
+    "request_a_callback": "طلب استشارة"
+  } ,
+  "Feature3": {
+    "title": "استكشف المناطق الشعبية",
+    "description": "استكشف العقارات الأخرى والمشاريع الأخرى في مناطق متنوعة"
+  },
+  "Feature4": {
+    "title": "العقارات الجديدة",
+    "title_span": "المعروضة",
+    "description": "استكشف أحدث العقارات المعروضة للبيع"
+  },
+  "Feature5": {
+    "Monthly": "شهري",
+    "title": "العقارات المعروضة",
+    "title_span": "الشهرية",
+    "description": "لا تفوت هذه العرض الشهري المخصص لك",
+    "more_details": "المزيد من التفاصيل",
+    "tag": "للبيع",
+    "address": "العنوان",
+    "price": "السعر",
+    "sqft": "المساحة",
+    "bed": "الغرف",
+    "bath": "الحمامات",
+    "check_full_details": "المزيد من التفاصيل"
   }
+  
 }

@@ -128,6 +128,7 @@ import property_data from "@/data/home-data/PropertyData"; // Keep as fallback
 
 import titleShape from "@/assets/images/shape/title_shape_03.svg";
 import { getData } from "@/libs/server/backendServer";
+import { useTranslations } from "next-intl";
 
 // Default placeholder images for property carousel
 const defaultImages = [
@@ -187,6 +188,7 @@ const Property = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("Feature4");
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -234,15 +236,16 @@ const Property = () => {
         <div className="position-relative">
           <div className="title-one text-center text-lg-start mb-45 xl-mb-30 lg-mb-20 wow fadeInUp">
             <h3>
-              New <span>Listings <Image src={titleShape} alt="" className="lazy-img" /></span>
+              {t("title")} <span>
+                {t("title_span")} <Image src={titleShape} alt="" className="lazy-img" /></span>
             </h3>
-            <p className="fs-22 mt-xs">Explore latest & featured properties for sale.</p>
+            <p className="fs-22 mt-xs">{t("description")}</p>
           </div>
 
           {loading ? (
-            <div className="text-center p-5">Loading properties...</div>
+            <div className="text-center p-5">{t("loading")}</div>
           ) : error ? (
-            <div className="alert alert-danger">{error}</div>
+            <div className="alert alert-danger">{t("error")}</div>
           ) : (
             <div className="row gx-xxl-5">
               {listings.length > 0 ? (
@@ -347,7 +350,7 @@ const Property = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-12 text-center p-5">No properties available at the moment</div>
+                  <div className="col-12 text-center p-5">{t("no_properties_available")}</div>
               )}
             </div>
           )}
