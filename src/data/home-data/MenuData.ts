@@ -35,7 +35,6 @@ const menu_data: MenuItem[] = [
                     { link: "/listing_05", title: "Grid Sidebar-2" },
                     { link: "/listing_02", title: "List Sidebar-1" },
                     { link: "/listing_06", title: "List Sidebar-2" },
-                    { link: "/listing_03", title: "Grid Top Filter-1" },
                     { link: "/listing_07", title: "Grid Top Filter-2" },
                     { link: "/listing_04", title: "List Top Filter-1" },
                     { link: "/listing_08", title: "List Top Filter-2" },

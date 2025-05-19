@@ -9,7 +9,7 @@ const ListingSix = () => {
          <HeaderOne style={true} />
          <ListingThreeArea style={false} />
          <FancyBanner />
-         <FooterFour />
+         <FooterFour /> 
       </>
    )
 }
