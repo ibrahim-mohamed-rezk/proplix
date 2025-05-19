@@ -36,7 +36,6 @@ export interface AgentTypes {
   role: string;
 }
 
-
 export interface AreaTypes {
   id: number;
   image: string;
@@ -47,6 +46,7 @@ export interface AreaTypes {
 export interface PropertyTypes {
   id: number;
   image: string;
+  cover: string;
   user: UserTypes;
   type: string;
   area: string;
@@ -66,6 +66,38 @@ export interface PropertyTypes {
   meta_title: string;
   meta_description: string;
   meta_keywords: string;
+  features: {
+    id: number;
+    property_listing_id: number;
+    type: string;
+  }[];
+  amenities: {
+    id: number;
+    property_listing_id: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+  }[];
+  property_floor_plans: {
+    id: number;
+    image: string;
+    property_listing_id: number;
+  }[];
+  property_listing_images: {
+    id: number;
+    image: string;
+    property_listing_id: number;
+  }[];
+  property_locations: [];
+  property_price_trackings: PropertyPriceTrackings[];
+}
+
+export interface PropertyPriceTrackings {
+  id: number;
+  property_listing_id: number;
+  price: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UserTypes {

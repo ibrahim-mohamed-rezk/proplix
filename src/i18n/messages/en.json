@@ -2,8 +2,30 @@
   "home": {
     "banner": {
       "title": "Get the ideal home for your family",
-      "description": "We’ve more than 745,000 apartments, place & plot."
+      "description": "We've more than 745,000 apartments, place & plot."
     }
+  },
+  "header": {
+    "home": "Home",
+    "properties": "Properties",
+    "blog": "Blog"
+  },
+  "properties": {
+    "sort_by": "Sort by",
+    "showing": "Showing",
+    "of": "of",
+    "results": "results",
+    "switch_to_list_view": "Switch To List View",
+    "newest": "Newest",
+    "best_seller": "Best Seller",
+    "best_match": "Best Match",
+    "price_low": "Price Low",
+    "price_high": "Price High",
+    "bedrooms": "Bed",
+    "bathrooms": "Bath",
+    "area": "Area",
+    "price": "Price",
+    "sqft": "Sqft"
   },
   "blogs": {
     "all": "All",
@@ -32,7 +54,7 @@
     "happy_customers": "Happy Customers",
     "loan_and_low_interest_facility": "Loan & low Interest facility",
     "over_100k_property_and_update_regularly": "Over 100k+ property & update regularly",
-      "expert_agent_consultation": "Expert agent consultation",
+    "expert_agent_consultation": "Expert agent consultation",
     "more_details": "More Details",
     "request_a_callback": "Request a Callback"
   },
@@ -65,5 +87,4 @@
     "loading_agents": "Loading agents...",
     "meet_entire_team": "Meet Entire Team"
   }
-
 }

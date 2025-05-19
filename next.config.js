@@ -5,16 +5,19 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 // https://fantasticegypt.com/images/mapofcairoegypt.jpg
 // "https://darkgrey-chough-759221.hostingersite.com/",
 const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                hostname: "fantasticegypt.com",
-            },
-            {
-                hostname: "darkgrey-chough-759221.hostingersite.com",
-            },
-        ],
-    },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "fantasticegypt.com",
+      },
+      {
+        hostname: "darkgrey-chough-759221.hostingersite.com",
+      },
+      {
+        hostname: "fantasticegypt.com",
+      },
+    ],
+  },
 };
 
 module.exports = withNextIntl(nextConfig);
