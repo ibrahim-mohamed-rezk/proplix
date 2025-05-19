@@ -6,11 +6,11 @@ import { useState } from "react";
 
 import logo from "@/assets/images/logo/logo_01.svg";
 import { Link } from "@/i18n/routing";
-
+import { useTranslations } from "next-intl";
 const NavMenu = () => {
     const pathname = usePathname();
     const [navTitle, setNavTitle] = useState("");
-
+    const t = useTranslations("header");
 
     //openMobileMenu
     const openMobileMenu = (menu: any) => {
@@ -33,7 +33,12 @@ const NavMenu = () => {
 
         <li className="nav-item ">
           <Link className="nav-link" href="/">
-            Home
+            {t("home")}
+          </Link>
+        </li>
+        <li className="nav-item ">
+          <Link className="nav-link" href="/properties">
+            {t("properties")}
           </Link>
         </li>
         {menu_data.map((menu: any) => (
@@ -102,7 +107,7 @@ const NavMenu = () => {
         ))}
         <li className="nav-item ">
           <Link className="nav-link" href="/blogs">
-            Blogs
+            {t("blog")}
           </Link>
         </li>
       </ul>

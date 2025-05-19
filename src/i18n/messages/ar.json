@@ -5,6 +5,28 @@
       "description": "لدينا أكثر من 745,000 فيلات ومنازل وأراضي"
     }
   },
+  "header": {
+    "home": "الرئيسية",
+    "properties": "العقارات",
+    "blog": "المدونة"
+  },
+  "properties": {
+    "sort_by": "ترتيب حسب",
+    "showing": "عرض",
+    "of": "من",
+    "results": "نتيجة",
+    "switch_to_list_view": "التبديل إلى عرض القائمة",
+    "newest": "الأحدث",
+    "best_seller": "الأكثر مبيعاً",
+    "best_match": "الأفضل تطابقاً",
+    "price_low": "السعر من الأقل للأعلى",
+    "price_high": "السعر من الأعلى للأقل",
+    "bedrooms": "غرف نوم",
+    "bathrooms": "حمامات",
+    "area": "مساحة",
+    "price": "سعر",
+    "sqft": "متر"
+  },
   "blogs": {
     "all": "الكل",
     "no_blogs_found": "لا يوجد منشورات"
@@ -35,7 +57,7 @@
     "expert_agent_consultation": "استشارة الوكيل الخبير",
     "more_details": "المزيد من التفاصيل",
     "request_a_callback": "طلب استشارة"
-  } ,
+  },
   "Feature3": {
     "title": "استكشف المناطق الشعبية",
     "description": "استكشف العقارات الأخرى والمشاريع الأخرى في مناطق متنوعة"
@@ -59,5 +81,4 @@
     "bath": "الحمامات",
     "check_full_details": "المزيد من التفاصيل"
   }
-  
 }

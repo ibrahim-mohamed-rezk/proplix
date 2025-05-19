@@ -139,7 +139,7 @@
             @include transition (0.3s);
         }
         .tag {
-            width: 90px;
+            width: fit-content;
             line-height: 27px;
             font-size: 12px;
             text-transform: uppercase;
