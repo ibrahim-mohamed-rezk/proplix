@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 
 import titleShape from "@/assets/images/shape/title_shape_03.svg";
 import { useTranslations } from "next-intl";
 import { PropertyTypes } from "@/libs/types/types";
+import { Link } from "@/i18n/routing";
 
 // Default placeholder images for property carousel
 const defaultImages = [
@@ -114,7 +114,7 @@ const Property = ({
                                   data-bs-interval="1000000"
                                 >
                                   <Link
-                                    href={`/listing_details_01/${item.id}`}
+                                    href={`/properties/${item.slug}`}
                                     className="d-block"
                                   >
                                     <Image
@@ -138,7 +138,7 @@ const Property = ({
                                     data-bs-interval="1000000"
                                   >
                                     <Link
-                                      href={`/listing_details_01/${item.id}`}
+                                      href={`/properties/${item.slug}`}
                                       className="d-block"
                                     >
                                       <Image
@@ -159,7 +159,7 @@ const Property = ({
 
                       <div className="property-info p-25">
                         <Link
-                          href={`/listing_details_01/${item.id}`}
+                          href={`/properties/${item.slug}`}
                           className="title tran3s"
                         >
                           {item.title}
@@ -208,7 +208,7 @@ const Property = ({
                             })}
                           </strong>
                           <Link
-                            href={`/listing_details_01/${item.id}`}
+                            href={`/properties/${item.slug}`}
                             className="btn-four rounded-circle"
                           >
                             <i className="bi bi-arrow-up-right"></i>
