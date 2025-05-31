@@ -48,8 +48,35 @@ export interface PropertyTypes {
   image: string;
   cover: string;
   user: UserTypes;
-  type: string;
-  area: string;
+  type: {
+    id: number;
+    title: string;
+    image: string | null;
+    descriptions: {
+      en: {
+        title: string;
+        image: string | null;
+      };
+      ar: {
+        title: string;
+        image: string | null;
+      };
+    };
+  };
+  area: {
+    id: number;
+    image: string;
+    count_of_properties: number;
+    name: string;
+    description: {
+      en: {
+        name: string;
+      };
+      ar: {
+        name: string;
+      };
+    };
+  };
   price: number;
   down_price: number;
   sqt: number;
@@ -57,7 +84,6 @@ export interface PropertyTypes {
   bedroom: number;
   kitichen: number;
   status: string;
-  apartment_office: string;
   immediate_delivery: string;
   title: string;
   description: string;
@@ -66,6 +92,26 @@ export interface PropertyTypes {
   meta_title: string;
   meta_description: string;
   meta_keywords: string;
+  descriptions: {
+    en: {
+      title: string;
+      description: string;
+      keywords: string;
+      slug: string;
+      meta_title: string;
+      meta_description: string;
+      meta_keywords: string;
+    };
+    ar: {
+      title: string;
+      description: string;
+      keywords: string;
+      slug: string;
+      meta_title: string;
+      meta_description: string;
+      meta_keywords: string;
+    };
+  };
   features: {
     id: number;
     property_listing_id: number;
@@ -88,7 +134,7 @@ export interface PropertyTypes {
     image: string;
     property_listing_id: number;
   }[];
-  property_locations: [];
+  property_locations: any[];
   property_price_trackings: PropertyPriceTrackings[];
 }
 
