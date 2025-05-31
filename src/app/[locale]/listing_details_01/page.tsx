@@ -7,7 +7,7 @@ export const metadata = {
 const index = () => {
    return (
       <Wrapper>
-         <ListingDetailsOne />
+         <ListingDetailsOne locale="en" slug="listing-details-01" />
       </Wrapper>
    )
 }

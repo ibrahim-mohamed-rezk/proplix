@@ -10,6 +10,21 @@
     }
 }
 /*^^^^^^^^^^^^^^^^^^^^^ sidebar Menu ^^^^^^^^^^^^^^^^^^^^^^^^*/
+.add-listing{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: fit-content !important;
+    
+}
+.auth-btns-container{
+    gap: 10px;
+    
+    div{
+        cursor: pointer;
+    }
+}
 .offcanvas-backdrop{
     visibility: hidden;
 }
@@ -252,7 +267,7 @@
 }
 .navbar .mega-dropdown-sm .dropdown-menu {
     min-width: 700px;
-    left: -250px;
+    inset-inline-start: -250px;
     padding: 10px;
 }
 .navbar [class*="mega-dropdown"] .menu-column {
@@ -445,4 +460,5 @@
     }
     .dashboard-menu .nav-link::before {right: auto; left: 0; top:-2px;}
   }
+  
   /*(max-width: 991px)*/

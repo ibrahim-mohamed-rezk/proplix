@@ -44,7 +44,7 @@ const HomeOne = async ({ locale }: {locale:string }) => {
       <BLockFeatureTwo />
       {/* location */}
       <BLockFeatureThree />
-      <Property listings={homeData.data.property_listings} loading={false} />
+      <Property listings={homeData?.data?.property_listings} loading={false} />
       <FancyBannerOne style={false} />
       <AgentArea style={false} agents={homeData.data.agents} loading={false} />
       <BLockFeatureFour />

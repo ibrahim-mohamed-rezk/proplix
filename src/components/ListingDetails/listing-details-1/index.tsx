@@ -13,7 +13,7 @@ const ListingDetailsOne = async ({slug, locale}:{slug:string, locale:string}) =>
       const response = await getData(`properties/${slug}`, {}, {
         lang: locale,
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       throw error;
     }

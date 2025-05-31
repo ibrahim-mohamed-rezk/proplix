@@ -8,7 +8,12 @@
   "header": {
     "home": "الرئيسية",
     "properties": "العقارات",
-    "blog": "المدونة"
+    "blog": "المدونة",
+    "flash sale": " التخفيضات السريعة",
+    "login": "تسجيل الدخول",
+    "go on The offer will end in": " الذهاب. سوف ينتهي العرض في",
+    "This Sunday": "الاحد",
+    "Add Listing": "اضافة عقار"
   },
   "properties": {
     "sort_by": "ترتيب حسب",
@@ -25,7 +30,24 @@
     "bathrooms": "حمامات",
     "area": "مساحة",
     "price": "سعر",
-    "sqft": "متر"
+    "sqft": "متر",
+    "property": {
+      "overview": "نظرة عامة",
+      "property_features": "مميزات العقار",
+      "amenities": "المرافق",
+      "video_tour": "جولة فيديو",
+      "floor_plan": "مخطط الطابق",
+      "nearby": "المناطق القريبة",
+      "similar_properties": "عقارات مشابهة",
+      "property_score": "تقييم العقار",
+      "location": "الموقع",
+      "reviews": "التقييمات",
+      "newest": "الأحدث",
+      "best_seller": "الأكثر مبيعاً",
+      "best_match": "الأفضل تطابقاً",
+      "property_features_description": "اكتشف المميزات الفريدة التي تجعل هذا العقار خياراً مثالياً",
+      "FOR SALE": "للبيع"
+    }
   },
   "blogs": {
     "all": "الكل",

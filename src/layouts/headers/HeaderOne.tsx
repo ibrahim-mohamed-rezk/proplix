@@ -1,12 +1,20 @@
 "use client";
+import { Link } from "@/i18n/routing";
 import NavMenu from "./Menu/NavMenu";
-import Link from "next/link";
 import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 
-const HeaderOne = ({ style, token }: { style?: boolean; token?: string | null }) => {
+const HeaderOne = ({
+  style,
+  token,
+}: {
+  style?: boolean;
+  token?: string | null;
+}) => {
   const { sticky } = UseSticky();
+  const t = useTranslations("header");
   const logout = async () => {
     await axios.post("/api/auth/logout", {
       headers: {
@@ -18,18 +26,18 @@ const HeaderOne = ({ style, token }: { style?: boolean; token?: string | null })
   return (
     <>
       <header
-        className={`theme-main-menu menu-overlay menu-style-one sticky-menu ${
+        className={`theme-main-menu mw-100 menu-overlay menu-style-one sticky-menu ${
           sticky ? "fixed" : ""
         }`}
       >
         {!style && (
           <div className="alert-wrapper text-center">
             <p className="fs-16 m0 text-white">
-              The{" "}
               <Link href="/listing_01" className="fw-500">
-                flash sale
+                {t("flash sale")}
               </Link>{" "}
-              go on. The offer will end in — <span>This Sunday</span>
+              {t("go on The offer will end in")}{" "}
+              <span> {t("This Sunday")}</span>
             </p>
           </div>
         )}
@@ -88,12 +96,23 @@ const HeaderOne = ({ style, token }: { style?: boolean; token?: string | null })
               </div>
               <div className="right-widget ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
                 {token ? (
-                  <div
-                    onClick={logout}
-                    className="user-icon d-flex align-items-center"
-                  >
-                    <i className="fa-regular fa-user me-2"></i>
-                    <span>User</span>
+                  <div className="d-flex align-items-center auth-btns-container ">
+                    <div
+                      onClick={logout}
+                      className="user-icon border rounded-circle justify-content-center p-2 d-flex align-items-center"
+                    >
+                      <i className="fa-regular fa-user"></i>
+                    </div>
+                    <li className="d-none d-md-inline-block ms-3">
+                      <Link
+                        href="/dashboard/add-property"
+                        className="btn-two add-listing"
+                        target="_blank"
+                      >
+                        <span>{t("Add Listing")}</span>{" "}
+                        <i className="fa-thin reverse fa-arrow-up-right"></i>
+                      </Link>
+                    </li>
                   </div>
                 ) : (
                   <ul className="d-flex align-items-center style-none">
@@ -105,17 +124,7 @@ const HeaderOne = ({ style, token }: { style?: boolean; token?: string | null })
                         className="btn-one"
                       >
                         <i className="fa-regular fa-lock"></i>{" "}
-                        <span>Login</span>
-                      </Link>
-                    </li>
-                    <li className="d-none d-md-inline-block ms-3">
-                      <Link
-                        href="/dashboard/add-property"
-                        className="btn-two"
-                        target="_blank"
-                      >
-                        <span>Add Listing</span>{" "}
-                        <i className="fa-thin fa-arrow-up-right"></i>
+                        <span>{t("login")}</span>
                       </Link>
                     </li>
                   </ul>

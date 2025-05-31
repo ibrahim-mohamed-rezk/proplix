@@ -8,7 +8,12 @@
   "header": {
     "home": "Home",
     "properties": "Properties",
-    "blog": "Blog"
+    "blog": "Blog",
+    "flash sale": "Flash Sale",
+    "login": "Login",
+    "go on The offer will end in": "Go on. The offer will end in",
+    "This Sunday": "This Sunday",
+    "Add Listing": "Add property"
   },
   "properties": {
     "sort_by": "Sort by",
@@ -25,7 +30,23 @@
     "bathrooms": "Bath",
     "area": "Area",
     "price": "Price",
-    "sqft": "Sqft"
+    "sqft": "Sqft",
+    "property": {
+      "overview": "Overview",
+      "property_features": "Property Features",
+      "amenities": "Amenities",
+      "video_tour": "Video Tour",
+      "floor_plan": "Floor Plan",
+      "nearby": "Nearby",
+      "similar_properties": "Similar Properties",
+      "property_score": "Property Score",
+      "location": "Location",
+      "reviews": "Reviews",
+      "newest": "Newest",
+      "best_seller": "Best Seller",
+      "best_match": "Best Match",
+      "property_features_description": "Risk management and compliance, when approached strategically, have the potential to go beyond mitigating threats."
+    }
   },
   "blogs": {
     "all": "All",

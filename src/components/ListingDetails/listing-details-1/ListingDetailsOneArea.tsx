@@ -15,35 +15,35 @@ import CommonProPertyScore from "../listing-details-common/CommonProPertyScore";
 import CommonLocation from "../listing-details-common/CommonLocation";
 import CommonReviewForm from "../listing-details-common/CommonReviewForm";
 import { PropertyTypes } from "@/libs/types/types";
+import { useTranslations } from "next-intl";
 
 const ListingDetailsOneArea = ({ property }: { property: PropertyTypes }) => {
-  const selectHandler = (e: any) => {};
+  const selectHandler = (e: any) => { };
+  const t = useTranslations("properties.property");
+
+  console.log(property)
 
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
       <div className="container">
-        <CommonBanner />
+        <CommonBanner property={property} />
         <MediaGallery />
         <div className="property-feature-list bg-white shadow4 border-20 p-40 mt-50 mb-60">
-          <h4 className="sub-title-one mb-40 lg-mb-20">Property Overview</h4>
+          <h4 className="sub-title-one mb-40 lg-mb-20">{t("overview")}</h4>
           <CommonPropertyOverview />
         </div>
         <div className="row">
           <div className="col-xl-8">
             <div className="property-overview mb-50 bg-white shadow4 border-20 p-40">
-              <h4 className="mb-20">Overview</h4>
+              <h4 className="mb-20">{t("overview")}</h4>
               <p className="fs-20 lh-lg">
-                Lorem ipsum dolor sit amet consectetur. Et velit varius ipsum
-                tempor vel dignissim tincidunt. Aliquam accumsan laoreet
-                ultricies tincidunt faucibus fames augue in sociis. Nisl enim
-                integer neque nec.
+                {property.description}
               </p>
             </div>
             <div className="property-feature-accordion bg-white shadow4 border-20 p-40 mb-50">
-              <h4 className="mb-20">Property Features</h4>
+              <h4 className="mb-20">{t("property_features")}</h4>
               <p className="fs-20 lh-lg">
-                Risk management and compliance, when approached strategically,
-                have the potential to go beyond mitigating threats.
+                {t("property_features_description")}
               </p>
               <div className="accordion-style-two mt-45">
                 <CommonPropertyFeatureList />
@@ -70,7 +70,7 @@ const ListingDetailsOneArea = ({ property }: { property: PropertyTypes }) => {
             <div className="review-panel-one bg-white shadow4 border-20 p-40 mb-50">
               <div className="position-relative z-1">
                 <div className="d-sm-flex justify-content-between align-items-center mb-10">
-                  <h4 className="m0 xs-pb-30">Reviews</h4>
+                  <h4 className="m0 xs-pb-30">{t("reviews")}</h4>
                   <NiceSelect
                     className="nice-select"
                     options={[
