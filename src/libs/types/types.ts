@@ -84,6 +84,7 @@ export interface PropertyTypes {
   bedroom: number;
   kitichen: number;
   status: string;
+  data_delay_time: string;
   immediate_delivery: string;
   title: string;
   description: string;

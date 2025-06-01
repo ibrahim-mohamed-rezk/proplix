@@ -20,11 +20,13 @@ const ListingSix = async ({ locale }: { locale: string }) => {
       );
       return response.data.data;
     } catch (error) {
+      console.log(error)
       throw error;
     }
   };
 
   const propertiesData = await feachData();
+  console.log(propertiesData.data)
   return (
     <>
       <HeaderOne token={token} style={true} />

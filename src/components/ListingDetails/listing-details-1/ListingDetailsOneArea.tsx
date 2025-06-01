@@ -26,7 +26,7 @@ const ListingDetailsOneArea = ({ property }: { property: PropertyTypes }) => {
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
       <div className="container">
-        <CommonBanner property={property} />
+        {/* <CommonBanner property={property} /> */}
         <MediaGallery />
         <div className="property-feature-list bg-white shadow4 border-20 p-40 mt-50 mb-60">
           <h4 className="sub-title-one mb-40 lg-mb-20">{t("overview")}</h4>

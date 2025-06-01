@@ -82,10 +82,10 @@ const ListingThreeArea = ({
           <div>
             {t("showing")}{" "}
             <span className="color-dark fw-500">
-              {itemOffset + 1}–{itemOffset + properties.length}
+              {itemOffset + 1}–{itemOffset + properties?.length}
             </span>{" "}
             {t("of")}{" "}
-            <span className="color-dark fw-500">{properties.length}</span>{" "}
+            <span className="color-dark fw-500">{properties?.length}</span>{" "}
             {t("results")}
           </div>
           <div className="d-flex align-items-center xs-mt-20">
@@ -118,7 +118,7 @@ const ListingThreeArea = ({
         </div>
 
         <div className="row gx-xxl-5">
-          {properties.map((item: any) => (
+          {properties?.map((item: PropertyTypes) => (
             <div
               key={item.id}
               className="col-lg-4 col-md-6 d-flex mb-50 wow fadeInUp"
@@ -208,7 +208,7 @@ const ListingThreeArea = ({
                   <Link href="/listing_details_03" className="title tran3s">
                     {item.title}
                   </Link>
-                  <div className="address">{item.area}</div>
+                  <div className="address">{item.area.name}</div>
                   <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
                     <li className="d-flex align-items-center">
                       <Image
@@ -225,7 +225,7 @@ const ListingThreeArea = ({
                         className="lazy-img icon mx-2"
                       />
                       <span className="fs-16">{`${item?.bedroom} ${t("bedrooms")}`}</span>
-                    </li>e
+                    </li>
                     <li className="d-flex align-items-center">
                       <Image
                         src={featureIcon_3}

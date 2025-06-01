@@ -1,4 +1,5 @@
 import "../../styles/index.scss";
+import "../global.css";
 import StoreProvider from "@/redux/StoreProvider";
 import { NextIntlClientProvider } from "next-intl";
 // import { cookies } from "next/headers";
