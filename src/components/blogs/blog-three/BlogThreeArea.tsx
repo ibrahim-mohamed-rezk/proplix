@@ -83,7 +83,7 @@ const BlogThreeArea = () => {
                 <div className="isotop-item villa sale">
                   <article className="blog-meta-one mb-70 lg-mb-40">
                     <figure
-                      className={`post-img border-25 position-relative m0`}
+                      className={`post-img    position-relative m0`}
                       style={{
                         backgroundImage: `url(${item.cover})`,
                       }}

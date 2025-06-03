@@ -2,7 +2,6 @@
 import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
 import UseShortedProperty from "@/hooks/useShortedProperty";
 import NiceSelect from "@/ui/NiceSelect";
-import Image from "next/image";
 import ReactPaginate from "react-paginate";
 
 import featureIcon_1 from "@/assets/images/icon/icon_04.svg";
@@ -25,7 +24,6 @@ const ListingThreeArea = ({
 
   const {
     itemOffset,
-    sortedProperties,
     // currentItems,
     pageCount,
     handlePageClick,
@@ -108,7 +106,7 @@ const ListingThreeArea = ({
             </div>
             <Link
               href={`/${style ? "listing_12" : "listing_04"}`}
-              className="tran3s layout-change rounded-circle ms-auto ms-sm-3"
+              className="tran3s layout-change rounded-[100%] ms-auto ms-sm-3"
               data-bs-toggle="tooltip"
               title={t("switch_to_list_view")}
             >
@@ -125,13 +123,13 @@ const ListingThreeArea = ({
               data-wow-delay={item.data_delay_time}
             >
               <div
-                className={`listing-card-one border-25 h-100 w-100 ${
+                className={`listing-card-one  h-100 w-100 ${
                   style ? "border-layout" : ""
                 }`}
               >
                 <div className="img-gallery p-15">
-                  <div className="position-relative border-25 overflow-hidden">
-                    <div className={`tag border-25 px-2 w-fit`}>
+                  <div className="position-relative  overflow-hidden">
+                    <div className={`tag  px-2 w-fit`}>
                       {item.keywords}
                     </div>
                     <Link href="#" className="fav-btn tran3s">
@@ -174,7 +172,7 @@ const ListingThreeArea = ({
                                href="/listing_details_01"
                                className="d-block"
                              >
-                               <Image
+                               <img
                                  src={item.img}
                                  className="w-100"
                                  alt="..."
@@ -193,7 +191,7 @@ const ListingThreeArea = ({
                         href={`/properties/${item.slug}`}
                         className="d-block"
                       >
-                        <Image
+                        <img
                           src={item.cover}
                           className="w-100 w-full h-full"
                           alt={item.title}
@@ -211,7 +209,7 @@ const ListingThreeArea = ({
                   <div className="address">{item.area.name}</div>
                   <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
                     <li className="d-flex align-items-center">
-                      <Image
+                      <img
                         src={featureIcon_1}
                         alt=""
                         className="lazy-img icon mx-2"
@@ -219,7 +217,7 @@ const ListingThreeArea = ({
                       <span className="fs-16">{`${item?.sqt} ${t("sqft")}`}</span>
                     </li>
                     <li className="d-flex align-items-center">
-                      <Image
+                      <img
                         src={featureIcon_2}
                         alt=""
                         className="lazy-img icon mx-2"
@@ -227,7 +225,7 @@ const ListingThreeArea = ({
                       <span className="fs-16">{`${item?.bedroom} ${t("bedrooms")}`}</span>
                     </li>
                     <li className="d-flex align-items-center">
-                      <Image
+                      <img
                         src={featureIcon_3}
                         alt=""
                         className="lazy-img icon mx-2"
@@ -250,7 +248,7 @@ const ListingThreeArea = ({
                     </strong>
                     <Link
                       href={`properties/${item.slug}`}
-                      className="btn-four rounded-circle"
+                      className="btn-four rounded-[100%]"
                     >
                       <i className="bi bi-arrow-up-right"></i>
                     </Link>

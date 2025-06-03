@@ -11,9 +11,7 @@ const CommonBanner = ({ style_3, property }: { style_3?: boolean, property: Prop
          <div className="d-flex flex-wrap mt-10">
            <div
              className={`list-type text-uppercase mt-15 me-3 ${
-               style_3
-                 ? "bg-white text-dark fw-500"
-                 : "text-uppercase border-20"
+               style_3 ? "bg-white text-dark fw-500" : "text-uppercase  "
              }`}
            >
              {t("FOR SELL")}

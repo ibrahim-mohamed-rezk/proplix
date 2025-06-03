@@ -48,6 +48,17 @@ export interface PropertyTypes {
   image: string;
   cover: string;
   user: UserTypes;
+  property_type: {
+    id: number;
+    title: string;
+    image: string | null;
+  };
+  features: {
+    id: number;
+    type: string;
+    key: string;
+    value: string;
+  }[];
   type: {
     id: number;
     title: string;
@@ -113,11 +124,7 @@ export interface PropertyTypes {
       meta_keywords: string;
     };
   };
-  features: {
-    id: number;
-    property_listing_id: number;
-    type: string;
-  }[];
+
   amenities: {
     id: number;
     property_listing_id: number;
@@ -152,9 +159,40 @@ export interface UserTypes {
   name: string;
   email: string;
   phone: string;
-  avatar: string;
+  avatar: string | null;
   subscription: string;
   provider_id: string | null;
   email_verified_at: string | null;
   role: string;
+  city: string;
+  country: string;
+  address: string;
+  image: string | null;
+  code?: string;
 }
+
+export interface countryTypes {
+  name: string;
+  region: string;
+  timezones: {
+    [key: string]: string;
+  };
+  iso: {
+    "alpha-2": string;
+    "alpha-3": string;
+    numeric: string;
+  };
+  phone: string[];
+  emoji: string;
+  image: string;
+}
+
+export interface DataType {
+  id: number;
+  title: string;
+  feature_list: {
+    title: string;
+    count: string;
+  }[];
+}
+[];

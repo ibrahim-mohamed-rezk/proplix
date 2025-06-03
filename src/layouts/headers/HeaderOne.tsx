@@ -4,7 +4,8 @@ import NavMenu from "./Menu/NavMenu";
 import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 
 const HeaderOne = ({
   style,
@@ -15,12 +16,16 @@ const HeaderOne = ({
 }) => {
   const { sticky } = UseSticky();
   const t = useTranslations("header");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const locale = useLocale()
+
   const logout = async () => {
     await axios.post("/api/auth/logout", {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    window.location.href = "/";
   };
 
   return (
@@ -97,12 +102,35 @@ const HeaderOne = ({
               <div className="right-widget ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
                 {token ? (
                   <div className="d-flex align-items-center auth-btns-container ">
-                    <div
-                      onClick={logout}
-                      className="user-icon border rounded-circle justify-content-center p-2 d-flex align-items-center"
-                    >
-                      <i className="fa-regular fa-user"></i>
+                    <div className="position-relative">
+                      {/* user icon  */}
+                      <div
+                        onClick={() => setShowDropdown(!showDropdown)}
+                        className="user-icon border rounded-circle justify-content-center p-2 d-flex align-items-center cursor-pointer"
+                      >
+                        <i className="fa-regular fa-user"></i>
+                      </div>
+                      {showDropdown && (
+                        <div
+                          className={`dropdown-menu show position-absolute end-1/2 transform ${
+                            locale === "ar"
+                              ? "-translate-x-1/2"
+                              : "translate-x-1/2"
+                          }  mt-2`}
+                          style={{ minWidth: "200px" }}
+                        >
+                          <Link href="/my-profile?page=personal-information" className="dropdown-item">
+                            <i className="fa-regular fa-user me-2"></i>
+                            {t("Profile")}
+                          </Link>
+                          <button onClick={logout} className="dropdown-item">
+                            <i className="fa-regular fa-right-from-bracket me-2"></i>
+                            {t("Logout")}
+                          </button>
+                        </div>
+                      )}
                     </div>
+                    {/* add listing btn */}
                     <li className="d-none d-md-inline-block ms-3">
                       <Link
                         href="/dashboard/add-property"

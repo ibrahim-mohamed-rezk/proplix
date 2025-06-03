@@ -105,7 +105,7 @@ const AgentArea = ({
                   agents.map((agent) => (
                     <div key={agent.id} className="item border-1 ">
                       <div className="agent-card-one position-relative">
-                        <div className="img border-20">
+                        <div className="img  ">
                           <Image
                             src={getAgentImage(agent.avatar)}
                             alt={agent.name}

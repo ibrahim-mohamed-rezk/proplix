@@ -7,6 +7,7 @@ import PersonalInformation from "./components/PersonalInformation";
 import Wrapper from "@/layouts/Wrapper";
 import Favorites from "./components/Favorites";
 import SearchHistory from "./components/SearchHistory";
+import Settings from "./components/Settings";
 
 const AccountPage = async ({
   params,
@@ -17,6 +18,7 @@ const AccountPage = async ({
 }) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
+  const user = JSON.parse(cookieStore.get("user")?.value || "{}");
   const { locale } = params;
   const { page } = searchParams;
 
@@ -34,17 +36,17 @@ const AccountPage = async ({
           <div className="row">
             <div className="col-lg-3 col-md-4">
               <div
-                className="sidebar-wrapper sticky-top"
-                style={{ top: "152px" }}
+                className="sidebar-wrapper "
               >
                 <Sidebar page={page} />
               </div>
             </div>
             <div className="col-lg-9 col-md-8">
               <div className="card-body p-4">
-                {page === "personal-information" && <PersonalInformation />}
-                {page === "favorites" && <Favorites properties={[]} />}
+                {page === "personal-information" && <PersonalInformation user={user} token={token as string} />}
+                {page === "favorites" && <Favorites token={token as string} />}
                 {page === "search-history" && <SearchHistory />}
+                {page === "settings" && <Settings token={token as string} />}
               </div>
             </div>
           </div>

@@ -1,3 +1,22 @@
 @import "tailwindcss/preflight";
 @tailwind utilities;
 
+
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+html[dir="rtl"] .reverse {
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] input , html[dir="rtl"] textarea {
+    direction: rtl;
+}
+
+a{
+    text-decoration: none;
+}
+
+.collapse{
+    visibility: visible !important;
+}

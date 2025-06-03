@@ -51,60 +51,92 @@ const feature_listing_data: DataType[] = [
 
 const FeatureListing = () => {
    return (
-      <div className="feature-listing bg-white border-20 p-30">
-         <h5 className="mb-40">Featured Listing</h5>
-         <div id="F-listing" className="carousel slide">
-            <div className="carousel-indicators">
-               <button type="button" data-bs-target="#F-listing" data-bs-slide-to="0" className="active"
-                  aria-current="true" aria-label="Slide 1"></button>
-               <button type="button" data-bs-target="#F-listing" data-bs-slide-to="1"
-                  aria-label="Slide 2"></button>
-               <button type="button" data-bs-target="#F-listing" data-bs-slide-to="2"
-                  aria-label="Slide 3"></button>
-            </div>
-            <div className="carousel-inner">
-               {feature_listing_data.map((item) => (
-                  <div key={item.id} className={`carousel-item ${item.class_name}`}>
-                     <div className="listing-card-one style-three border-10">
-                        <div className="img-gallery">
-                           <div className="position-relative border-10 overflow-hidden">
-                              <div className="tag bg-white text-dark fw-500 border-20">{item.tag}</div>
-                              <Link href="#" className="fav-btn tran3s"><i className="fa-light fa-heart"></i></Link>
-                              <Image src={item.thumb} className="w-100 border-10" alt="..." />
-                              <div className="img-slider-btn">
-                                 03 <i className="fa-regular fa-image"></i>
-                                 <Fancybox
-                                    options={{
-                                       Carousel: {
-                                          infinite: true,
-                                       },
-                                    }}
-                                 >
-                                    {largeThumb.map((thumb: any, index: any) => (
-                                       <a key={index} className="d-block" data-fancybox="img5" href={`/assets/images/listing/img_large_0${thumb}.jpg`}></a>
-                                    ))}
-                                 </Fancybox>
-                              </div>
-                           </div>
-                        </div>
-                        <div className="property-info mt-15">
-                           <div className="d-flex justify-content-between align-items-end">
-                              <div>
-                                 <strong className="price fw-500 color-dark">${item.price}</strong>
-                                 <div className="address m0 pt-5">{item.address} </div>
-                              </div>
-                              <Link href="/listing_details_03" className="btn-four rounded-circle">
-                                 <i className="bi bi-arrow-up-right"></i>
-                              </Link>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               ))}
-            </div>
+     <div className="feature-listing bg-white   p-30">
+       <h5 className="mb-40">Featured Listing</h5>
+       <div id="F-listing" className="carousel slide">
+         <div className="carousel-indicators">
+           <button
+             type="button"
+             data-bs-target="#F-listing"
+             data-bs-slide-to="0"
+             className="active"
+             aria-current="true"
+             aria-label="Slide 1"
+           ></button>
+           <button
+             type="button"
+             data-bs-target="#F-listing"
+             data-bs-slide-to="1"
+             aria-label="Slide 2"
+           ></button>
+           <button
+             type="button"
+             data-bs-target="#F-listing"
+             data-bs-slide-to="2"
+             aria-label="Slide 3"
+           ></button>
          </div>
-      </div>
-   )
+         <div className="carousel-inner">
+           {feature_listing_data.map((item) => (
+             <div key={item.id} className={`carousel-item ${item.class_name}`}>
+               <div className="listing-card-one style-three border-10">
+                 <div className="img-gallery">
+                   <div className="position-relative border-10 overflow-hidden">
+                     <div className="tag bg-white text-dark fw-500  ">
+                       {item.tag}
+                     </div>
+                     <Link href="#" className="fav-btn tran3s">
+                       <i className="fa-light fa-heart"></i>
+                     </Link>
+                     <Image
+                       src={item.thumb}
+                       className="w-100 border-10"
+                       alt="..."
+                     />
+                     <div className="img-slider-btn">
+                       03 <i className="fa-regular fa-image"></i>
+                       <Fancybox
+                         options={{
+                           Carousel: {
+                             infinite: true,
+                           },
+                         }}
+                       >
+                         {largeThumb.map((thumb: any, index: any) => (
+                           <a
+                             key={index}
+                             className="d-block"
+                             data-fancybox="img5"
+                             href={`/assets/images/listing/img_large_0${thumb}.jpg`}
+                           ></a>
+                         ))}
+                       </Fancybox>
+                     </div>
+                   </div>
+                 </div>
+                 <div className="property-info mt-15">
+                   <div className="d-flex justify-content-between align-items-end">
+                     <div>
+                       <strong className="price fw-500 color-dark">
+                         ${item.price}
+                       </strong>
+                       <div className="address m0 pt-5">{item.address} </div>
+                     </div>
+                     <Link
+                       href="/listing_details_03"
+                       className="btn-four rounded-circle"
+                     >
+                       <i className="bi bi-arrow-up-right"></i>
+                     </Link>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           ))}
+         </div>
+       </div>
+     </div>
+   );
 }
 
 export default FeatureListing;
