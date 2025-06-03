@@ -17,7 +17,13 @@ import CommonLocation from "../listing-details-common/CommonLocation";
 import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
 
-const ListingDetailsOneArea = ({ property }: { property: PropertyTypes }) => {
+const ListingDetailsOneArea = ({
+  property,
+  similar,
+}: {
+  property: PropertyTypes;
+  similar: PropertyTypes[];
+}) => {
   const selectHandler = (e: any) => {};
   const t = useTranslations("properties.property");
 
@@ -51,16 +57,16 @@ const ListingDetailsOneArea = ({ property }: { property: PropertyTypes }) => {
               </div>
             </div>
             <div className="property-amenities bg-white shadow4 p-40 mb-50">
-              <CommonAmenities />
+              <CommonAmenities property={property} />
             </div>
             <div className="property-video-tour mb-50">
               <CommonPropertyVideoTour />
             </div>
-            <CommonPropertyFloorPlan style={false} />
+            <CommonPropertyFloorPlan property={property} style={false} />
             {/* <div className="property-nearby bg-white shadow4 p-40 mb-50">
               <CommonNearbyList />
             </div> */}
-            <CommonSimilarProperty />
+            <CommonSimilarProperty similar={similar} />
             {/* <div className="property-score bg-white shadow4 p-40 mb-50">
               <CommonProPertyScore />
             </div> */}
@@ -92,7 +98,7 @@ const ListingDetailsOneArea = ({ property }: { property: PropertyTypes }) => {
               <CommonReviewForm />
             </div> */}
           </div>
-          <Sidebar />
+          <Sidebar property={property} />
         </div>
       </div>
     </div>

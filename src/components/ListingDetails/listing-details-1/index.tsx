@@ -24,7 +24,7 @@ const ListingDetailsOne = async ({slug, locale}:{slug:string, locale:string}) =>
   return (
     <>
       <HeaderOne token={token} style={true} />
-      <ListingDetailsOneArea property={propertyData} />
+      <ListingDetailsOneArea property={propertyData.property} similar={propertyData.similar} />
       <FancyBanner />
       <FooterFour />
     </>

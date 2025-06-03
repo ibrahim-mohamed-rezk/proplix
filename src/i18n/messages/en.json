@@ -186,5 +186,21 @@
     "utility_detail": "Utility Details",
     "outdoor_feature": "Outdoor Features",
     "indoor_feature": "Indoor Features"
+  },
+  "amenities": {
+    "Amenities": "Amenities",
+    "Risk management & compliance, when approached strategically, have the potential": "Risk management & compliance, when approached strategically, have the potential"
+  },
+  "floorPlan": {
+    "Floor Plans": "Floor Plans"
+  },
+  "similar":{
+    "Similar Homes You May Like":"Similar Homes You May Like"
+  },
+  "sidebar":{
+    "Contact Agent":"Contact Agent",
+    "Email":"Email: ",
+    "Phone":"Phone: ",
+    "Location":"Location: "
   }
 }

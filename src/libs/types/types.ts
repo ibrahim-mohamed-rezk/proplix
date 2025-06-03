@@ -131,6 +131,7 @@ export interface PropertyTypes {
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
+    title: string;
   }[];
   property_floor_plans: {
     id: number;
@@ -193,6 +194,6 @@ export interface DataType {
   feature_list: {
     title: string;
     count: string;
-  }[];
+  }[] | undefined;
 }
 [];

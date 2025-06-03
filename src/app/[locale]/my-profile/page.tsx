@@ -13,14 +13,14 @@ const AccountPage = async ({
   params,
   searchParams,
 }: {
-  params: { locale: string };
-  searchParams: { page?: string };
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const user = JSON.parse(cookieStore.get("user")?.value || "{}");
-  const { locale } = params;
-  const { page } = searchParams;
+  const { locale } = await params;
+  const { page } = await searchParams;
 
   if (!token) {
     redirect({ href: "/", locale });

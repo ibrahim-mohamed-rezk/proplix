@@ -1,5 +1,5 @@
 import Image, { StaticImageData } from "next/image";
-import SidebarInfo from "../listing-details-sidebar.tsx/SidebarInfo";
+// import SidebarInfo from "../listing-details-sidebar.tsx/SidebarInfo";
 import Fancybox from "@/components/common/Fancybox";
 
 import bigCarousel_1 from "@/assets/images/listing/img_52.jpg"
@@ -34,7 +34,7 @@ const MediaGallery = () => {
        <div id="media_slider" className="carousel slide row style-two">
          <div className="col-12">
            <div className="position-relative z-1 overflow-hidden  ">
-             <div className="img-fancy-btn border-10 fw-500 fs-16 color-dark">
+             <div className="img-fancy-btn rounded-[10px]  fw-500 fs-16 color-dark">
                Sell all 37 Photos
                <Fancybox
                  options={{
@@ -55,7 +55,7 @@ const MediaGallery = () => {
              </div>
              <div className="theme-sidebar-one d-none d-xl-block">
                <div className="agent-info bg-white   p-30">
-                 <SidebarInfo />
+                 {/* <SidebarInfo /> */}
                </div>
              </div>
              <div className="carousel-inner">
@@ -80,7 +80,11 @@ const MediaGallery = () => {
                    aria-current="true"
                    aria-label="Slide 1"
                  >
-                   <Image src={carousel} alt="" className="border-10 w-100" />
+                   <Image
+                     src={carousel}
+                     alt=""
+                     className="rounded-[10px]  w-100"
+                   />
                  </button>
                ))}
              </div>

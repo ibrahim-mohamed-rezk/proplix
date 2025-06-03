@@ -2,12 +2,12 @@ import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
 import Link from "next/link"
 
-const CommonBanner = ({ style_3, property }: { style_3?: boolean, property: PropertyTypes }) => {
+const CommonBanner = ({ style_3, property }: { style_3?: boolean, property?: PropertyTypes }) => {
   const t = useTranslations("properties.property");
    return (
      <div className="row">
        <div className="col-lg-6">
-         <h3 className="property-titlee">{property.title}</h3>
+         <h3 className="property-titlee">{property?.title}</h3>
          <div className="d-flex flex-wrap mt-10">
            <div
              className={`list-type text-uppercase mt-15 me-3 ${
@@ -17,7 +17,7 @@ const CommonBanner = ({ style_3, property }: { style_3?: boolean, property: Prop
              {t("FOR SELL")}
            </div>
            <div className="address mt-15">
-             <i className="bi bi-geo-alt"></i> {property.area}
+             <i className="bi bi-geo-alt"></i> {property?.area.name}
            </div>
          </div>
        </div>

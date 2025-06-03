@@ -162,7 +162,7 @@
     "sqft": "متر مربع",
     "bed": "غرفة",
     "bath": "حمام",
-    "Kitchen":"مطبخ",
+    "Kitchen": "مطبخ",
     "type": "نوع",
     "perMonth": "جنيه/شهرياً",
     "egp": "جنيه",
@@ -175,10 +175,26 @@
     "bedrooms": "غرفات",
     "bathrooms": "حمامات"
   },
-  "features":{
-    "property_feature":"مميزات العقار",
-    "utility_detail":" تفاصيل الخدمات",
-    "outdoor_feature":" خصائص الخارجية",
-    "indoor_feature":" خصائص الداخلية"
+  "features": {
+    "property_feature": "مميزات العقار",
+    "utility_detail": " تفاصيل الخدمات",
+    "outdoor_feature": " خصائص الخارجية",
+    "indoor_feature": " خصائص الداخلية"
+  },
+  "amenities": {
+    "Amenities": "مميزات",
+    "Risk management & compliance, when approached strategically, have the potential": "إدارة المخاطر والامتثال، عند التعامل معها بشكل استراتيجي، لديها القدرة"
+  },
+  "floorPlan": {
+    "Floor Plans": "خطط الطوابق"
+  },
+  "similar":{
+    "Similar Homes You May Like":"منازل مشابهة قد تعجبك"
+  },
+  "sidebar":{
+    "Contact Agent":"اتصل بالوكيل" ,
+    "Email":"البريد الإلكتروني: ",
+    "Phone":"الهاتف: ",
+    "Location":"العنوان: "
   }
 }

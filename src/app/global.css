@@ -1,22 +1,37 @@
 @import "tailwindcss/preflight";
 @tailwind utilities;
 
-
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 
 html[dir="rtl"] .reverse {
-    transform: scaleX(-1);
+  transform: scaleX(-1);
 }
 
-html[dir="rtl"] input , html[dir="rtl"] textarea {
-    direction: rtl;
+html[dir="rtl"] input,
+html[dir="rtl"] textarea {
+  direction: rtl;
 }
 
-a{
-    text-decoration: none;
+html[dir="rtl"] .noMl::after {
+  margin-left: 0 !important;
 }
 
-.collapse{
-    visibility: visible !important;
+a {
+  text-decoration: none;
+}
+
+.collapse {
+  visibility: visible !important;
+}
+
+html[dir="rtl"] .navpos,
+html[dir="rtl"] .theme-details-one .similar-property .slick-dots {
+  right: auto !important;
+  left: 0 !important;
+}
+
+html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
+  right: -25px;
+  left: auto;
 }

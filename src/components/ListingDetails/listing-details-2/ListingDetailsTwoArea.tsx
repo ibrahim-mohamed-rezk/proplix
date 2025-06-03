@@ -1,18 +1,18 @@
 "use client"
 import NiceSelect from "@/ui/NiceSelect"
-import CommonAmenities from "../listing-details-common/CommonAmenities"
+// import CommonAmenities from "../listing-details-common/CommonAmenities"
 import CommonBanner from "../listing-details-common/CommonBanner"
 import CommonLocation from "../listing-details-common/CommonLocation"
 import CommonNearbyList from "../listing-details-common/CommonNearbyList"
 import CommonProPertyScore from "../listing-details-common/CommonProPertyScore"
-import CommonPropertyFeatureList from "../listing-details-common/CommonPropertyFeatureList"
-import CommonPropertyFloorPlan from "../listing-details-common/CommonPropertyFloorPlan"
-import CommonPropertyOverview from "../listing-details-common/CommonPropertyOverview"
+// import CommonPropertyFeatureList from "../listing-details-common/CommonPropertyFeatureList"
+// import CommonPropertyFloorPlan from "../listing-details-common/CommonPropertyFloorPlan"
+// import CommonPropertyOverview from "../listing-details-common/CommonPropertyOverview"
 import CommonPropertyVideoTour from "../listing-details-common/CommonPropertyVideoTour"
 import CommonReviewForm from "../listing-details-common/CommonReviewForm"
-import CommonSimilarProperty from "../listing-details-common/CommonSimilarProperty"
+// import CommonSimilarProperty from "../listing-details-common/CommonSimilarProperty"
 import Review from "@/components/inner-pages/agency/agency-details/Review"
-import Sidebar from "../listing-details-1/Sidebar"
+// import Sidebar from "../listing-details-1/Sidebar"
 import { PropertyTypes } from "@/libs/types/types";
 
 const ListingDetailsTwoArea = ({ property }: { property: PropertyTypes }) => {
@@ -38,7 +38,7 @@ const ListingDetailsTwoArea = ({ property }: { property: PropertyTypes }) => {
         <div className="bg-white shadow4   p-40 mt-70 lg-mt-50 mb-60">
           <CommonBanner property={property} />
           <div className="property-feature-list border-top mt-70 lg-mt-50 pt-60 lg-pt-30 pb-30 lg-pb-10">
-            <CommonPropertyOverview />
+            {/* <CommonPropertyOverview /> */}
           </div>
         </div>
         <div className="row">
@@ -59,20 +59,20 @@ const ListingDetailsTwoArea = ({ property }: { property: PropertyTypes }) => {
                 have the potential to go beyond mitigating threats.
               </p>
               <div className="accordion-style-two mt-45">
-                <CommonPropertyFeatureList />
+                {/* <CommonPropertyFeatureList /> */}
               </div>
             </div>
             <div className="property-amenities bg-white shadow4   p-40 mb-50">
-              <CommonAmenities />
+              {/* <CommonAmenities /> */}
             </div>
             <div className="property-video-tour mb-50">
               <CommonPropertyVideoTour />
             </div>
-            <CommonPropertyFloorPlan style={false} />
+            {/* <CommonPropertyFloorPlan style={false} /> */}
             <div className="property-nearby bg-white shadow4   p-40 mb-50">
               <CommonNearbyList />
             </div>
-            <CommonSimilarProperty />
+            {/* <CommonSimilarProperty /> */}
             <div className="property-score bg-white shadow4   p-40 mb-50">
               <CommonProPertyScore />
             </div>
@@ -104,7 +104,7 @@ const ListingDetailsTwoArea = ({ property }: { property: PropertyTypes }) => {
               <CommonReviewForm />
             </div>
           </div>
-          <Sidebar />
+          {/* <Sidebar /> */}
         </div>
       </div>
     </div>

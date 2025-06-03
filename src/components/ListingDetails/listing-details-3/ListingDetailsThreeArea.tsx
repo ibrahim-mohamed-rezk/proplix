@@ -1,7 +1,7 @@
 "use client"
 import Review from "@/components/inner-pages/agency/agency-details/Review"
-import CommonAmenities from "../listing-details-common/CommonAmenities"
-import CommonBanner from "../listing-details-common/CommonBanner"
+// import CommonAmenities from "../listing-details-common/CommonAmenities"
+// import CommonBanner from "../listing-details-common/CommonBanner"
 import CommonLocation from "../listing-details-common/CommonLocation"
 import CommonNearbyList from "../listing-details-common/CommonNearbyList"
 import CommonProPertyScore from "../listing-details-common/CommonProPertyScore"
@@ -21,14 +21,14 @@ const ListingDetailsThreeArea = () => {
    return (
      <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
        <div className="container">
-         <CommonBanner />
+         {/* <CommonBanner /> */}
          <MediaGallery />
          <div className="row">
            <div className="col-xl-8">
              <div className="bg-white shadow4  ">
                <PropertyOverview />
                <div className="property-amenities border-top p-40">
-                 <CommonAmenities />
+                 {/* <CommonAmenities /> */}
                </div>
                <div className="property-video-tour border-top p-40">
                  <CommonPropertyVideoTour />

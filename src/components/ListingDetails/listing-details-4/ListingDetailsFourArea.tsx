@@ -1,11 +1,11 @@
 "use client"
-import CommonBanner from '../listing-details-common/CommonBanner'
+// import CommonBanner from '../listing-details-common/CommonBanner'
 import MediaGallery from './MediaGallery'
 import PropertyOverview from './PropertyOverview'
-import CommonPropertyFeatureList from '../listing-details-common/CommonPropertyFeatureList'
-import CommonAmenities from '../listing-details-common/CommonAmenities'
+// import CommonPropertyFeatureList from '../listing-details-common/CommonPropertyFeatureList'
+// import CommonAmenities from '../listing-details-common/CommonAmenities'
 import CommonPropertyVideoTour from '../listing-details-common/CommonPropertyVideoTour'
-import CommonPropertyFloorPlan from '../listing-details-common/CommonPropertyFloorPlan'
+// import CommonPropertyFloorPlan from '../listing-details-common/CommonPropertyFloorPlan'
 import CommonNearbyList from '../listing-details-common/CommonNearbyList'
 import SimilarProperty from './SimilarProperty'
 import CommonProPertyScore from '../listing-details-common/CommonProPertyScore'
@@ -15,7 +15,7 @@ import Review from '@/components/inner-pages/agency/agency-details/Review'
 import AgencyFormOne from '@/components/forms/AgencyFormOne'
 import { useState } from 'react'
 import LoginModal from '@/modals/LoginModal'
-import Sidebar from '../listing-details-1/Sidebar'
+// import Sidebar from '../listing-details-1/Sidebar'
 import Link from 'next/link'
 
 const ListingDetailsFourArea = () => {
@@ -28,7 +28,7 @@ const ListingDetailsFourArea = () => {
       <>
          <div className="listing-details-one theme-details-one border-top mt-130 lg-mt-100 pt-70 pb-150 xl-pb-120">
             <div className="container">
-               <CommonBanner style_3={true} />
+               {/* <CommonBanner style_3={true} /> */}
                <MediaGallery />
                <PropertyOverview />
                <div className="row">
@@ -45,16 +45,16 @@ const ListingDetailsFourArea = () => {
 								potential to go beyond mitigating threats.</p>
 
 							<div className="accordion-style-two mt-45">
-                     <CommonPropertyFeatureList />
+                     {/* <CommonPropertyFeatureList /> */}
 							</div>
 						</div>
                      <div className="property-amenities bottom-line-dark pb-40 mb-60">
-                        <CommonAmenities />
+                        {/* <CommonAmenities /> */}
                      </div>
                      <div className="property-video-tour bottom-line-dark pb-40 mb-60">
                         <CommonPropertyVideoTour />
                      </div>
-                     <CommonPropertyFloorPlan style={true} />
+                     {/* <CommonPropertyFloorPlan style={true} /> */}
                      <div className="property-nearby bottom-line-dark pb-40 mb-60">
                         <CommonNearbyList />
                      </div>
@@ -94,7 +94,7 @@ const ListingDetailsFourArea = () => {
                         </div>
                      </div>
                   </div>
-                  <Sidebar />
+                  {/* <Sidebar /> */}
                </div>
             </div>
          </div>

@@ -1,18 +1,19 @@
 import { DataType, PropertyTypes } from "@/libs/types/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const CommonPropertyFeatureList = ({
   property,
 }: {
-  property: PropertyTypes;
+  property?: PropertyTypes;
 }) => {
   const t = useTranslations("features");
+  const locale = useLocale();
 
   const property_feature_list: DataType[] = [
     {
       id: 1,
       title: t("property_feature"),
-      feature_list: property.features
+      feature_list: property?.features
         .map((feature) => {
           if (feature.type === "property_feature") {
             return {
@@ -29,8 +30,7 @@ const CommonPropertyFeatureList = ({
     {
       id: 2,
       title: t("utility_detail"),
-      feature_list: property.features
-        .map((feature) => {
+      feature_list: property?.features?.map((feature) => {
           if (feature.type === "utility_detail") {
             return {
               title: feature.key,
@@ -46,7 +46,7 @@ const CommonPropertyFeatureList = ({
     {
       id: 3,
       title: t("outdoor_feature"),
-      feature_list: property.features
+      feature_list: property?.features
         .map((feature) => {
           if (feature.type === "outdoor_feature") {
             return {
@@ -63,7 +63,7 @@ const CommonPropertyFeatureList = ({
     {
       id: 3,
       title: t("indoor_feature"),
-      feature_list: property.features
+      feature_list: property?.features
         .map((feature) => {
           if (feature.type === "indoor_feature") {
             return {
@@ -85,7 +85,9 @@ const CommonPropertyFeatureList = ({
         <div key={item.id} className="accordion-item">
           <h2 className="accordion-header">
             <button
-              className={`accordion-button ${item.id === 1 ? "" : "collapsed"}`}
+              className={`accordion-button ${
+                locale === "ar" ? "after:mr-auto noMl" : "after:ml-auto after:mr-[0px]"
+              } ${item.id === 1 ? "" : "collapsed"}`}
               type="button"
               data-bs-toggle="collapse"
               data-bs-target={`#collapse${item.id}`}
@@ -105,7 +107,7 @@ const CommonPropertyFeatureList = ({
             <div className="accordion-body">
               <div className="feature-list-two">
                 <ul className="flex flex-wrap justify-between">
-                  {item.feature_list.map((list, i) => (
+                  {item?.feature_list?.map((list, i) => (
                     <li
                       className="w-full flex items-center justify-between "
                       key={i}

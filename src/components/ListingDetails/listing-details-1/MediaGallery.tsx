@@ -15,13 +15,15 @@ const MediaGallery = ({
   property,
 }: {
   style?: boolean;
-  property: PropertyTypes;
+  property?: PropertyTypes;
 }) => {
   const gallery_data: DataType = {
-    big_carousel: property.property_listing_images.map((image) => image.image),
-    small_carousel: property.property_listing_images.map(
+    big_carousel: property?.property_listing_images.map(
       (image) => image.image
-    ),
+    ) as string[],
+    small_carousel: property?.property_listing_images.map(
+      (image) => image.image
+    ) as string[],
   };
 
   const { big_carousel, small_carousel } = gallery_data;
@@ -54,7 +56,10 @@ const MediaGallery = ({
 
               <div className="carousel-inner">
                 {big_carousel.map((carousel, index) => (
-                  <div key={index} className="carousel-item items-stretch active">
+                  <div
+                    key={index}
+                    className="carousel-item items-stretch active"
+                  >
                     <img src={carousel} alt="" className="w-[100%] h-[100%] " />
                   </div>
                 ))}

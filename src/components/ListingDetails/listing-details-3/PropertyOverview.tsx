@@ -4,7 +4,7 @@ import icon_1 from "@/assets/images/icon/icon_47.svg"
 import icon_2 from "@/assets/images/icon/icon_48.svg"
 import icon_3 from "@/assets/images/icon/icon_49.svg"
 import icon_4 from "@/assets/images/icon/icon_50.svg"
-import property_feature_list from "@/data/inner-data/PropertyFeatureListData"
+// import property_feature_list from "@/data/inner-data/PropertyFeatureListData"
 
 interface DataType {
    id: number;
@@ -57,7 +57,7 @@ const PropertyOverview = () => {
             <h4 className="mb-20">Property Features</h4>
             <p className="fs-20 lh-lg">Risk management and compliance, when approached strategically, have the potential to go beyond mitigating threats.</p>
             <h5 className="pt-30 pb-25">Property Details</h5>
-            {property_feature_list.slice(0, 1).map((item) => (
+            {/* {property_feature_list.slice(0, 1).map((item) => (
                <div key={item.id} className="feature-list-two">
                   <ul className="style-none d-flex flex-wrap justify-content-between">
                      {item.feature_list.map((list, i) => (
@@ -65,7 +65,7 @@ const PropertyOverview = () => {
                      ))}
                   </ul>
                </div>
-            ))}
+            ))} */}
          </div>
       </>
    )

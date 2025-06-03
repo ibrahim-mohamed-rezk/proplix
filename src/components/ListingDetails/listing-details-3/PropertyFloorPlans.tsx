@@ -42,42 +42,77 @@ const floor_plan_data: DataType[] = [
 const PropertyFloorPlans = () => {
 
    return (
-      <>
-         {floor_plan_data.map((item) => (
-            <div key={item.id} className="accordion-item">
-               <h2 className="accordion-header">
-                  <button className={`accordion-button ${item.id === 1 ? "" : "collapsed"}`} type="button"
-                     data-bs-toggle="collapse" data-bs-target={`#collapse${item.id}`} aria-expanded="true"
-                     aria-controls={`collapse${item.id}`}>
-                     <div className="d-flex justify-content-between w-100">
-                        <span className="fw-500 color-dark">1st Floor</span>
-                        <ul className="style-none d-flex flex-wrap align-items-center justify-content-between">
-                           <li>
-                              <Image src={floorIcon_1} alt="" className="lazy-img icon" />
-                              <span><span className="fw-500">{item.features.sqft}</span> sqft</span>
-                           </li>
-                           <li>
-                              <Image src={floorIcon_2} alt="" className="lazy-img icon" />
-                              <span><span className="fw-500">0{item.features.bed}</span> bed</span>
-                           </li>
-                           <li>
-                              <Image src={floorIcon_3} alt="" className="lazy-img icon" />
-                              <span><span className="fw-500">0{item.features.bath}</span> bath</span>
-                           </li>
-                        </ul>
-                     </div>
-                  </button>
-               </h2>
-               <div id={`collapse${item.id}`} className={`accordion-collapse collapse ${item.id === 1 ? "show" : ""}`}
-                  data-bs-parent="#accordionTwo">
-                  <div className="accordion-body">
-                     <Image src={item.thumb} alt="" className="w-100 border-10" />
-                  </div>
+     <>
+       {floor_plan_data.map((item) => (
+         <div key={item.id} className="accordion-item">
+           <h2 className="accordion-header">
+             <button
+               className={`accordion-button ${
+                 item.id === 1 ? "" : "collapsed"
+               }`}
+               type="button"
+               data-bs-toggle="collapse"
+               data-bs-target={`#collapse${item.id}`}
+               aria-expanded="true"
+               aria-controls={`collapse${item.id}`}
+             >
+               <div className="d-flex justify-content-between w-100">
+                 <span className="fw-500 color-dark">1st Floor</span>
+                 <ul className="style-none d-flex flex-wrap align-items-center justify-content-between">
+                   <li>
+                     <Image
+                       src={floorIcon_1}
+                       alt=""
+                       className="lazy-img icon"
+                     />
+                     <span>
+                       <span className="fw-500">{item.features.sqft}</span> sqft
+                     </span>
+                   </li>
+                   <li>
+                     <Image
+                       src={floorIcon_2}
+                       alt=""
+                       className="lazy-img icon"
+                     />
+                     <span>
+                       <span className="fw-500">0{item.features.bed}</span> bed
+                     </span>
+                   </li>
+                   <li>
+                     <Image
+                       src={floorIcon_3}
+                       alt=""
+                       className="lazy-img icon"
+                     />
+                     <span>
+                       <span className="fw-500">0{item.features.bath}</span>{" "}
+                       bath
+                     </span>
+                   </li>
+                 </ul>
                </div>
-            </div>
-         ))}
-      </>
-   )
+             </button>
+           </h2>
+           <div
+             id={`collapse${item.id}`}
+             className={`accordion-collapse collapse ${
+               item.id === 1 ? "show" : ""
+             }`}
+             data-bs-parent="#accordionTwo"
+           >
+             <div className="accordion-body">
+               <Image
+                 src={item.thumb}
+                 alt=""
+                 className="w-100 rounded-[10px] "
+               />
+             </div>
+           </div>
+         </div>
+       ))}
+     </>
+   );
 }
 
 export default PropertyFloorPlans

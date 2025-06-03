@@ -43,7 +43,7 @@ const ListingElevenArea = () => {
         handleLocationChange={handleLocationChange}
         handleStatusChange={handleStatusChange}
       />
-      <ListingThreeArea style={true} />
+      {/* <ListingThreeArea style={true} /> */}
     </>
   )
 }

@@ -33,7 +33,7 @@ const MediaGallery = () => {
          <div className="col-lg-10">
            <div className="bg-white shadow4   p-30 md-mb-20">
              <div className="position-relative z-1 overflow-hidden  ">
-               <div className="img-fancy-btn border-10 fw-500 fs-16 color-dark">
+               <div className="img-fancy-btn rounded-[10px]  fw-500 fs-16 color-dark">
                  Sell all 37 Photos
                  <Fancybox
                    options={{
@@ -94,7 +94,11 @@ const MediaGallery = () => {
                  aria-current="true"
                  aria-label="Slide 1"
                >
-                 <Image src={carousel} alt="" className="border-10 w-100" />
+                 <Image
+                   src={carousel}
+                   alt=""
+                   className="rounded-[10px]  w-100"
+                 />
                </button>
              ))}
            </div>

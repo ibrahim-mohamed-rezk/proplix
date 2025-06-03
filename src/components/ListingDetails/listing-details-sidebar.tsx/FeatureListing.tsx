@@ -79,9 +79,9 @@ const FeatureListing = () => {
          <div className="carousel-inner">
            {feature_listing_data.map((item) => (
              <div key={item.id} className={`carousel-item ${item.class_name}`}>
-               <div className="listing-card-one style-three border-10">
+               <div className="listing-card-one style-three rounded-[10px] ">
                  <div className="img-gallery">
-                   <div className="position-relative border-10 overflow-hidden">
+                   <div className="position-relative rounded-[10px]  overflow-hidden">
                      <div className="tag bg-white text-dark fw-500  ">
                        {item.tag}
                      </div>
@@ -90,7 +90,7 @@ const FeatureListing = () => {
                      </Link>
                      <Image
                        src={item.thumb}
-                       className="w-100 border-10"
+                       className="w-100 rounded-[10px] "
                        alt="..."
                      />
                      <div className="img-slider-btn">

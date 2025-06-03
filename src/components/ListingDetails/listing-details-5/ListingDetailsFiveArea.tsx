@@ -1,5 +1,5 @@
 "use client"
-import property_feature_list from "@/data/inner-data/PropertyFeatureListData"
+// import property_feature_list from "@/data/inner-data/PropertyFeatureListData"
 import CommonBanner from "../listing-details-common/CommonBanner"
 import MediaGallery from "./MediaGallery"
 import PropertyOverview from "./PropertyOverview"
@@ -21,7 +21,7 @@ const ListingDetailsFiveArea = () => {
     <div className="listing-details-one theme-details-one mt-130 lg-mt-100 pb-150 xl-pb-120">
       <MediaGallery />
       <div className="container">
-        <CommonBanner style_3={true} />
+        {/* <CommonBanner style_3={true} /> */}
         <div className="property-feature-list position-relative z-2 mt-65 mb-75">
           <div className="dark-bg ps-3 ps-md-5 pe-3 pt-30 pb-30">
             <PropertyOverview />
@@ -55,7 +55,7 @@ const ListingDetailsFiveArea = () => {
                     <div className="accordion-body">
                       <p className="fs-20 lh-lg">Risk management and compliance, when approached strategically, have the potential to go beyond mitigating threats.</p>
                       <h5 className="pt-30 pb-25">Property Details</h5>
-                      {property_feature_list.slice(0, 1).map((item) => (
+                      {/* {property_feature_list.slice(0, 1).map((item) => (
                         <div key={item.id} className="feature-list-two">
                           <ul className="style-none d-flex flex-wrap justify-content-between">
                             {item.feature_list.map((list, i) => (
@@ -63,7 +63,7 @@ const ListingDetailsFiveArea = () => {
                             ))}
                           </ul>
                         </div>
-                      ))}
+                      ))} */}
                     </div>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ const ListingDetailsFiveArea = () => {
               </div>
             </div>
           </div>
-          <Sidebar />
+          {/* <Sidebar /> */}
         </div>
       </div>
     </div>
