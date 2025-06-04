@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import agent_data from "@/data/home-data/AgentData"; // Keep as fallback
 import Slider from "react-slick";
 
 import titleShape from "@/assets/images/shape/title_shape_05.svg";
@@ -21,31 +20,36 @@ const AgentArea = ({
   loading: Boolean;
 }) => {
   const settings = {
-    infinite: agents?.length > 1,
+    infinite: agents?.length > 4,
     dots: true,
-    arrows: false,
+    arrows: true,
     centerPadding: "0px",
     slidesToShow: 4,
-    slidesToScroll: 2,
+    slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
     responsive: [
       {
-        breakpoint: 1200,
+        breakpoint: 1400,
         settings: {
           slidesToShow: 3,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 768,
+        breakpoint: 992,
         settings: {
           slidesToShow: 2,
+          slidesToScroll: 1,
         },
       },
       {
         breakpoint: 576,
         settings: {
           slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false,
         },
       },
     ],
@@ -99,29 +103,28 @@ const AgentArea = ({
           <div className="wrapper position-relative z-1">
             {loading ? (
               <div className="text-center p-5">Loading agents...</div>
+            ) : agents?.length === 0 ? (
+              <div className="text-center p-5">No agents found</div>
             ) : (
-              <Slider {...settings} className="agent-slider-one">
+              <Slider {...settings} className="agent-slider-one flex">
                 {agents &&
                   agents.map((agent) => (
-                    <div key={agent.id} className="item border-1 ">
+                    <div key={agent.id} className="item mb-[30px] rounded-[20px] ">
                       <div className="agent-card-one position-relative">
-                        <div className="img  ">
-                          <Image
+                        <div className="img  rounded-[20px] overflow-hidden">
+                          <img
                             src={getAgentImage(agent.avatar)}
                             alt={agent.name}
-                            className="w-100 tran5s"
-                            width={300}
-                            height={350}
-                            unoptimized={agent.avatar !== defaultAgentImage}
+                            className="w-[100%] !h-[400px] tran5s rounded-[20px] hover:rounded-[20px]"
                           />
                         </div>
                         <div className="text-center">
                           <h6>{agent.name}</h6>
                           <Link
                             href={`/agent_details/${agent.id}`}
-                            className="stretched-link"
+                            className="stretched-link no-underline"
                           >
-                            {agent.email}
+                            {agent.role}
                           </Link>
                         </div>
                       </div>
