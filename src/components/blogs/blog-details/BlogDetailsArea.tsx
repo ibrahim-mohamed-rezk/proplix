@@ -125,105 +125,139 @@ const BlogDetailsArea = () => {
 
     feachData();
   }, []);
+
+  // Add JSON-LD structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${slug}`,
+    },
+    headline: blog?.title,
+    description: blog?.description?.replace(/<[^>]*>/g, "").substring(0, 160), // Strip HTML tags and limit to 160 chars
+    image: blog?.image,
+    author: {
+      "@type": "Person",
+      name: blog?.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Proplix",
+      logo: {
+        "@type": "ImageObject",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+      },
+    },
+    datePublished: blog?.created_at,
+    dateModified: blog?.updated_at || blog?.created_at,
+  };
+
   return (
-    <div className="blog-details mt-130 xl-mt-100 pt-100 xl-pt-80 mb-150 xl-mb-100">
-      <div className="container">
-        <div className="row gx-xl-5">
-          <div className="col-lg-8">
-            <div className="blog-post-meta mb-60 lg-mb-40">
-              <div className="post-info">
-                <Link href="/blog_02">{blog?.author}</Link>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="blog-details mt-130 xl-mt-100 pt-100 xl-pt-80 mb-150 xl-mb-100">
+        <div className="container">
+          <div className="row gx-xl-5">
+            <div className="col-lg-8">
+              <div className="blog-post-meta mb-60 lg-mb-40">
+                <div className="post-info">
+                  <Link href="/blog_02">{blog?.author}</Link>
+                </div>
+                <h3 className="blog-title">{blog?.title}</h3>
               </div>
-              <h3 className="blog-title">{blog?.title}</h3>
             </div>
           </div>
-        </div>
-        <div className="row gx-xl-5">
-          <div className="col-lg-8">
-            <article className="blog-post-meta">
-              <figure
-                className="post-img position-relative m0"
-                style={{
-                  backgroundImage: `url(${blog?.image})`,
-                }}
-              >
-                <div className="fw-500 date d-inline-block">
-                  {new Date(blog?.created_at)
-                    .toLocaleDateString("en-US", {
-                      day: "2-digit",
-                      month: "short",
-                    })
-                    .toUpperCase()}
-                </div>
-              </figure>
-              <div className="post-data pt-50 md-pt-30">
-                <p dangerouslySetInnerHTML={{ __html: blog?.description }} />
-                {/* <div className="quote-wrapper">
-                  <div className="icon rounded-circle d-flex align-items-center justify-content-center m-auto">
-                    <Image src={blogDetailsIcon} alt="" className="lazy-img" />
+          <div className="row gx-xl-5">
+            <div className="col-lg-8">
+              <article className="blog-post-meta">
+                <figure
+                  className="post-img position-relative m0"
+                  style={{
+                    backgroundImage: `url(${blog?.image})`,
+                  }}
+                >
+                  <div className="fw-500 date d-inline-block">
+                    {new Date(blog?.created_at)
+                      .toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                      })
+                      .toUpperCase()}
                   </div>
-                  <div className="row">
-                    <div className="col-xxl-10 col-xl-11 col-lg-12 col-md-9 m-auto">
-                      <h4>{desc_3}</h4>
+                </figure>
+                <div className="post-data pt-50 md-pt-30">
+                  <p dangerouslySetInnerHTML={{ __html: blog?.description }} />
+                  {/* <div className="quote-wrapper">
+                    <div className="icon rounded-circle d-flex align-items-center justify-content-center m-auto">
+                      <Image src={blogDetailsIcon} alt="" className="lazy-img" />
                     </div>
+                    <div className="row">
+                      <div className="col-xxl-10 col-xl-11 col-lg-12 col-md-9 m-auto">
+                        <h4>{desc_3}</h4>
+                      </div>
+                    </div>
+                    <h6>
+                      James Bond. <span>USA</span>
+                    </h6>
                   </div>
-                  <h6>
-                    James Bond. <span>USA</span>
-                  </h6>
+                  <h5>{title_2}</h5>
+                  <p>{desc_4}</p>
+                  <ul className="style-none list-item">
+                    {blog_details_list.map((list, i) => (
+                      <li key={i}>{list}</li>
+                    ))}
+                  </ul>
+                  <p>{desc_5}</p>
+                  <div className="img-meta">
+                    <Image
+                      src={blogDetailsThumb_1}
+                      alt=""
+                      className="lazy-img w-100"
+                    />
+                  </div>
+                  <div className="img-caption">
+                    Buy or rent properties with no commission
+                  </div>
+                  <p>{desc_6}</p>
                 </div>
-                <h5>{title_2}</h5>
-                <p>{desc_4}</p>
-                <ul className="style-none list-item">
-                  {blog_details_list.map((list, i) => (
-                    <li key={i}>{list}</li>
-                  ))}
-                </ul>
-                <p>{desc_5}</p>
-                <div className="img-meta">
-                  <Image
-                    src={blogDetailsThumb_1}
-                    alt=""
-                    className="lazy-img w-100"
-                  />
-                </div>
-                <div className="img-caption">
-                  Buy or rent properties with no commission
-                </div>
-                <p>{desc_6}</p>
-              </div>
-              <div className="bottom-widget d-sm-flex align-items-center justify-content-between">
-                <ul className="d-flex align-items-center tags style-none pt-20">
-                  <li>Tag:</li>
-                  <li>
-                    <Link href="#">Apartments,</Link>
-                  </li>
-                  <li>
-                    <Link href="#">loan,</Link>
-                  </li>
-                  <li>
-                    <Link href="#">Sale</Link>
-                  </li>
-                </ul>
-                <ul className="d-flex share-icon align-items-center style-none pt-20">
-                  <li>Share:</li>
-                  {icon.map((icon, index) => (
-                    <li key={index}>
-                      <Link href="#">
-                        <i className={icon}></i>
-                      </Link>
+                <div className="bottom-widget d-sm-flex align-items-center justify-content-between">
+                  <ul className="d-flex align-items-center tags style-none pt-20">
+                    <li>Tag:</li>
+                    <li>
+                      <Link href="#">Apartments,</Link>
                     </li>
-                  ))}
-                </ul> */}
-              </div>
-            </article>
+                    <li>
+                      <Link href="#">loan,</Link>
+                    </li>
+                    <li>
+                      <Link href="#">Sale</Link>
+                    </li>
+                  </ul>
+                  <ul className="d-flex share-icon align-items-center style-none pt-20">
+                    <li>Share:</li>
+                    {icon.map((icon, index) => (
+                      <li key={index}>
+                        <Link href="#">
+                          <i className={icon}></i>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul> */}
+                </div>
+              </article>
 
-            {/* <BlogComment /> */}
-            {/* <BlogForm /> */}
+              {/* <BlogComment /> */}
+              {/* <BlogForm /> */}
+            </div>
+            <BlogSidebar style={true} />
           </div>
-          <BlogSidebar style={true} />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

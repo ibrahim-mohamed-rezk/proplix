@@ -54,6 +54,49 @@ export default async function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap"
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Proplix",
+              description: "{{ settings('meta_description_en') }}",
+              telephone: "+2{{ settings('phone') }}",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "New Cairo, Cairo Governorate, Egypt",
+                addressLocality: "New Cairo",
+                addressRegion: "Cairo",
+                postalCode: "11835",
+                addressCountry: "Egypt",
+              },
+              url: "https://proplix.vercel.app/en",
+              logo: "https://proplix.vercel.app/logo.png",
+              sameAs: [
+                "https://www.facebook.com/proplix",
+                "https://www.instagram.com/proplix",
+                "https://www.linkedin.com/company/proplix",
+              ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Proplix",
+              url: "https://proplix.vercel.app/en",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://proplix.vercel.app/en/search?q={query}",
+                "query-input": "required name=query",
+              },
+            }),
+          }}
+        />
       </head>
       <body>
         <NextIntlClientProvider locale={locale}>
