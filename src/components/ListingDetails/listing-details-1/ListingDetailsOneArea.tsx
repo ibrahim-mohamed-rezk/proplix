@@ -44,7 +44,7 @@ const ListingDetailsOneArea = ({
               <h4 className="mb-20">{t("overview")}</h4>
               <p
                 className="fs-20 lh-lg"
-                dangerouslySetInnerHTML={{ __html: property.description }}
+                dangerouslySetInnerHTML={{ __html: property?.description }}
               />
             </div>
             <div className="property-feature-accordion bg-white shadow4 p-40 mb-50">

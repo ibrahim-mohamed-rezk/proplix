@@ -47,15 +47,15 @@ const CommonSimilarProperty = ({ similar }: { similar: PropertyTypes[] }) => {
     <div className="similar-property">
       <h4 className="mb-40">{t("Similar Homes You May Like")}</h4>
       <Slider {...setting} className="similar-listing-slider-one">
-        {similar.map((item: PropertyTypes, index: number) => (
-          <div key={item.id} className="item">
+        {similar?.map((item: PropertyTypes, index: number) => (
+          <div key={item?.id} className="item">
             <div className="listing-card-one shadow4 style-three       mb-50">
               <div className="img-gallery p-15">
                 <div className="position-relative   overflow-hidden">
                   <div className="tag bg-white text-dark fw-500  ">
-                    {item.keywords}
+                    {item?.keywords}
                   </div>
-                  <img src={item.cover} className="w-100  " alt="..." />
+                  <img src={item?.cover} className="w-100  " alt="..." />
                   <Link
                     href="/listing_details_06"
                     className="btn-four inverse rounded-circle position-absolute"
@@ -71,7 +71,7 @@ const CommonSimilarProperty = ({ similar }: { similar: PropertyTypes[] }) => {
                         },
                       }}
                     >
-                      {item.property_listing_images.map((thumb) => (
+                      {item?.property_listing_images.map((thumb) => (
                         <a
                           key={thumb.id}
                           className="d-block"
@@ -85,12 +85,12 @@ const CommonSimilarProperty = ({ similar }: { similar: PropertyTypes[] }) => {
               </div>
               <div className="property-info pe-4 ps-4">
                 <Link href="/listing_details_06" className="title tran3s">
-                  {item.title}
+                  {item?.title}
                 </Link>
-                <div className="address m0 pb-5">{item.area.name}</div>
+                <div className="address m0 pb-5">{item?.area.name}</div>
                 <div className="pl-footer m0 d-flex align-items-center justify-content-between">
                   <strong className="price fw-500 color-dark">
-                    ${item.price}
+                    ${item?.price}
                   </strong>
                   <ul className="style-none d-flex action-icons">
                     <li>

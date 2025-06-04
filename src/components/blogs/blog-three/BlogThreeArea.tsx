@@ -106,11 +106,14 @@ const BlogThreeArea = () => {
                         {new Date(item.created_at).getHours()} min
                       </div>
                       <div className="d-flex justify-content-between align-items-sm-center flex-wrap">
-                        <Link href="/blog_details" className="blog-title">
+                        <Link
+                          href={`/blogs/${item.slug}`}
+                          className="blog-title"
+                        >
                           <h4>{item.title}</h4>
                         </Link>
                         <Link
-                          href="/blog_details"
+                          href={`/blogs/${item.slug}`}
                           className="read-btn rounded-circle d-flex align-items-center justify-content-center tran3s"
                         >
                           <i className="bi bi-arrow-up-right"></i>

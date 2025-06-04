@@ -18,30 +18,32 @@ const defaultImages = [
 const Property = ({
   listings,
   loading,
+  token,
 }: {
   listings: PropertyTypes[];
-  loading: boolean;
+    loading: boolean;
+    token: string | undefined;
 }) => {
   const t = useTranslations("Feature4");
 
   // Function to determine tag background class based on property status
-  const getTagBgClass = (status: string): string => {
-    switch (status) {
-      case "sale":
-        return "bg-one";
-      case "rent":
-        return "bg-two";
-      case "sold":
-        return "bg-three";
-      default:
-        return "bg-one";
-    }
-  };
+  // const getTagBgClass = (status: string): string => {
+  //   switch (status) {
+  //     case "sale":
+  //       return "bg-one";
+  //     case "rent":
+  //       return "bg-two";
+  //     case "sold":
+  //       return "bg-three";
+  //     default:
+  //       return "bg-one";
+  //   }
+  // };
 
-  // Function to format status text for display
-  const formatStatus = (status: string): string => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
+  // // Function to format status text for display
+  // const formatStatus = (status: string): string => {
+  //   return status.charAt(0).toUpperCase() + status.slice(1);
+  // };
 
   return (
     <div className="property-listing-one bg-pink-two mt-150 xl-mt-120 pt-140 xl-pt-120 lg-pt-80 pb-180 xl-pb-120 lg-pb-100">
@@ -64,7 +66,7 @@ const Property = ({
             <div className="row gx-xxl-5">
               {listings.length > 0 ? (
                 listings.map((item, index) => (
-                  <PropertiesCard key={index} item={item} />
+                  <PropertiesCard token={token as string} key={index} item={item} />
                 ))
               ) : (
                 <div className="col-12 text-center p-5">

@@ -104,6 +104,7 @@ export interface PropertyTypes {
   meta_title: string;
   meta_description: string;
   meta_keywords: string;
+  created_at: string;
   descriptions: {
     en: {
       title: string;

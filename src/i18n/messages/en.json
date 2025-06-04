@@ -13,7 +13,9 @@
     "login": "Login",
     "go on The offer will end in": "Go on. The offer will end in",
     "This Sunday": "This Sunday",
-    "Add Listing": "Add property"
+    "Add Listing": "Add property",
+    "Profile": "Profile",
+    "Logout": "Logout"
   },
   "properties": {
     "sort_by": "Sort by",
@@ -168,7 +170,7 @@
     "sqft": "sqft",
     "bed": "bed",
     "bath": "bath",
-    "Kitchen":"Kitchen",
+    "Kitchen": "Kitchen",
     "type": "Type",
     "perMonth": "EGP/month",
     "egp": "EGP",
@@ -194,13 +196,22 @@
   "floorPlan": {
     "Floor Plans": "Floor Plans"
   },
-  "similar":{
-    "Similar Homes You May Like":"Similar Homes You May Like"
+  "similar": {
+    "Similar Homes You May Like": "Similar Homes You May Like"
   },
-  "sidebar":{
-    "Contact Agent":"Contact Agent",
-    "Email":"Email: ",
-    "Phone":"Phone: ",
-    "Location":"Location: "
+  "sidebar": {
+    "Contact Agent": "Contact Agent",
+    "Email": "Email: ",
+    "Phone": "Phone: ",
+    "Location": "Location: "
+  },
+  "SearchHistory": {
+    "title": "Search History",
+    "clear": "Clear",
+    "name": "Name",
+    "area": "Area",
+    "date": "Date",
+    "action": "Action",
+    "noLogs": "No search history found"
   }
 }

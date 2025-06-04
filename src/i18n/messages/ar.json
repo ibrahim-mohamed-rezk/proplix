@@ -13,7 +13,9 @@
     "login": "تسجيل الدخول",
     "go on The offer will end in": " الذهاب. سوف ينتهي العرض في",
     "This Sunday": "الاحد",
-    "Add Listing": "اضافة عقار"
+    "Add Listing": "اضافة عقار",
+    "Profile": "الملف الشخصي",
+    "Logout": "تسجيل الخروج"
   },
   "properties": {
     "sort_by": "ترتيب حسب",
@@ -188,13 +190,22 @@
   "floorPlan": {
     "Floor Plans": "خطط الطوابق"
   },
-  "similar":{
-    "Similar Homes You May Like":"منازل مشابهة قد تعجبك"
+  "similar": {
+    "Similar Homes You May Like": "منازل مشابهة قد تعجبك"
   },
-  "sidebar":{
-    "Contact Agent":"اتصل بالوكيل" ,
-    "Email":"البريد الإلكتروني: ",
-    "Phone":"الهاتف: ",
-    "Location":"العنوان: "
+  "sidebar": {
+    "Contact Agent": "اتصل بالوكيل",
+    "Email": "البريد الإلكتروني: ",
+    "Phone": "الهاتف: ",
+    "Location": "العنوان: "
+  },
+  "SearchHistory": {
+    "title": "سجل البحث",
+    "clear": "مسح",
+    "name": "الاسم",
+    "area": "المنطقة",
+    "date": "التاريخ",
+    "action": "إجراء",
+    "noLogs": "لا يوجد سجل بحث"
   }
 }

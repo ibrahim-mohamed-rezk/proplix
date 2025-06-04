@@ -1,8 +1,8 @@
 "use client";
 // import Image from "next/image";
 import Link from "next/link";
-import BlogComment from "../common-blog/BlogComment";
-import BlogForm from "@/components/forms/BlogForm";
+// import BlogComment from "../common-blog/BlogComment";
+// import BlogForm from "@/components/forms/BlogForm";
 import BlogSidebar from "../common-blog/BlogSidebar";
 
 // import blogDetailsIcon from "@/assets/images/icon/icon_67.svg";
@@ -217,8 +217,8 @@ const BlogDetailsArea = () => {
               </div>
             </article>
 
-            <BlogComment />
-            <BlogForm />
+            {/* <BlogComment /> */}
+            {/* <BlogForm /> */}
           </div>
           <BlogSidebar style={true} />
         </div>

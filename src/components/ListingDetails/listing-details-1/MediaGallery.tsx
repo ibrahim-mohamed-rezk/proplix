@@ -43,7 +43,7 @@ const MediaGallery = ({
                     },
                   }}
                 >
-                  {largeThumb.map((thumb: any, index: any) => (
+                  {largeThumb?.map((thumb: any, index: any) => (
                     <a
                       key={index}
                       className="d-block"
@@ -55,7 +55,7 @@ const MediaGallery = ({
               </div>
 
               <div className="carousel-inner">
-                {big_carousel.map((carousel, index) => (
+                {big_carousel?.map((carousel, index) => (
                   <div
                     key={index}
                     className="carousel-item items-stretch active"
@@ -92,7 +92,7 @@ const MediaGallery = ({
               style ? "" : "     bg-white shadow4"
             }`}
           >
-            {small_carousel.map((carousel, i) => (
+            {small_carousel?.map((carousel, i) => (
               <button
                 key={i}
                 type="button"

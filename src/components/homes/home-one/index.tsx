@@ -34,7 +34,6 @@ const HomeOne = async ({ locale }: {locale:string }) => {
   };
   const homeData = await feachData();
 
-  console.log(homeData.data);
 
   return (
     <>
@@ -45,7 +44,7 @@ const HomeOne = async ({ locale }: {locale:string }) => {
       <BLockFeatureTwo />
       {/* location */}
       <BLockFeatureThree />
-      <Property listings={homeData?.data?.property_listings} loading={false} />
+      <Property token={token} listings={homeData?.data?.property_listings} loading={false} />
       <FancyBannerOne style={false} />
       <AgentArea style={false} agents={homeData.data.agents} loading={false} />
       <BLockFeatureFour />

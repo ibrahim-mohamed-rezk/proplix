@@ -22,27 +22,27 @@ const CommonPropertyOverview = ({ property }: { property: PropertyTypes }) => {
     {
       id: 1,
       icon: icon_1,
-      title: `${t("sqft")} . ${property.sqt}`,
+      title: `${t("sqft")} . ${property?.sqt}`,
     },
     {
       id: 2,
       icon: icon_2,
-      title: `${t("bed")} . ${property.bedroom}`,
+      title: `${t("bed")} . ${property?.bedroom}`,
     },
     {
       id: 3,
       icon: icon_3,
-      title: `${t("bath")} . ${property.bathroom}`,
+      title: `${t("bath")} . ${property?.bathroom}`,
     },
     {
       id: 4,
       icon: icon_4,
-      title: `${t("Kitchen")} . ${property.kitichen}`,
+      title: `${t("Kitchen")} . ${property?.kitichen}`,
     },
     {
       id: 5,
       icon: icon_5,
-      title: `${t("type")} . ${property.property_type.title}`,
+      title: `${t("type")} . ${property?.property_type.title}`,
     },
   ];
   return (

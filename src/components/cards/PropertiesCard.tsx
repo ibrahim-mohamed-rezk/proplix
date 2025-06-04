@@ -1,28 +1,71 @@
 "use client";
-import { Link } from '@/i18n/routing';
-import { PropertyTypes } from '@/libs/types/types';
+import { Link } from "@/i18n/routing";
+import { PropertyTypes } from "@/libs/types/types";
 import featureIcon_1 from "@/assets/images/icon/icon_04.svg";
 import featureIcon_2 from "@/assets/images/icon/icon_05.svg";
 import featureIcon_3 from "@/assets/images/icon/icon_06.svg";
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { postData } from "@/libs/server/backendServer";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-
-const PropertiesCard = ({ item }: { item: PropertyTypes }) => {
-    const t = useTranslations("Favorites");
+const PropertiesCard = ({
+  item,
+  token,
+}: {
+  item: PropertyTypes;
+  token: string;
+}) => {
+  const t = useTranslations("Favorites");
+  const addToFavorites = async (id: string | number) => {
+    try {
+      const response = await postData(
+        "favourite/toggle",
+        { property_id: id },
+        {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.msg || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      throw error;
+    }
+  };
   return (
     <div
       key={item.id}
-      className="col-lg-6 d-flex mb-50 wow fadeInUp"
+      className="col-lg-3 d-flex mb-50 wow fadeInUp"
       data-wow-delay={item.data_delay_time}
     >
-      <div className={`listing-card-one  `}>
+      <div className={`listing-card-one rounded-[25px] `}>
         <div className="img-gallery p-15">
           <div className="position-relative overflow-hidden">
-            <div className={`tag px-2 w-fit`}>{item.keywords}</div>
-            <Link href="#" className="fav-btn tran3s">
+            <div
+              className={`tag px-2 ${
+                item.status === "rent"
+                  ? "!bg-[#FF6B2C]"
+                  : item.status === "sale"
+                  ? "!bg-[#00B579]"
+                  : "!bg-[#f9fcfb0]"
+              } rounded-[25px] w-fit`}
+            >
+              {item.status}
+            </div>
+            <button
+              onClick={() => {
+                addToFavorites(item.id);
+              }}
+              className="fav-btn tran3s"
+            >
               <i className="fa-light fa-heart"></i>
-            </Link>
+            </button>
             {/* <div
                       id={`carousel${item.carousel}`}
                       className="carousel slide"
@@ -57,7 +100,7 @@ const PropertiesCard = ({ item }: { item: PropertyTypes }) => {
                              data-bs-interval="1000000"
                            >
                              <Link
-                               href="/listing_details_01"
+                               href={`/properties/${item.slug}`}
                                className="d-block"
                              >
                                <img
@@ -78,10 +121,9 @@ const PropertiesCard = ({ item }: { item: PropertyTypes }) => {
               <Link href={`/properties/${item.slug}`} className="d-block">
                 <img
                   src={item.cover}
-                  className="w-100 w-full h-full"
+                  className="w-[100%] rounded-[25px] h-full"
                   alt={item.title}
-                  width={500}
-                  height={500}
+                  
                 />
               </Link>
             </div>
@@ -89,7 +131,7 @@ const PropertiesCard = ({ item }: { item: PropertyTypes }) => {
         </div>
         <div className="property-info p-25">
           <Link
-            href="/listing_details_03"
+            href={`/properties/${item.slug}`}
             className="title no-underline !text-[#FF6625] tran3s"
           >
             {item.title}
@@ -135,7 +177,7 @@ const PropertiesCard = ({ item }: { item: PropertyTypes }) => {
                        )} */}
             </strong>
             <Link
-              href={`properties/${item.slug}`}
+              href={`/properties/${item.slug}`}
               className="btn-four rounded-circle"
             >
               <i className="bi bi-arrow-up-right"></i>
@@ -145,6 +187,6 @@ const PropertiesCard = ({ item }: { item: PropertyTypes }) => {
       </div>
     </div>
   );
-}
+};
 
-export default PropertiesCard
+export default PropertiesCard;

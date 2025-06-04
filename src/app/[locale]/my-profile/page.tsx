@@ -45,7 +45,7 @@ const AccountPage = async ({
               <div className="card-body p-4">
                 {page === "personal-information" && <PersonalInformation user={user} token={token as string} />}
                 {page === "favorites" && <Favorites token={token as string} />}
-                {page === "search-history" && <SearchHistory />}
+                {page === "search-history" && <SearchHistory token={token as string} />}
                 {page === "settings" && <Settings token={token as string} />}
               </div>
             </div>
