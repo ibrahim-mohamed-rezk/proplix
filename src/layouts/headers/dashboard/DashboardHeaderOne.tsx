@@ -28,6 +28,8 @@ import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_41.svg";
 
 const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
    const pathname = usePathname();
+   const lang = pathname.split('/')[1];
+   
 
    return (
       <aside className={`dash-aside-navbar ${isActive ? "show" : ""}`}>
@@ -50,7 +52,7 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                   </Link></li>
                   <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                   <li><div className="nav-title">Profile</div></li>
-                  <li className="plr"><Link href="/dashboard/profile" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
+                  <li className="plr"><Link href="./profile" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3} alt="" />
                      <span>Profile</span>
                   </Link></li>
@@ -64,7 +66,7 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                   </Link></li>
                   <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                   <li><div className="nav-title">Listing</div></li>
-                  <li className="plr"><Link href="/dashboard/properties-list" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/properties-list' ? 'active' : ''}`}>
+                  <li className="plr"><Link href={`/${lang}/dashboard/properties-list`} className={`d-flex w-100 align-items-center ${pathname === '/dashboard/properties-list' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/properties-list' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
                      <span>My Properties</span>
                   </Link></li>

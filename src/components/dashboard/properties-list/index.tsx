@@ -1,11 +1,11 @@
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
 import PropertyListBody from "./PropertyListBody"
 
-const PropertyList = () => {
+const PropertyList = ({ token }: { token: string }) => {
    return (
       <>
          <DashboardHeaderOne />
-         <PropertyListBody />
+         <PropertyListBody token={token} />
       </>
    )
 }

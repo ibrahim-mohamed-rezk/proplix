@@ -1,4 +1,4 @@
-import DashboardAddProperty from "@/components/dashboard/add-property";
+import DashboardEditProperty from "@/components/dashboard/edit-property";
 import Wrapper from "@/layouts/Wrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -17,7 +17,7 @@ const index = async () => {
 
    return (
       <Wrapper>
-         <DashboardAddProperty token={token as string} />
+         <DashboardEditProperty token={token as string} />
       </Wrapper>
    )
 }

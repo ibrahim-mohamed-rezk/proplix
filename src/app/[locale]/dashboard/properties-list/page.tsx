@@ -1,13 +1,21 @@
 import PropertyList from "@/components/dashboard/properties-list";
 import Wrapper from "@/layouts/Wrapper";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata = {
    title: "Dashboard Property List Homy - Real Estate React Next js Template",
 };
-const index = () => {
+const index = async () => {
+   const cookieStore = await cookies();
+   const user = JSON.parse(cookieStore.get("user")?.value || "{}");
+   const token = cookieStore.get("token")?.value;
+   if (user.role !== "agent") {
+      redirect("/");
+   }
    return (
       <Wrapper>
-         <PropertyList />
+         <PropertyList token={token as string} />
       </Wrapper>
    )
 }

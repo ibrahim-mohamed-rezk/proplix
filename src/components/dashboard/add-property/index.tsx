@@ -1,11 +1,11 @@
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
 import AddPropertyBody from "./AddPropertyBody"
 
-const DashboardAddProperty = () => {
+const DashboardAddProperty = ({ token }: { token: string }) => {
    return (
       <>
          <DashboardHeaderOne />
-         <AddPropertyBody />
+         <AddPropertyBody token={token} />  
       </>
    )
 }

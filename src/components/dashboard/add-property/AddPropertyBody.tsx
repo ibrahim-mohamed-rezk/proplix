@@ -6,16 +6,16 @@ import Link from "next/link"
 import SelectAmenities from "./SelectAmenities"
 import AddressAndLocation from "../profile/AddressAndLocation"
 
-const AddPropertyBody = () => {
+const AddPropertyBody = ({ token }: { token: string }) => {
    return (
      <div className="dashboard-body">
        <div className="position-relative">
          <DashboardHeaderTwo title="Add New Property" />
-         <h2 className="main-title d-block d-lg-none">Add New Property</h2>
-         <Overview />
-         <ListingDetails />
+         <h2 className="main-title d-block d-lg-none bg-red-500">Add New Property</h2>
+         <Overview token={token} />
+         {/* <ListingDetails /> */}
 
-         <div className="bg-white card-box   mt-40">
+         {/* <div className="bg-white card-box   mt-40">
            <h4 className="dash-title-three">Photo & Video Attachment</h4>
            <div className="dash-input-wrapper mb-20">
              <label htmlFor="">File Attachment*</label>
@@ -49,8 +49,8 @@ const AddPropertyBody = () => {
            </Link>
            <Link href="#" className="dash-cancel-btn tran3s">
              Cancel
-           </Link>
-         </div>
+           </Link> */}
+         {/* </div> */}
        </div>
      </div>
    );

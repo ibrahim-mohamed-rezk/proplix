@@ -6,8 +6,25 @@ import Link from "next/link";
 import Image from "next/image";
 
 import icon_1 from "@/assets/images/icon/icon_46.svg";
+import { deleteData, getData, postData } from "@/libs/server/backendServer";
+import { useEffect, useState } from "react";
 
-const PropertyListBody = () => {
+
+
+
+const PropertyListBody = ({ token }: { token: string }) => {
+  const [properties, setProperties] = useState([]);
+  useEffect(() => {
+    const fetchProperties = async () => {
+      const response = await getData(
+        "agent/property_listings",
+        {},
+         { Authorization: `Bearer ${token}` });
+
+      setProperties(response.data.data);
+    };
+    fetchProperties();
+  }, [token]);
 
    const selectHandler = (e: any) => { };
 
@@ -54,7 +71,7 @@ const PropertyListBody = () => {
                    <th scope="col">Action</th>
                  </tr>
                </thead>
-               <PropertyTableBody />
+               <PropertyTableBody properties={properties}  />
              </table>
            </div>
          </div>

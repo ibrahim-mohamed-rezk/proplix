@@ -1,11 +1,11 @@
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
 import ProfileBody from "./ProfileBody"
 
-const DashboardProfile = () => {
+      const DashboardProfile = ({ token }: { token: string }) => {
    return (
       <>
          <DashboardHeaderOne />
-         <ProfileBody />
+         <ProfileBody token={token} />
       </>
    )
 }

@@ -8,7 +8,7 @@ import SocialMediaLink from "./SocialMediaLink"
 
 import avatar_1 from "@/assets/images/dashboard/avatar_02.jpg"
 
-const ProfileBody = () => {
+const ProfileBody = ({ token }: { token: string }) => {
    return (
      <div className="dashboard-body">
        <div className="position-relative">
@@ -16,7 +16,7 @@ const ProfileBody = () => {
          <h2 className="main-title d-block d-lg-none">Profile</h2>
 
          <div className="bg-white card-box  ">
-           <div className="user-avatar-setting d-flex align-items-center mb-30">
+           {/* <div className="user-avatar-setting d-flex align-items-center mb-30">
              <Image src={avatar_1} alt="" className="lazy-img user-img" />
              <div className="upload-btn position-relative tran3s ms-4 me-3">
                Upload new photo
@@ -28,8 +28,8 @@ const ProfileBody = () => {
                />
              </div>
              <button className="delete-btn tran3s">Delete</button>
-           </div>
-           <UserAvatarSetting />
+           </div> */}
+           <UserAvatarSetting token={token} />
          </div>
          <SocialMediaLink />
          <AddressAndLocation />

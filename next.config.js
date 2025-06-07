@@ -16,6 +16,13 @@ const nextConfig = {
       {
         hostname: "fantasticegypt.com",
       },
+      {
+        hostname: "darkgrey-chough-759221.hostingersite.com",
+      },
+      // (https://thumbs.dreamstime.com/b/residential-real-estate-buying-selling-renting-homes-apartments-condos-townhouses-investment-shelter-expert-guidance-318813833.jpg?w=768) on `ne
+      {
+        hostname: "thumbs.dreamstime.com",
+      },
     ],
   },
 };
