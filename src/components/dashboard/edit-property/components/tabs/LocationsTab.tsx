@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Trash2, MapPin, Edit, Save, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { PropertyData } from '../../PropertyTypes';
 import { deleteData, postData } from '@/libs/server/backendServer';
@@ -15,11 +16,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || 'your-mapbox-token-here';
 
 interface LocationTabProps {
-  token: string;
+  token:string;
   property: PropertyData;
   onUpdate?: () => void;
 }
 
+// Updated to match your PropertyLocation type from PropertyTypes
 interface LocationPoint {
   id: number;
   name: string;
@@ -39,8 +41,8 @@ interface LocationFormData {
   name: string;
   latitude: number;
   longitude: number;
-  polygon_points: number;
-  polygon_radius: number;
+  polygon_points: number; // Number of polygon points to generate
+  polygon_radius: number; // Radius for generating polygon points
 }
 
 interface TempLocationPoint {
@@ -52,7 +54,7 @@ interface TempLocationPoint {
   marker: mapboxgl.Marker;
 }
 
-export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, token }) => {
+export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,token }) => {
   const router = useRouter();
   const params = useParams();
   const propertyId = params?.id as string;
@@ -197,9 +199,9 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
   // Load existing locations and add markers
   useEffect(() => {
-    if (property?.data?.property_locations) {
+    if (property?.data.property_locations) {
       // Convert PropertyLocation[] to LocationPoint[]
-      const convertedLocations: LocationPoint[] = property.data?.property_locations.map(loc => ({
+      const convertedLocations: LocationPoint[] = property.data.property_locations.map(loc => ({
         id: loc.id,
         name: loc.name,
         latitude: loc.latitude,
@@ -365,6 +367,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
     try {
       setLoading(true);
+      // const token = localStorage.getItem('token');
       const queryParams = selectedLocationIds.join('&');
 
       await deleteData(`owner/locations/${queryParams}`, new AxiosHeaders({
@@ -391,6 +394,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
     try {
       setLoading(true);
+      // const token = localStorage.getItem('token');
 
       const polygonPoints = generatePolygonPoints(
         formData.latitude,
@@ -409,7 +413,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
       const formDataToSend = createSingleLocationFormData(locationData);
 
-      await postData('owner/locations', formDataToSend, new AxiosHeaders({
+      await postData('agent/locations', formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
@@ -430,6 +434,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
     try {
       setLoading(true);
+      // const token = localStorage.getItem('token');
 
       const polygonPoints = generatePolygonPoints(
         formData.latitude,
@@ -450,7 +455,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
       };
 
       await postData(
-        `owner/locations/${editingLocation.id}`,
+        `agent/locations/${editingLocation.id}`,
         requestBody,
         new AxiosHeaders({
           Authorization: `Bearer ${token}`,
@@ -478,9 +483,10 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
     try {
       setLoading(true);
+      // const token = localStorage.getItem('token');
       const formDataToSend = createMultiPointFormData(tempLocations);
 
-      await postData('owner/locations', formDataToSend, new AxiosHeaders({
+      await postData('agnet/locations', formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
@@ -506,33 +512,38 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
     }));
   };
 
+  // Enhanced single location form with better styling similar to multi-add
   const renderLocationForm = (isEdit = false) => (
-    <form onSubmit={isEdit ? handleEditSubmit : handleAddSubmit} className="mb-3">
+    <form onSubmit={isEdit ? handleEditSubmit : handleAddSubmit}>
 
       {/* Location Name Section */}
-      <div className="mb-3">
-        <h5 className="font-medium text-muted">{t("Location Information")}</h5>
-        <label htmlFor="location-name" className="form-label">{t("Location Name")} *</label>
-        <input
-          id="location-name"
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleInputChange}
-          className="form-control"
-          required
-          placeholder={t("Enter location name")}
-        />
+      <div className="bg-light p-3 rounded mb-3">
+        <h4 className="fw-medium text-dark mb-3">{t("Location Information")}</h4>
+        <div className="mb-3">
+          <label className="form-label fw-medium">
+            {t("Location Name")} *
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            className="form-control"
+            required
+            placeholder={t("Enter location name")}
+          />
+        </div>
       </div>
 
       {/* Coordinates Section */}
-      <div className="mb-3">
-        <h5 className="font-medium text-muted">{t("Coordinates")}</h5>
+      <div className="bg-light p-3 rounded mb-3">
+        <h4 className="fw-medium text-dark mb-3">{t("Coordinates")}</h4>
         <div className="row">
-          <div className="col-6">
-            <label htmlFor="latitude" className="form-label">{t("Latitude")} *</label>
+          <div className="col-md-6">
+            <label className="form-label fw-medium">
+              {t("Latitude")} *
+            </label>
             <input
-              id="latitude"
               type="number"
               name="latitude"
               value={formData.latitude}
@@ -542,10 +553,11 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
               required
             />
           </div>
-          <div className="col-6">
-            <label htmlFor="longitude" className="form-label">{t("Longitude")} *</label>
+          <div className="col-md-6">
+            <label className="form-label fw-medium">
+              {t("Longitude")} *
+            </label>
             <input
-              id="longitude"
               type="number"
               name="longitude"
               value={formData.longitude}
@@ -559,7 +571,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
       </div>
 
       {/* Action Buttons */}
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-end gap-2 pt-3 border-top">
         <button
           type="button"
           onClick={() => {
@@ -571,26 +583,24 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
             }
             resetFormData();
           }}
-          className="btn btn-secondary me-2"
+          className="btn btn-outline-secondary"
           disabled={loading}
         >
           {t("Cancel")}
         </button>
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn btn-primary d-flex align-items-center gap-2"
           disabled={loading}
         >
           {loading ? (
             <>
-              <div className="spinner-border spinner-border-sm me-2" role="status">
-                <span className="visually-hidden">{t("Saving...")}</span>
-              </div>
+              <div className="spinner-border spinner-border-sm" role="status"></div>
               {t("Saving...")}
             </>
           ) : (
             <>
-              <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+              <Save size={16} />
               {isEdit ? t("Update Location") : t("Add Location")}
             </>
           )}
@@ -602,22 +612,25 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
   return (
     <div className="mb-4">
       {toast.show && <Toast message={toast.message} type={toast.type} duration={3000} />}
-      <div className="d-flex justify-content-between mb-3">
-        <h3 className="h5">{t("Property Locations")}</h3>
-        <div className="d-flex gap-2">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3 className="h5 fw-semibold text-dark">
+          {t("Property Locations")}
+        </h3>
+        <div className="d-flex align-items-center gap-2">
           {locations.length > 0 && (
             <>
               <button
                 onClick={handleSelectAll}
-                className="btn btn-outline-secondary"
+                className="btn btn-secondary btn-sm shadow-sm"
               >
                 {selectedLocationIds.length === locations.length ? t('Deselect All') : t('Select All')}
               </button>
               {selectedLocationIds.length > 0 && (
                 <button
                   onClick={handleBulkDeleteClick}
-                  className="btn btn-outline-danger"
+                  className="btn btn-danger btn-sm shadow-sm d-flex align-items-center gap-2"
                 >
+                  <Trash2 size={16} />
                   {t("Delete Selected")} ({selectedLocationIds.length})
                 </button>
               )}
@@ -625,16 +638,16 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
           )}
           <button
             onClick={handleAddSingleClick}
-            className="btn btn-outline-primary"
+            className="btn btn-primary btn-sm shadow-sm d-flex align-items-center gap-2"
           >
-            <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+            <Plus size={16} />
             {t("Add Single")}
           </button>
           <button
             onClick={handleAddMultipleClick}
-            className="btn btn-outline-success"
+            className="btn btn-success btn-sm shadow-sm d-flex align-items-center gap-2"
           >
-            <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+            <Plus size={16} />
             {t("Add Multiple")}
           </button>
         </div>
@@ -642,27 +655,29 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
       {/* Multi-add mode controls */}
       {isMultiAddMode && (
-        <div className="alert alert-warning">
-          <div className="d-flex justify-content-between">
+        <div className="alert alert-warning border rounded p-3 mb-3">
+          <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h5 className="alert-heading">{t("Multi-Add Mode Active")}</h5>
-              <p>{t("Points added")}: {tempLocations.length}</p>
+              <h4 className="fw-medium text-warning-emphasis">{t("Multi-Add Mode Active")}</h4>
+              <p className="small text-warning-emphasis mb-0">
+                {t("Points added")}: {tempLocations.length}
+              </p>
             </div>
             <div className="d-flex gap-2">
               <button
                 onClick={handleSaveAllPoints}
-                className="btn btn-success"
+                className="btn btn-success btn-sm d-flex align-items-center gap-2"
                 disabled={tempLocations.length === 0}
               >
-                <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+                <Save size={16} />
                 {t("Save All Points")}
               </button>
               <button
                 onClick={handleCancelMultiAdd}
-                className="btn btn-danger"
+                className="btn btn-danger btn-sm d-flex align-items-center gap-2"
               >
-                <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
-                {t("Cancel")}
+                <X size={16} />
+                {t("cancel")}
               </button>
             </div>
           </div>
@@ -670,12 +685,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
       )}
 
       {/* Map Container */}
-      <div className="mb-4">
+      <div className="mb-3">
         <div
           ref={mapContainer}
-          className="w-100 h-400 border"
+          className="w-100 border rounded"
+          style={{ height: '24rem' }}
         />
-        <p className="text-muted mt-2">
+        <p className="small text-muted mt-2">
           {isMultiAddMode
             ? t("Multi-add mode: Click on the map to add multiple location points")
             : t("Click on the map to add a new location point")
@@ -685,20 +701,35 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
 
       {/* Temporary locations list (when in multi-add mode) */}
       {isMultiAddMode && tempLocations.length > 0 && (
-        <div className="mb-4">
-          <h5>{t("Points to be added")}:</h5>
-          <div className="list-group">
+        <div className="mb-3">
+          <h4 className="fw-medium text-dark mb-3">{t("Points to be added")}:</h4>
+          {/* Single input for name of all points */}
+          <div className="mb-3">
+            <label className="form-label fw-medium">
+              {t("Location Name for All")} *
+            </label>
+            <input
+              type="text"
+              value={multiName}
+              onChange={(e) => setMultiName(e.target.value)}
+              className="form-control"
+              placeholder={t("Enter name for all locations")}
+              required
+            />
+          </div>
+          <div className="d-flex flex-column gap-2">
             {tempLocations.map((tempLoc, index) => (
-              <div key={tempLoc.id} className="list-group-item d-flex justify-content-between align-items-center">
-                <span className="badge badge-secondary">{index + 1}</span>
-                <span className="text-muted">
+              <div key={tempLoc.id} className="d-flex align-items-center gap-3 p-2 bg-light rounded">
+                <span className="small fw-medium text-muted">#{index + 1}</span>
+                <span className="small text-muted">
                   {tempLoc.latitude.toFixed(6)}, {tempLoc.longitude.toFixed(6)}
                 </span>
                 <button
+                  type="button"
                   onClick={() => removeTempLocation(tempLoc.id)}
-                  className="btn btn-sm btn-danger"
+                  className="btn btn-danger btn-sm p-1"
                 >
-                  <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+                  <X size={14} />
                 </button>
               </div>
             ))}
@@ -707,62 +738,66 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
       )}
 
       {/* Locations List */}
-      {property.data?.property_locations.length > 0 ? (
-        <div className="list-group">
-          {property.data?.property_locations.map((location) => (
-            <div key={location.id} className="list-group-item d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedLocationIds.includes(location.id.toString())}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedLocationIds(prev => [...prev, location.id.toString()]);
-                    } else {
-                      setSelectedLocationIds(prev => prev.filter(id => id !== location.id.toString()));
-                    }
-                  }}
-                  className="form-check-input"
-                />
-                <div className="d-flex align-items-center ms-2">
-                  <div className="badge bg-primary text-white rounded-circle">
-                    <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+      {property.data.property_locations.length > 0 ? (
+        <div className="d-flex flex-column gap-3 mb-3">
+          {property.data.property_locations.map((location) => (
+            <div key={location.id} className="border rounded p-3 bg-light">
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedLocationIds.includes(location.id.toString())}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedLocationIds(prev => [...prev, location.id.toString()]);
+                      } else {
+                        setSelectedLocationIds(prev => prev.filter(id => id !== location.id.toString()));
+                      }
+                    }}
+                    className="form-check-input"
+                  />
+                  <div className="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle" style={{ width: '2.5rem', height: '2.5rem' }}>
+                    <MapPin size={20} className="text-primary" />
                   </div>
                   <div>
-                    <strong>{location.name}</strong>
-                    <div className="text-muted">{location.latitude}, {location.longitude}</div>
+                    <div className="fw-medium text-dark">
+                      {location.name}
+                    </div>
+                    <div className="small text-muted">
+                      Lat: {location.latitude}, Lng: {location.longitude}
+                    </div>
                     {location.location_points && location.location_points.length > 0 && (
-                      <div className="text-muted">
+                      <div className="small text-muted">
                         Polygon points: {location.location_points.length}
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-              <div className="d-flex gap-2">
-                <button
-                  onClick={() => handleEditClick(location)}
-                  className="btn btn-outline-success btn-sm"
-                  title="Edit location"
-                >
-                  <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Edit" width="20" />
-                </button>
-                <button
-                  onClick={() => handleDeleteClick(location.id.toString())}
-                  className="btn btn-outline-danger btn-sm"
-                  title="Delete location"
-                >
-                  <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="20" />
-                </button>
+                <div className="d-flex align-items-center gap-2">
+                  <button
+                    onClick={() => handleEditClick(location)}
+                    className="btn btn-success btn-sm"
+                    title="Edit location"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(location.id.toString())}
+                    className="btn btn-danger btn-sm"
+                    title="Delete location"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center text-muted py-4">
-          <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
-          <p>{t("No locations marked yet")}</p>
-          <p>{t("Click on the map above or use the \"Add New Location\" button to mark your first location.")}</p>
+        <div className="text-center text-muted py-5">
+          <MapPin size={48} className="mx-auto mb-3 opacity-50" />
+          <p className="h5 fw-medium mb-2">No locations marked yet</p>
+          <p className="small">Click on the map above or use the &quot;Add New Location&quot; button to mark your first location.</p>
         </div>
       )}
 
@@ -790,11 +825,11 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
           <p className="text-muted mb-3">
             {t("You are about to save")} {tempLocations.length} {t("location(s).")}
           </p>
-          <div className="max-height-60 overflow-auto">
+          <div className="overflow-auto d-flex flex-column gap-2" style={{ maxHeight: '15rem' }}>
             {tempLocations.map((tempLoc, index) => (
-              <div key={tempLoc.id} className="d-flex justify-content-between align-items-center py-2">
-                <span className="badge bg-secondary">{index + 1}</span>
-                <span className="text-muted">
+              <div key={tempLoc.id} className="d-flex align-items-center gap-3 p-2 bg-light rounded">
+                <span className="small fw-medium text-muted">#{index + 1}</span>
+                <span className="small text-muted">
                   {tempLoc.latitude.toFixed(4)}, {tempLoc.longitude.toFixed(4)}
                 </span>
               </div>
@@ -832,8 +867,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
         {renderLocationForm(true)}
       </ModalForm>
 
-      {/* Delete Confirmation Modal */}
-      <ModalForm
+     {/* Delete Confirmation Modal */}
+     <ModalForm
         open={showDeleteModal}
         title={t("Confirm Delete")}
         onClose={() => {
@@ -841,23 +876,23 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate, to
           setSelectedLocationIds([]);
         }}
       >
-        <p className="text-muted mb-3">
+        <p className="text-gray-600 mb-6">
           {t("Are you sure you want to delete")} {selectedLocationIds.length === 1 ? t('this location') : `${t('these')} ${selectedLocationIds.length} ${t('locations')}`}? {t("This action cannot be undone.")}
         </p>
-        <div className="d-flex justify-content-end gap-2">
+        <div className="flex justify-end space-x-3">
           <button
             onClick={() => {
               setShowDeleteModal(false);
               setSelectedLocationIds([]);
             }}
-            className="btn btn-outline-secondary"
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition duration-200"
             disabled={loading}
           >
             {t("Cancel")}
           </button>
           <button
             onClick={handleDeleteConfirm}
-            className="btn btn-danger"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition duration-200 disabled:opacity-50"
             disabled={loading}
           >
             {loading ? t('Deleting...') : `${t('Delete')} ${selectedLocationIds.length === 1 ? t('Location') : t('Locations')}`}

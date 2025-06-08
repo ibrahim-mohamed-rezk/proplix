@@ -33,7 +33,7 @@ const PropertyListBody = ({ token }: { token: string }) => {
        <div className="position-relative">
          <DashboardHeaderTwo title="My Properties" />
          <h2 className="main-title d-block d-lg-none">My Properties</h2>
-         <div className="d-sm-flex align-items-center justify-content-between mb-25">
+         {/* <div className="d-sm-flex align-items-center justify-content-between mb-25">
            <div className="fs-16">
              Showing <span className="color-dark fw-500">1–5</span> of{" "}
              <span className="color-dark fw-500">40</span> results
@@ -57,7 +57,7 @@ const PropertyListBody = ({ token }: { token: string }) => {
                />
              </div>
            </div>
-         </div>
+         </div> */}
 
          <div className="bg-white card-box p0  ">
            <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
@@ -71,12 +71,12 @@ const PropertyListBody = ({ token }: { token: string }) => {
                    <th scope="col">Action</th>
                  </tr>
                </thead>
-               <PropertyTableBody properties={properties}  />
+               <PropertyTableBody properties={properties} token={token} />
              </table>
            </div>
          </div>
 
-         <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
+         {/* <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
            <li className="me-3">
              <Link href="#">1</Link>
            </li>
@@ -95,7 +95,7 @@ const PropertyListBody = ({ token }: { token: string }) => {
                Last <Image src={icon_1} alt="" className="ms-2" />
              </Link>
            </li>
-         </ul>
+         </ul> */}
        </div>
      </div>
    );
