@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl";
 import RichTextEditor from "@/components/RichTextEditor";
 import NiceSelect from "@/ui/NiceSelect";
 import { toast } from "react-toastify";
-
 
 type FormInputs = {
   // General Information
@@ -20,7 +19,7 @@ type FormInputs = {
   sqt: string;
   bedroom: string;
   bathroom: string;
-  kitchen: string;
+  kitichen : string;
   status: string;
   type: string;
   immediate_delivery: string;
@@ -82,14 +81,43 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   const [descriptionAr, setDescriptionAr] = useState<string>("");
   const [images, setImages] = useState<FileList | null>(null);
 
+  // State for dropdown values
+  const [selectValues, setSelectValues] = useState({
+    type_id: '',
+    area_id: '',
+    status: '',
+    type: '',
+    immediate_delivery: ''
+  });
+
   // State for dropdown options
-  const [propertyTypes, setPropertyTypes] = useState<SelectOption[]>([]);
-  const [areas, setAreas] = useState<AreaOption[]>([]);
+  const [propertyTypes, setPropertyTypes] = useState<{ data: SelectOption[] }>({ data: [] });
+  const [areas, setAreas] = useState<{data:AreaOption[]}>({data:[]});
+
+  // Dropdown handlers
+  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectValues(prev => ({ ...prev, type_id: e.target.value }));
+  };
+
+  const handleAreaChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectValues(prev => ({ ...prev, area_id: e.target.value }));
+  };
+
+  const handleStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectValues(prev => ({ ...prev, status: e.target.value }));
+  };
+
+  const handleTypeSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectValues(prev => ({ ...prev, type: e.target.value }));
+  };
+
+  const handleImmediateDeliveryChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectValues(prev => ({ ...prev, immediate_delivery: e.target.value }));
+  };
 
   // Fetch dropdown data on component mount
   useEffect(() => {
     const fetchDropdownData = async () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
       if (!token) {
         toast.error("Authentication token not found");
         return;
@@ -98,8 +126,8 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       try {
         // Fetch types and areas - adjust API endpoints as needed
         const [typesResponse, areasResponse] = await Promise.all([
-          getData("owner/types", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` })),
-          getData("owner/areas", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` }))
+          getData("types", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` })),
+          getData("areas", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` }))
         ]);
 
         if (typesResponse.status) setPropertyTypes(typesResponse.data);
@@ -111,29 +139,38 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     };
 
     fetchDropdownData();
-  }, []);
+  }, [token]);
 
   const onSubmit = async (data: FormInputs) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
     if (!token) {
       toast.error("Authentication token not found");
       return;
     }
 
+    // Check if required select values are filled
+    if (!selectValues.type_id || !selectValues.area_id || !selectValues.status || 
+        !selectValues.type || !selectValues.immediate_delivery) {
+      toast.error("Please fill all required dropdown fields");
+      return;
+    }
+
+    console.log('Form data:', data);
+    console.log('Select values:', selectValues);
+
     const formData = new FormData();
     
-    // Add general fields
-    formData.append("type_id", data.type_id);
-    formData.append("area_id", data.area_id);
+    // Add general fields - use selectValues for dropdowns
+    formData.append("type_id", selectValues.type_id);
+    formData.append("area_id", selectValues.area_id);
     formData.append("price", data.price);
     formData.append("down_price", data.down_price);
     formData.append("sqt", data.sqt);
     formData.append("bedroom", data.bedroom);
     formData.append("bathroom", data.bathroom);
-    formData.append("kitichen", data.kitchen);
-    formData.append("status", data.status);
-    formData.append("type", data.type);
-    formData.append("immediate_delivery", data.immediate_delivery);
+    formData.append("kitichen ", data.kitichen ); // Fixed typo from "kitichen"
+    formData.append("status", selectValues.status);
+    formData.append("type", selectValues.type);
+    formData.append("immediate_delivery", selectValues.immediate_delivery);
     
     // Add English fields
     formData.append("title[en]", data.title_en);
@@ -161,7 +198,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     }
 
     try {
-      await postData("owner/property_listings", formData,  new AxiosHeaders({ Authorization: `Bearer ${token}` }));
+      await postData("agent/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
       toast.success(t("Property added successfully"));
       router.back();
     } catch (error) {
@@ -169,8 +206,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       toast.error(t("Failed to add property"));
     }
   };
-
-  const selectHandler = (e: any) => {};
 
   const TabButton = ({ label, isActive, onClick }: {
     label: string;
@@ -230,17 +265,17 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       className="nice-select"
                       options={[
                         { value: "", text: t("Select Type") },
-                        ...propertyTypes.map((type) => ({
+                        ...propertyTypes?.data?.map((type) => ({
                           value: type.id,
                           text: type.title || type.name || ""
                         }))
                       ]}
                       defaultCurrent={0}
-                      onChange={selectHandler}
+                      onChange={handleTypeChange}
                       name="type_id"
                       placeholder=""
                     />
-                    {errors.type_id && (
+                    {!selectValues.type_id && (
                       <div className="text-danger">{t("This field is required")}</div>
                     )}
                   </div>
@@ -253,17 +288,17 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       className="nice-select"
                       options={[
                         { value: "", text: t("Select Area") },
-                        ...areas.map((area) => ({
+                        ...areas?.data?.map((area) => ({
                           value: area.id.toString(),
-                          text: `${area.description.en.name} / ${area.description.ar.name}`
+                          text: `${area.name} / ${area.name}`
                         }))
                       ]}
                       defaultCurrent={0}
-                      onChange={selectHandler}
+                      onChange={handleAreaChange}
                       name="area_id"
                       placeholder=""
                     />
-                    {errors.area_id && (
+                    {!selectValues.area_id && (
                       <div className="text-danger">{t("This field is required")}</div>
                     )}
                   </div>
@@ -341,13 +376,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
                 <div className="col-md-6">
                   <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Kitchen")}*</label>
+                    <label htmlFor="">{t("kitchen ")}*</label>
                     <input
-                      {...register("kitchen", { required: true })}
+                      {...register("kitichen", { required: true })}
                       type="number"
-                      placeholder={t("Number of Kitchens")}
+                      placeholder={t("Number of kitichen s")}
                     />
-                    {errors.kitchen && (
+                    {errors.kitichen  && (
                       <div className="text-danger">{t("This field is required")}</div>
                     )}
                   </div>
@@ -364,11 +399,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         { value: "sale", text: t("Sale") }
                       ]}
                       defaultCurrent={0}
-                      onChange={selectHandler}
+                      onChange={handleStatusChange}
                       name="status"
                       placeholder=""
                     />
-                    {errors.status && (
+                    {!selectValues.status && (
                       <div className="text-danger">{t("This field is required")}</div>
                     )}
                   </div>
@@ -385,11 +420,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         { value: "office", text: t("Office") }
                       ]}
                       defaultCurrent={0}
-                      onChange={selectHandler}
+                      onChange={handleTypeSelectChange}
                       name="type"
                       placeholder=""
                     />
-                    {errors.type && (
+                    {!selectValues.type && (
                       <div className="text-danger">{t("This field is required")}</div>
                     )}
                   </div>
@@ -406,11 +441,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         { value: "no", text: t("No") }
                       ]}
                       defaultCurrent={0}
-                      onChange={selectHandler}
+                      onChange={handleImmediateDeliveryChange}
                       name="immediate_delivery"
                       placeholder=""
                     />
-                    {errors.immediate_delivery && (
+                    {!selectValues.immediate_delivery && (
                       <div className="text-danger">{t("This field is required")}</div>
                     )}
                   </div>
@@ -639,7 +674,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             </div>
           )}
 
-          <div className="button-group d-inline-flex "  style={{ gap: '10px' }}>
+          <div className="button-group d-inline-flex" style={{ gap: '10px' }}>
             <button
               type="button"
               onClick={() => router.back()}
@@ -647,15 +682,14 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             >
               {t("Cancel")}
             </button>
-           <button
-  type="submit"
-  className="dash-btn-one d-flex align-items-center"
-  style={{ gap: '10px' }}
->
-  <i className="fa-regular fa-floppy-disk"></i>
-  {t("Submit")}
-</button>
-
+            <button
+              type="submit"
+              className="dash-btn-one d-flex align-items-center"
+              style={{ gap: '10px' }}
+            >
+              <i className="fa-regular fa-floppy-disk"></i>
+              {t("Submit")}
+            </button>
           </div>
         </form>
       </div>

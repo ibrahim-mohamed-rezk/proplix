@@ -68,10 +68,10 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div>
               <h1 className="h3 font-weight-bold">
-                {property?.descriptions?.en?.title}
+                {property?.data.descriptions?.en?.title}
               </h1>
               <p className="text-muted mt-2">
-                {t("property_id")}: {property?.id} • {property?.type?.descriptions?.en?.title}
+                {t("property_id")}: {property?.data.id} • {property?.data.type?.descriptions?.en?.title}
               </p>
             </div>
             {/* <div className="d-flex space-x-3">

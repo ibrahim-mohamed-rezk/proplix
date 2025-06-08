@@ -37,8 +37,8 @@ export const useProperty = (propertyId: string,token:string) => {
   }, [token]);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
+    // const storedToken = localStorage.getItem('token');
+    if (token) {
       // setToken(token);
     } else {
       console.error('Token not found in localStorage');
