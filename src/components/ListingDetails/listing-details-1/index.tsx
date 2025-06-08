@@ -35,9 +35,9 @@ const ListingDetailsOne = async ({
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: propertyData.property.title,
-    description: propertyData.property.description,
-    image: propertyData.property.images?.map((img: any) => img.url) || [],
+    name: propertyData?.property?.title,
+    description: propertyData?.property?.description,
+    image: propertyData?.property?.images?.map((img: any) => img.url) || [],
     brand: {
       "@type": "Organization",
       name: "ARX Real Estate Development",
@@ -45,7 +45,7 @@ const ListingDetailsOne = async ({
     offers: {
       "@type": "Offer",
       priceCurrency: "EGP",
-      price: propertyData.property.price,
+      price: propertyData?.property?.price,
       itemCondition: "https://schema.org/NewCondition",
       availability: "https://schema.org/InStock",
       url: `https://example.com/properties/${slug}`,
@@ -61,8 +61,8 @@ const ListingDetailsOne = async ({
       />
       <HeaderOne token={token} style={true} />
       <ListingDetailsOneArea
-        property={propertyData.property}
-        similar={propertyData.similar}
+        property={propertyData?.property}
+        similar={propertyData?.similar}
       />
       <FancyBanner />
       <FooterFour />
