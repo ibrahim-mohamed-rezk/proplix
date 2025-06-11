@@ -41,7 +41,7 @@ const ListingDropdownModal = ({
                       <div className="row gx-lg-5">
                         <div className="col-md-6">
                           <div className="input-box-one mb-35">
-                            <div className="label">I'm looking to...</div>
+                            <div className="label">I&apos;m looking to...</div>
                             <NiceSelect
                               className="nice-select fw-normal"
                               options={[
