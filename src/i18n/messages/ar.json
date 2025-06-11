@@ -256,6 +256,21 @@
     "authenticationTokenNotFound": "رمز المصادقة غير موجود",
     "failedToFetchStatistics": "فشل في جلب الإحصائيات"
   },
+  "Dashboard": {
+    "dashboardOverview": "نظرة عامة على لوحة التحكم",
+    "realTimePropertyStatistics": "إحصائيات العقارات في الوقت الفعلي والرؤى",
+    "forSaleTotal": "إجمالي للبيع",
+    "forRentTotal": "إجمالي للإيجار",
+    "propertyStatusOverview": "نظرة عامة على حالة العقار",
+    "pending": "معلق",
+    "accepted": "مقبول",
+    "cancelled": "ملغى",
+    "forSale": "للبيع",
+    "forRent": "للإيجار",
+    "immediateDelivery": "تسليم فوري",
+    "loading": "جاري التحميل...",
+    "noDataAvailable": "لا توجد بيانات متاحة"
+  },
   "Amenities": {
     "Amenities": "المرفقات",
     "title(EN)": "عنوان (إنجليزي)",

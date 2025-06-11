@@ -168,7 +168,7 @@ const Favorites = ({ token }: { token: string }) => {
                   >
                     {item.title}
                   </Link>
-                  <div className="address">{item.area.name}</div>
+                  <div className="address">{item?.area?.name}</div>
                   <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
                     <li className="d-flex align-items-center">
                       <Image

@@ -93,8 +93,8 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                      <Image src={pathname === '/dashboard/dashboard-index' ? dashboardIconActive_1 : dashboardIcon_1} alt="" />
                      <span className="px-2">{t("Dashboard")}</span>
                   </Link></li>
-                  <li className="plr"><Link href={`/${lang}/dashboard/Statistics-index`} className={`d-flex w-100 align-items-center ${isRTL ? 'flex-row-reverse' : ''} ${pathname === '/Statistics/Statistics-index' ? 'active' : ''}`}>
-                     <Image src={pathname === '/dashboard/Statistics-index' ? dashboardIconActive_1 : dashboardIcon_1} alt="" />
+                  <li className="plr"><Link href={`/${lang}/dashboard/Statistics`} className={`d-flex w-100 align-items-center ${isRTL ? 'flex-row-reverse' : ''} ${pathname === '/dashboard/Statistics' ? 'active' : ''}`}>
+                     <Image src={pathname === '/dashboard/Statistics' ? dashboardIconActive_1 : dashboardIcon_1} alt="" />
                      <span className="px-2">{t("Statistics")}</span>
                   </Link></li>
                   {/* <li className="plr"><Link href="/dashboard/message" className={`d-flex w-100 align-items-center ${isRTL ? 'flex-row-reverse' : ''} ${pathname === '/dashboard/message' ? 'active' : ''}`}>
