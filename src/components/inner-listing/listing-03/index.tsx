@@ -5,32 +5,24 @@ import { cookies } from "next/headers";
 import { getData } from "@/libs/server/backendServer";
 import FooterOne from "@/layouts/footers/FooterOne";
 
-const ListingSix = async ({ locale }: { locale: string }) => {
+const ListingSix = async ({
+ 
+  searchParams,
+}: {
+ 
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
   const cookiesData = await cookies();
   const token = cookiesData.get("token")?.value;
+  const filters = await searchParams;
 
-  const feachData = async () => {
-    try {
-      const response = await getData(
-        "properties",
-        {},
-        {
-          lang: locale,
-        }
-      );
-      return response.data.data;
-    } catch (error) {
-      console.log(error)
-      throw error;
-    }
-  };
+ 
 
-  const propertiesData = await feachData();
-  console.log(propertiesData.data)
+  
   return (
     <>
       <HeaderOne token={token} style={true} />
-      <ListingThreeArea style={false} properties={propertiesData} />
+      <ListingThreeArea style={false}  />
       <FancyBanner />
       <FooterOne style={false} />
     </>
