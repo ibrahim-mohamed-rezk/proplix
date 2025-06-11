@@ -41,7 +41,13 @@ const NavMenu = () => {
             {t("properties")}
           </Link>
         </li>
-        {menu_data.map((menu: any) => (
+        <li className="nav-item ">
+          <Link className="nav-link" href="/contact">
+            {t("contact")}
+          </Link>
+        </li>
+
+        {/* {menu_data.map((menu: any) => (
           <li key={menu.id} className={`nav-item dropdown ${menu.class_name}`}>
             <Link
               href={menu.link}
@@ -104,7 +110,7 @@ const NavMenu = () => {
               </>
             )}
           </li>
-        ))}
+        ))} */}
         <li className="nav-item ">
           <Link className="nav-link" href="/blogs">
             {t("blog")}

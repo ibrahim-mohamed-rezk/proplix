@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const metadata = {
-   title: "Dashboard Add Property Homy - Real Estate React Next js Template",
+  title: "Dashboard Add Property Problix - Real Estate React Next js Template",
 };
 const index = async () => {
 

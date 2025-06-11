@@ -2,7 +2,8 @@ import PasswordChange from "@/components/dashboard/account-settings/password-cha
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
-   title: "Dashboard Account Password Change Homy - Real Estate React Next js Template",
+  title:
+    "Dashboard Account Password Change Problix - Real Estate React Next js Template",
 };
 const index = () => {
    return (
