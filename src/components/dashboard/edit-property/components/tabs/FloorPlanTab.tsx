@@ -119,7 +119,7 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
       
       // Append multiple floor plans
       Array.from(formData.floor_plans).forEach((file, index) => {
-        formDataToSend.append(`floor_plans[${index}]`, file);
+        formDataToSend.append(`images[${index}]`, file);
       });
       
       await postData('agent/property/floor-plan', formDataToSend, new AxiosHeaders({
@@ -184,7 +184,7 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
         </button>
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn dash-btn-two"
           disabled={loading}
         >
           {loading ? t("Uploading...") : t("Upload Floor Plans")}
@@ -219,7 +219,7 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
           )}
           <button
             onClick={handleAddClick}
-            className="btn btn-primary d-flex align-items-center gap-2"
+            className="btn dash-btn-two d-flex align-items-center gap-2"
           >
             <Plus size={20} />
             {t("Add New Floor Plans")}

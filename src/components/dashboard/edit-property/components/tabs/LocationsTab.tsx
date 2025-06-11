@@ -370,7 +370,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
       // const token = localStorage.getItem('token');
       const queryParams = selectedLocationIds.join('&');
 
-      await deleteData(`owner/locations/${queryParams}`, new AxiosHeaders({
+      await deleteData(`agent/locations/${queryParams}`, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
       }));
 
@@ -486,7 +486,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
       // const token = localStorage.getItem('token');
       const formDataToSend = createMultiPointFormData(tempLocations);
 
-      await postData('agnet/locations', formDataToSend, new AxiosHeaders({
+      await postData('agent/locations', formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
@@ -590,7 +590,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
         </button>
         <button
           type="submit"
-          className="btn btn-primary d-flex align-items-center gap-2"
+          className="btn dash-btn-two d-flex align-items-center gap-2"
           disabled={loading}
         >
           {loading ? (
@@ -638,14 +638,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
           )}
           <button
             onClick={handleAddSingleClick}
-            className="btn btn-primary btn-sm shadow-sm d-flex align-items-center gap-2"
+            className="btn dash-btn-two btn-sm shadow-sm d-flex align-items-center gap-2"
           >
             <Plus size={16} />
             {t("Add Single")}
           </button>
           <button
             onClick={handleAddMultipleClick}
-            className="btn btn-success btn-sm shadow-sm d-flex align-items-center gap-2"
+            className="btn dash-btn-two btn-sm shadow-sm d-flex align-items-center gap-2"
           >
             <Plus size={16} />
             {t("Add Multiple")}

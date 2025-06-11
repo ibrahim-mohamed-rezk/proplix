@@ -1,11 +1,11 @@
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne";
 import SavedSearchBody from "./SavedSearchBody";
 
-const DashboardSavedSearch = () => {
+const DashboardSavedSearch = ({ token }: { token: string }) => {
    return (
       <>
          <DashboardHeaderOne />
-         <SavedSearchBody />
+         <SavedSearchBody token={token} />
       </>
    )
 }

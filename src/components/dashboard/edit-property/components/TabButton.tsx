@@ -9,11 +9,7 @@ export const TabButton = ({ label, isActive, onClick }: {
   <button
     type="button"
     onClick={onClick}
-    className={`px-4 py-2 rounded-top font-weight-medium transition-colors duration-200 ${
-      isActive
-        ? "bg-primary text-white border-bottom-2 border-primary"
-        : "bg-light text-dark hover:bg-secondary"
-    }`}
+    className={`dash-btn-two mx-1 ${isActive ? "active" : ""}`}
   >
     {label}
   </button>

@@ -193,7 +193,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     // Add images
     if (images) {
       for (let i = 0; i < images.length; i++) {
-        formData.append("images[]", images[i]);
+        formData.append("cover", images[i]);
       }
     }
 
@@ -376,7 +376,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
                 <div className="col-md-6">
                   <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("kitchen ")}*</label>
+                    <label htmlFor="">{t("kitchen")}*</label>
                     <input
                       {...register("kitichen", { required: true })}
                       type="number"
