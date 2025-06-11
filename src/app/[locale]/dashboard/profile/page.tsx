@@ -3,7 +3,7 @@ import Wrapper from "@/layouts/Wrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 export const metadata = {
-   title: "Dashboard Profile Homy - Real Estate React Next js Template",
+  title: "Dashboard Profile Problix - Real Estate React Next js Template",
 };
 
 

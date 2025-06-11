@@ -3,7 +3,7 @@ import Wrapper from "@/layouts/Wrapper";
 import { cookies } from "next/headers";
 
 export const metadata = {
-   title: "Blog Details Homy - Real Estate React Next js Template",
+  title: "Blog Details Problix - Real Estate React Next js Template",
 };
 const index = async () => {
    const cookieStore = await cookies();

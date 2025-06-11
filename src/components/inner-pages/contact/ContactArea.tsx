@@ -13,24 +13,24 @@ interface DataType {
 }
 
 const address_data: DataType[] = [
-   {
-      id: 1,
-      title: "We’r always happy to help.",
-      address_1: "ask@homy.com"
-   },
-   {
-      id: 2,
-      class_name: "skew-line",
-      title: "Our hotline number",
-      address_1: "+757 699 4478,",
-      address_2: "+991 377 9731",
-   },
-   {
-      id: 3,
-      title: "Live chat",
-      address_1: "www.homylivechat.com"
-   },
-]
+  {
+    id: 1,
+    title: "We’r always happy to help.",
+    address_1: "ask@Problix.com",
+  },
+  {
+    id: 2,
+    class_name: "skew-line",
+    title: "Our hotline number",
+    address_1: "+757 699 4478,",
+    address_2: "+991 377 9731",
+  },
+  {
+    id: 3,
+    title: "Live chat",
+    address_1: "www.Problixlivechat.com",
+  },
+];
 
 const ContactArea = () => {
    return (

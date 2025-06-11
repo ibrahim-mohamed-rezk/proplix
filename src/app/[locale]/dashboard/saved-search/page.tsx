@@ -3,7 +3,7 @@ import Wrapper from "@/layouts/Wrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 export const metadata = {
-   title: "Dashboard Saved Search Homy - Real Estate React Next js Template",
+  title: "Dashboard Saved Search Problix - Real Estate React Next js Template",
 };
 const index = async() => {
    const cookieStore = await cookies();
