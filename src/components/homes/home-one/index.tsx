@@ -7,9 +7,9 @@ import BLockFeatureTwo from "./BLockFeatureTwo";
 import BLockFeatureThree from "./BLockFeatureThree";
 import FancyBannerOne from "./FancyBannerOne";
 import AgentArea from "./AgentArea";
-import BLockFeatureFour from "./BLockFeatureFour";
+// import BLockFeatureFour from "./BLockFeatureFour";
 import BLockFeatureFive from "./BLockFeatureFive";
-import FancyBannerThree from "./FancyBannerThree";
+// import FancyBannerThree from "./FancyBannerThree";
 import FancyBanner from "@/components/common/FancyBanner";
 import { cookies } from "next/headers";
 import { getData } from "@/libs/server/backendServer";
@@ -50,10 +50,10 @@ const HomeOne = async ({ locale }: { locale: string }) => {
       />
       <FancyBannerOne style={false} />
       <AgentArea style={false} agents={homeData.data.agents} loading={false} />
-      <BLockFeatureFour />
+      {/* <BLockFeatureFour /> */}
       <BLockFeatureFive style={false} />
       <FancyBanner style={false} />
-      <FancyBannerThree />
+      {/* <FancyBannerThree /> */}
       <Feedback />
 
       <FooterOne style={false} />

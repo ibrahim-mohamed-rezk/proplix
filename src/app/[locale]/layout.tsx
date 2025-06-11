@@ -35,7 +35,7 @@ export default async function RootLayout({
         <meta property="og:type" content="website" />
         <meta
           property="og:title"
-          content="Homy - Real Estate React Next js Template"
+          content="Proplix - Real estate, Property sale, Property buy"
         />
         <meta name="og:image" content="images/assets/ogg.png" />
         {/* For IE  */}
