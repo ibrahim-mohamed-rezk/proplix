@@ -82,7 +82,7 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
         .map((id, index) => `ids[${index}]=${id}`)
         .join('&');
       
-      await deleteData(`owner/property/images?${queryParams}`, new AxiosHeaders({
+      await deleteData(`agent/property/images?${queryParams}`, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
       }));
       
@@ -122,7 +122,7 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
         formDataToSend.append(`images[${index}]`, file);
       });
       
-      await postData('owner/property/images', formDataToSend, new AxiosHeaders({
+      await postData('agent/property/images', formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
@@ -184,7 +184,7 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
         </button>
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn dash-btn-two"
           disabled={loading}
         >
           {loading ? t("Uploading...") : t("Upload Images")}
@@ -219,7 +219,7 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
           )}
           <button
             onClick={handleAddClick}
-            className="btn btn-primary shadow-sm d-flex align-items-center gap-2"
+            className="btn dash-btn-two shadow-sm d-flex align-items-center gap-2"
           >
             <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="16" height="16" />
             {t("Add New Images")}
@@ -298,14 +298,14 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
       {/* Delete Confirmation Modal */}
       <ModalForm
         open={showDeleteModal}
-        title="Confirm Delete"
+        title={t("Confirm Delete")}
         onClose={() => {
           setShowDeleteModal(false);
           setSelectedImageIds([]);
         }}
       >
         <p className="text-muted mb-4">
-          Are you sure you want to delete {selectedImageIds?.length === 1 ? 'this image' : `these ${selectedImageIds?.length} images`}? This action cannot be undone.
+          {t("Are you sure you want to delete images? This action cannot be undone.")}
         </p>
         <div className="d-flex justify-content-end gap-2">
           <button

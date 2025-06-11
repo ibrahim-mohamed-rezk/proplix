@@ -69,7 +69,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
     try {
       setLoading(true);
       
-      await deleteData(`owner/amenities/${selectedAmenityId}`, new AxiosHeaders({
+      await deleteData(`agent/amenities/${selectedAmenityId}`, new AxiosHeaders({
         Authorization: `Bearer ${token}`, // Use token from props
       }));
       
@@ -99,7 +99,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       formDataToSend.append('title[en]', formData['title[en]']);
       formDataToSend.append('title[ar]', formData['title[ar]']);
       
-      await postData('owner/amenities', formDataToSend, new AxiosHeaders({
+      await postData('agent/amenities', formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`, // Use token from props
         'Content-Type': 'multipart/form-data',
       }));
@@ -133,7 +133,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       formDataToSend.append('title[ar]', formData['title[ar]']);
       formDataToSend.append('_method', 'PUT'); // Laravel method spoofing for FormData
       
-      await postData(`owner/amenities/${selectedAmenityId}`, formDataToSend, new AxiosHeaders({
+      await postData(`agent/amenities/${selectedAmenityId}`, formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`, // Use token from props
         'Content-Type': 'multipart/form-data',
       }));
@@ -221,7 +221,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
         <h3 className="h5">{t("Amenities")}</h3>
         <button
           onClick={handleAddClick}
-          className="btn btn-primary d-flex align-items-center gap-2"
+          className="btn dash-btn-two d-flex align-items-center gap-2"
         >
           <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
           {t("Add New Amenity")}

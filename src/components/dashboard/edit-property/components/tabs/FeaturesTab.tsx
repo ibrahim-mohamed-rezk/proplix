@@ -317,7 +317,7 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
         </button>
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn dash-btn-two"
           disabled={loading}
         >
           {loading ? (isEdit ? t('Updating') : t('Adding')) : (isEdit ? t('Update Feature') : t('Add Feature'))}
@@ -332,7 +332,7 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
         <h3 className="h5 text-secondary">{t("Property Features")}</h3>
         <button
           onClick={handleAddClick}
-          className="btn btn-primary d-flex align-items-center gap-2"
+          className="btn dash-btn-two d-flex align-items-center gap-2"
         >
           <Plus size={20} />
           {t("Add New Feature")}

@@ -3,25 +3,26 @@ import React, { useState } from "react";
 import { useLocale } from "next-intl";
 import { deleteData } from "@/libs/server/backendServer";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 // Confirmation Modal Component
 const ConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
-  title = "Confirm Delete",
-  message = "Are you sure you want to delete this property?",
-  confirmText = "Delete",
-  cancelText = "Cancel",
+  title,
+  message,
+  confirmText,
+  cancelText,
   locale = "en"
 }: {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  title?: string;
-  message?: string;
-  confirmText?: string;
-  cancelText?: string;
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
   locale?: string;
 }) => {
   if (!isOpen) return null;
@@ -85,6 +86,8 @@ const PropertyTableBody = ({
   const locale = useLocale();
   const [showModal, setShowModal] = useState(false);
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
+  const t = useTranslations("table");
+  const tProps = useTranslations("properties");
 
   const handleDeleteClick = (propertyId: string) => {
     setPropertyToDelete(propertyId);
@@ -95,16 +98,18 @@ const PropertyTableBody = ({
     if (!propertyToDelete) return;
 
     try {
-      await deleteData(`property_listings/${propertyToDelete}`, {
+      await deleteData(`agent/property_listings/${propertyToDelete}`, {
         Authorization: `Bearer ${token}`,
       });
       if (onPropertyDeleted) {
         onPropertyDeleted(propertyToDelete);
       }
-      toast.success("Property deleted successfully!");
+      toast.success(t("property_deleted_successfully"));
+      // reload page
+      window.location.reload();
     } catch (error) {
       console.error("Failed to delete property:", error);
-      toast.error("Failed to delete property. Please try again.");
+      toast.error(t("failed_to_delete_property"));
     } finally {
       setShowModal(false);
       setPropertyToDelete(null);
@@ -177,7 +182,7 @@ const PropertyTableBody = ({
                           alt=""
                           className="lazy-img"
                         />{" "}
-                        Create Property
+                        {tProps("Create Property")}
                       </a>
                     </li>
                     <li>
@@ -192,7 +197,7 @@ const PropertyTableBody = ({
                           alt=""
                           className="lazy-img"
                         />
-                        View/Edit
+                        {t("view_edit")}
                       </a>
                     </li>
                     <li>
@@ -213,7 +218,7 @@ const PropertyTableBody = ({
                           alt=""
                           className="lazy-img"
                         />{" "}
-                        Delete
+                        {t("delete")}
                       </button>
                     </li>
                   </ul>
@@ -227,10 +232,10 @@ const PropertyTableBody = ({
         isOpen={showModal}
         onClose={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        title="Confirm Delete"
-        message="Are you sure you want to delete this property? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t("confirm_delete")}
+        message={t("confirm_delete_message")}
+        confirmText={t("delete")}
+        cancelText={tProps("Cancel")}
         locale={locale}
       />
     </>

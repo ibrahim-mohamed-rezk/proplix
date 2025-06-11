@@ -34,7 +34,7 @@ export default function ModalForm({ open, title, onClose, children }: ModalFormP
             borderRadius: '16px 16px 0 0'
           }}
         >
-<h2 className="h4 font-weight-bold mb-0 pe-5 text-">
+<h2 className="h4 font-weight-bold mb-0 pe-5">
   {title}
 </h2>
           
