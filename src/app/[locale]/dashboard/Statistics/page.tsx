@@ -1,4 +1,4 @@
-import DashboardSavedSearch from "@/components/dashboard/saved-search";
+import DashboardSavedSearch from "@/components/dashboard/Statistics";
 import Wrapper from "@/layouts/Wrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

@@ -46,6 +46,21 @@
     "Profile": "Profile",
     "Logout": "Logout"
   },
+  "Dashboard": {
+    "dashboardOverview": "Dashboard Overview",
+    "realTimePropertyStatistics": "Real-time property statistics and insights",
+    "forSaleTotal": "For Sale Total",
+    "forRentTotal": "For Rent Total",
+    "propertyStatusOverview": "Property Status Overview",
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "cancelled": "Cancelled",
+    "forSale": "For Sale",
+    "forRent": "For Rent",
+    "immediateDelivery": "Immediate Delivery",
+    "loading": "Loading...",
+    "noDataAvailable": "No data available"
+  },
   "Create Property": "Create Property",
   "General Information": "General Information",
   "Arabic Content": "Arabic Content",

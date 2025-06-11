@@ -276,7 +276,7 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
                     <Link href="/listing_details_03" className="title tran3s">
                       {item.title}
                     </Link>
-                    <div className="address">{item.area.name}</div>
+                    <div className="address">{item?.area?.name}</div>
                     <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
                       <li className="d-flex align-items-center">
                         <img
