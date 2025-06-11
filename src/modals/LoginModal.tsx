@@ -4,7 +4,6 @@ import LoginForm from "@/components/forms/LoginForm";
 import { useState } from "react";
 
 import loginIcon_1 from "@/assets/images/icon/google.png";
-import loginIcon_2 from "@/assets/images/icon/facebook.png";
 import RegisterForm from "@/components/forms/RegisterForm";
 import VerifyPhoneForm from "@/components/forms/VerifyPhoneForm";
 
@@ -115,7 +114,7 @@ const LoginModal = () => {
                     <div className="line"></div>
                   </div>
                   <div className="row">
-                    <div className="col-sm-6">
+                    <div className="col-sm-6  mx-auto">
                       <Link
                         href="#"
                         className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
@@ -124,7 +123,7 @@ const LoginModal = () => {
                         <span className="ps-3">Signup with Google</span>
                       </Link>
                     </div>
-                    <div className="col-sm-6">
+                    {/* <div className="col-sm-6">
                       <Link
                         href="#"
                         className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
@@ -132,7 +131,7 @@ const LoginModal = () => {
                         <Image src={loginIcon_2} alt="" />
                         <span className="ps-3">Signup with Facebook</span>
                       </Link>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               )}

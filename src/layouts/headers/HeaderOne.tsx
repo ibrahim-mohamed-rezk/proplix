@@ -6,18 +6,21 @@ import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { UserTypes } from "@/libs/types/types";
 
 const HeaderOne = ({
   style,
   token,
+  user,
 }: {
   style?: boolean;
   token?: string | null;
+  user?: UserTypes;
 }) => {
   const { sticky } = UseSticky();
   const t = useTranslations("header");
   const [showDropdown, setShowDropdown] = useState(false);
-  const locale = useLocale()
+  const locale = useLocale();
 
   const logout = async () => {
     await axios.post("/api/auth/logout", {
@@ -119,7 +122,10 @@ const HeaderOne = ({
                           }  mt-2`}
                           style={{ minWidth: "200px" }}
                         >
-                          <Link href="/my-profile?page=personal-information" className="dropdown-item">
+                          <Link
+                            href="/my-profile?page=personal-information"
+                            className="dropdown-item"
+                          >
                             <i className="fa-regular fa-user me-2"></i>
                             {t("Profile")}
                           </Link>
@@ -131,16 +137,18 @@ const HeaderOne = ({
                       )}
                     </div>
                     {/* add listing btn */}
-                    <li className="d-none d-md-inline-block ms-3">
-                      <Link
-                        href="/dashboard/add-property"
-                        className="btn-two add-listing"
-                        target="_blank"
-                      >
-                        <span>{t("Add Listing")}</span>{" "}
-                        <i className="fa-thin reverse fa-arrow-up-right"></i>
-                      </Link>
-                    </li>
+                    {user?.role !== "customer" && (
+                      <li className="d-none d-md-inline-block ms-3">
+                        <Link
+                          href="/dashboard/add-property"
+                          className="btn-two add-listing"
+                          target="_blank"
+                        >
+                          <span>{t("Add Listing")}</span>{" "}
+                          <i className="fa-thin reverse fa-arrow-up-right"></i>
+                        </Link>
+                      </li>
+                    )}
                   </div>
                 ) : (
                   <ul className="d-flex align-items-center style-none">

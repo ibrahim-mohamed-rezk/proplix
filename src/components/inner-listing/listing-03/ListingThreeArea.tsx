@@ -20,7 +20,11 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
   const locale = useLocale();
   const [agents, setAgents] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState<{
+    [key: string]: string | number | null;
+  }>({
+    status: "sale",
+  });
   const [isLoading, setIsLoading] = useState(true);
   const {
     itemOffset,
@@ -79,11 +83,14 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
   }, []);
 
   // handle status change
-  const handleStatusChange = (e: { target: { value: string } }) => {
-    if (e.target.value === "all") {
-      setFilters({ ...filters, status: null });
-    } else {
-      setFilters({ ...filters, status: e.target.value });
+  const handleStatusChange = (status: string) => {
+    setFilters({ ...filters, status });
+  };
+  const handleTypesChange = (e: { target: { value: string } }) => {
+    if(e.target.value === "all"){
+      setFilters({ ...filters, type_id: null });
+    }else{
+      setFilters({ ...filters, type_id: e.target.value });
     }
   };
 
@@ -106,8 +113,48 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
     >
       <div className="container">
         {!style && (
-          <div className="search-wrapper-one layout-one bg position-relative mb-75 md-mb-50">
-            <div className="bg-wrapper border-layout">
+          <div className="search-wrapper-one rounded-[20px] layout-one bg relative mb-75 md-mb-50">
+            {/* status filters */}
+            <div className="px-[4px] pt-[4px] z-0 absolute -top-[20px] start-[70px] bg-white rounded-tl-[16px] rounded-tr-[16px] inline-flex justify-end items-start">
+              <div
+                onClick={() => handleStatusChange("sale")}
+                className={`px-[32px] py-[8px] ${
+                  filters.status && filters.status === "sale"
+                    ? "bg-[#FF6625]"
+                    : "bg-[#FFE2D6]"
+                } rounded-tl-[8px] flex justify-center items-center gap-2.5 cursor-pointer`}
+              >
+                <div
+                  className={`justify-start ${
+                    filters.status && filters.status === "sale"
+                      ? "text-white"
+                      : "text-neutral-950"
+                  } text-base font-medium font-['Gordita'] leading-normal`}
+                >
+                  Sell
+                </div>
+              </div>
+              <div
+                onClick={() => handleStatusChange("rent")}
+                className={`px-[32px] py-[8px] ${
+                  filters.status && filters.status === "rent"
+                    ? "bg-[#FF6625]"
+                    : "bg-[#FFE2D6]"
+                } rounded-tr-[8px] flex justify-center items-center gap-2.5 cursor-pointer`}
+              >
+                <div
+                  className={`justify-start ${
+                    filters.status && filters.status === "rent"
+                      ? "text-white"
+                      : "text-neutral-950"
+                  } text-base font-medium font-['Gordita'] leading-normal`}
+                >
+                  Rent
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-wrapper relative border-layout">
               <DropdownTwo
                 handlePriceDropChange={handlePriceDropChange}
                 handleSearchChange={handleSearchChange}
@@ -120,7 +167,7 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
                 selectedAmenities={selectedAmenities}
                 handleAmenityChange={handleAmenityChange}
                 handleLocationChange={handleLocationChange}
-                handleStatusChange={handleStatusChange}
+                handleTypesChange={handleTypesChange}
               />
             </div>
           </div>
@@ -276,7 +323,7 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
                     <Link href="/listing_details_03" className="title tran3s">
                       {item.title}
                     </Link>
-                    <div className="address">{item.area.name}</div>
+                    <div className="address">{item.area?.name}</div>
                     <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
                       <li className="d-flex align-items-center">
                         <img

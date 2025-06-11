@@ -15,7 +15,8 @@
     "This Sunday": "الاحد",
     "Add Listing": "اضافة عقار",
     "Profile": "الملف الشخصي",
-    "Logout": "تسجيل الخروج"
+    "Logout": "تسجيل الخروج",
+    "contact":"اتصل بنا"
   },
   "properties": {
     "sort_by": "ترتيب حسب",

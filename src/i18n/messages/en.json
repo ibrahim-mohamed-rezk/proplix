@@ -15,7 +15,8 @@
     "This Sunday": "This Sunday",
     "Add Listing": "Add property",
     "Profile": "Profile",
-    "Logout": "Logout"
+    "Logout": "Logout",
+    "contact":"Contact Us"
   },
   "properties": {
     "sort_by": "Sort by",

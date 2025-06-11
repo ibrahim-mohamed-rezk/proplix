@@ -17,8 +17,12 @@ const ListingDropdownModal = ({
       id="advanceFilterModal"
       tabIndex={-1}
       aria-hidden="true"
+      style={{ zIndex: 1051 }}
     >
-      <div className="modal-dialog modal-dialog-centered">
+      <div
+        className="modal-dialog modal-dialog-centered"
+        style={{ zIndex: 1052 }}
+      >
         <div className="container">
           <div className="row">
             <div className="col-xl-8 m-auto">
@@ -37,7 +41,7 @@ const ListingDropdownModal = ({
                       <div className="row gx-lg-5">
                         <div className="col-md-6">
                           <div className="input-box-one mb-35">
-                            <div className="label">I’m looking to...</div>
+                            <div className="label">I'm looking to...</div>
                             <NiceSelect
                               className="nice-select fw-normal"
                               options={[

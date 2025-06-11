@@ -16,12 +16,13 @@ const DropdownTwo = ({
   selectedAmenities,
   handleAmenityChange,
   handleLocationChange,
-  handleStatusChange,
+  handleTypesChange,
   handlePriceDropChange,
 }: any) => {
   const t = useTranslations("properties");
   const locale = useLocale();
   const [areas, setAreas] = useState([]);
+  const [types, setTypes] = useState([]);
 
   // fetch areas form api
   useEffect(() => {
@@ -30,6 +31,15 @@ const DropdownTwo = ({
       setAreas(response.data.data);
     };
     fetchAreas();
+  }, []);
+
+  // fetch types form api
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const response = await getData("types", {}, { lang: locale });
+      setTypes(response.data.data);
+    };
+    fetchAgents();
   }, []);
   return (
     <>
@@ -41,12 +51,17 @@ const DropdownTwo = ({
               <NiceSelect
                 className="nice-select"
                 options={[
-                  { value: "all", text: "All" },
-                  { value: "rent", text: "Rent" },
-                  { value: "sale", text: "Sale" },
+                  {
+                    text: "all",
+                    value: "all",
+                  },
+                  ...types?.map((type: any) => ({
+                    value: type.id,
+                    text: type.title,
+                  })),
                 ]}
                 defaultCurrent={0}
-                onChange={handleStatusChange}
+                onChange={handleTypesChange}
                 name=""
                 placeholder=""
               />
@@ -116,7 +131,6 @@ const DropdownTwo = ({
         maxPrice={maxPrice}
         priceValue={priceValue}
         handleResetFilter={handleResetFilter}
-        handleStatusChange={handleStatusChange}
       />
     </>
   );
