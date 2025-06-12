@@ -409,5 +409,31 @@
     "home": "Home",
     "installment_plans": "Installment Plans",
     "properity": "Property"
+  },
+  "Feature": {
+    "block_feature_one": {
+      "title": "Unlock Proplix's advantages",
+      "description": "Your trusted real estate partner in every transaction."
+    },
+    "Buy a home": "Buy a home",
+    "RENT A HOME": "Rent a home",
+    "SELL PROPERTY": "Sell property",
+    "Explore Problixs 2 million homes and uncover your ideal living space": "Explore proplix’s 2 million+ homes and uncover your ideal living space.",
+    "Discover a rental youll love on Problix thanks to 35+ filters and tailored keywords": "Discover a rental you'll love on proplix, thanks to 35+ filters and tailored keywords.",
+    "List sell thrive  with our top-notch real estate agency Its super easy  fun": "List, sell, thrive – with our top-notch real estate agency. It’s super easy & fun.",
+    "vid": {
+      "title1": "Secure your family's dream home.",
+      "title2": "Who we are?",
+      "description": "Years Experience with proud.",
+      "description2": "Your premier partner in real estate. Transforming properties into dreams. Let us guide you home with expertise.",
+      "completed_project": "Completed Project",
+      "happy_customers": "Happy Customers",
+      "loan_and_low_interest_facility": "Loan & low Interest facility",
+      "over_100k_property_and_update_regularly": "Over 100k+ property & update regularly",
+      "expert_agent_consultation": "Expert agent consultation",
+      "request_a_callback": "Request a Callback",
+      "more_details": "More Details"
+
+    }
   }
 }
