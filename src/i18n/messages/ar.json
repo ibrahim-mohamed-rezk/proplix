@@ -6,6 +6,7 @@
     }
   },
   "dashboard": {
+    "Listing": "القوائم",
     "Statistics": "الإحصائيات",
     "Dashboard": "لوحة التحكم",
     "message": "رسالة",
