@@ -403,5 +403,13 @@
     "Save All Points": "حفظ النقاط",
     "cancel": "إلغاء",
     "": ""
+  },
+  "installments":{
+    "Installment Plans": "خطط التقسيط",
+    "home":"الرئيسية",
+    "installment_plans":"خطط التقسيط",
+    "properity":"العقار"
+    
+    
   }
 }

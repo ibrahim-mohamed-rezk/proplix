@@ -117,7 +117,7 @@ const HeaderOne = ({
                 </Link>
               </div>
 
-              <div className="right-widget flex gap-[10px] ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
+              <div className="right-widget flex gap-[10px] items-center justify-center ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
                 {/* language switcher */}
                 <div className="relative">
                   <button
