@@ -1,0 +1,27 @@
+@media (max-width: 768px) {
+  .statstics-container {
+    width: 100% !important;
+  }
+
+  .statstics-circle{
+    margin-top: 48px;
+    align-items: center;
+    justify-content: center;
+    width: 100% !important;
+  }
+
+  .statstics-circle .statstics-circle-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .statstics-info{
+    justify-content: center;
+  }
+
+  .featured-card{
+    width: 100% !important;
+  }
+}

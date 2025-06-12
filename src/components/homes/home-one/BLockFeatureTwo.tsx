@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import featureShape from "@/assets/images/assets/screen_01.png";
 
 const BLockFeatureTwo = () => {
-  const t = useTranslations("Feature2");
+  const t = useTranslations("Feature.vid");
    const [isVideoOpen, setIsVideoOpen] = useState(false);
 
    return (
@@ -20,7 +20,7 @@ const BLockFeatureTwo = () => {
                   <div className="col-xxl-7 col-md-6 d-flex wow fadeInLeft">
                      <div className="block-one w-100 h-100">
                         <div className="position-relative z-1 h-100">
-                           <h3 className="mb-55">{t("title")}</h3>
+                           <h3 className="mb-55">{t("title1")}</h3>
                            <a onClick={() => setIsVideoOpen(true)} style={{ cursor: "pointer" }} className="fancybox video-icon d-flex align-items-center justify-content-center rounded-circle ms-3" data-fancybox="">
                               <i className="fa-solid fa-play"></i>
                            </a>
@@ -36,8 +36,8 @@ const BLockFeatureTwo = () => {
                   <div className="col-xxl-5 col-md-6 wow fadeInRight">
                      <div className="block-two">
                         <div className="bg-wrapper">
-                              <h4>{t("title")}</h4>
-                           <p className="fs-22 mt-20">{t("description")}</p>
+                              <h4>{t("title2")}</h4>
+                           <p className="fs-22 mt-20">{t("description2")}</p>
                            <div className="counter-wrapper ps-xl-3 pb-30 mt-45 mb-50">
                               <div className="row">
                                  <div className="col-6">

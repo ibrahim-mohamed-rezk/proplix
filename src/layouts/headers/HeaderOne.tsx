@@ -1,12 +1,13 @@
 "use client";
-import { Link } from "@/i18n/routing";
+import { Link, routing, usePathname, useRouter } from "@/i18n/routing";
 import NavMenu from "./Menu/NavMenu";
 import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { use, useRef, useState } from "react";
 import { UserTypes } from "@/libs/types/types";
+import { useSearchParams } from "next/navigation";
 
 const HeaderOne = ({
   style,
@@ -21,6 +22,11 @@ const HeaderOne = ({
   const t = useTranslations("header");
   const [showDropdown, setShowDropdown] = useState(false);
   const locale = useLocale();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef(null);
 
   const logout = async () => {
     await axios.post("/api/auth/logout", {
@@ -29,6 +35,14 @@ const HeaderOne = ({
       },
     });
     window.location.href = "/";
+  };
+
+  const changeLanguage = (l: string) => {
+    const paramsString = searchParams.toString();
+    const url = paramsString ? `${pathname}?${paramsString}` : pathname;
+
+    router.replace(url, { locale: l });
+    setLangOpen(false);
   };
 
   return (
@@ -102,7 +116,45 @@ const HeaderOne = ({
                   </svg>
                 </Link>
               </div>
-              <div className="right-widget ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
+
+              <div className="right-widget flex gap-[10px] items-center justify-center ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
+                {/* language switcher */}
+                <div className="relative">
+                  <button
+                    onClick={() => setLangOpen((o) => !o)}
+                    className="flex items-center hover:border hover:border-white/70 rounded-[clamp(10px,0.833vw,20px)] font-['Libre_Baskerville'] text-[clamp(14px,1.042vw,20px)] font-[400] py-[clamp(3px,0.417vw,5px)] px-[clamp(5px,1.562vw,10px)] justify-center gap-2 text-white cursor-pointer transition focus:outline-none"
+                  >
+                    <span className="uppercase text-[#000] font-medium font-['Libre_Baskerville'] text-[18px]">
+                      {locale}
+                    </span>
+                  </button>
+                  <div className="" ref={langRef}>
+                    <div
+                      className={`absolute  mt-2 w-[clamp(50px,6.5vw,144px)] border border-gray-200 bg-white bg-opacity-95 backdrop-blur-sm rounded-xl shadow-xl transform origin-top-left transition-all duration-150 ${
+                        langOpen
+                          ? "opacity-100 scale-100 pointer-events-auto"
+                          : "opacity-0 scale-95 pointer-events-none"
+                      }`}
+                    >
+                      <ul className="divide-y divide-gray-100">
+                        {routing.locales.map((l) => (
+                          <li key={l}>
+                            <button
+                              onClick={() => changeLanguage(l)}
+                              className="w-full flex items-center px-3 py-2 hover:bg-gray-100 transition-colors rounded-xl"
+                            >
+                              <span className="capitalize font-[400] font-['Libre_Baskerville'] text-[clamp(12px,0.938vw,20px)] flex-1">
+                                {l}
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* auth buttons or user icon */}
                 {token ? (
                   <div className="d-flex align-items-center auth-btns-container ">
                     <div className="position-relative">
@@ -166,6 +218,7 @@ const HeaderOne = ({
                   </ul>
                 )}
               </div>
+
               <nav className="navbar navbar-expand-lg p0 order-lg-2">
                 <button
                   className="navbar-toggler d-block d-lg-none"

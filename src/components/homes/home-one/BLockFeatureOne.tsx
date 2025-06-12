@@ -13,8 +13,7 @@ const BLockFeatureOne = () => {
           <h3>
             {t("block_feature_one.title")}{" "}
             <span>
-              {t("block_feature_one.title_span")}{" "}
-              <Image src={titleShape} alt="" className="lazy-img" />
+              <Image src={titleShape} alt="" className="lazy-img !relative " />
             </span>
           </h3>
           <p className="fs-24">{t("block_feature_one.description")}</p>

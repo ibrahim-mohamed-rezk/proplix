@@ -52,7 +52,7 @@ const feature_data: DataType[] = [
     icon: featureIcon_1,
     title: "Buy a home",
     btn: "Find Home",
-    desc: "Explore Problix’s 2 million+ homes and uncover your ideal living space.",
+    desc: "Explore Problixs 2 million homes and uncover your ideal living space",
   },
   {
     id: 2,
@@ -60,7 +60,7 @@ const feature_data: DataType[] = [
     icon: featureIcon_2,
     title: "RENT A HOME",
     btn: "Rent Home",
-    desc: "Discover a rental you'll love on Problix, thanks to 35+ filters and tailored keywords.",
+    desc: "Discover a rental youll love on Problix thanks to 35+ filters and tailored keywords",
   },
   {
     id: 3,
@@ -68,7 +68,7 @@ const feature_data: DataType[] = [
     icon: featureIcon_3,
     title: "SELL PROPERTY",
     btn: "Sell Property",
-    desc: "List, sell, thrive – with our top-notch real estate agency. It’s super easy & fun.",
+    desc: "List sell thrive  with our top-notch real estate agency Its super easy  fun",
   },
 
   // home_1_feature_2
