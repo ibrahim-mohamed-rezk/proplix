@@ -17,7 +17,7 @@ interface Option {
 
 type NiceSelectProps = {
   options: Option[];
-  defaultCurrent: string;
+  defaultCurrent: string | number;
   placeholder: string;
   className?: string;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
