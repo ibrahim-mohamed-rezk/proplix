@@ -18,50 +18,45 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
   const itemsPerPage = 9;
   const page = "listing_4";
   const locale = useLocale();
-  const [agents, setAgents] = useState([]);
   const [properties, setProperties] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<{
     [key: string]: string | number | null;
-  }>({
-    status: "sale",
+  }>(() => {
+    const storedFilters = localStorage.getItem("filters");
+    return storedFilters
+      ? JSON.parse(storedFilters)
+      : {
+          status: "sale",
+          price: null,
+          down_price: null,
+        };
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const {
-    itemOffset,
-    // currentItems,
-    pageCount,
-    handlePageClick,
-    handleBathroomChange,
-    handleBedroomChange,
-    handleSearchChange,
-    handlePriceChange,
-    maxPrice,
-    priceValue,
-    resetFilters,
-    selectedAmenities,
-    handleAmenityChange,
-    // handleLocationChange,
-    // handleStatusChange,
-    handleTypeChange,
-    handlePriceDropChange,
-  } = UseShortedProperty({ itemsPerPage, page });
 
-  const handleResetFilter = () => {
-    resetFilters();
+  const { itemOffset, pageCount, handlePageClick, handleTypeChange } =
+    UseShortedProperty({ itemsPerPage, page });
+
+  const handleResetFilter = (): void => {
+    const defaultFilters = {
+      status: "sale",
+      price: null,
+      down_price: null,
+    };
+    setFilters(defaultFilters);
+    localStorage.setItem("filters", JSON.stringify(defaultFilters));
   };
+
+  // Update localStorage when filters change
+  useEffect(() => {
+    localStorage.setItem("filters", JSON.stringify(filters));
+  }, [filters]);
 
   // fetch properties form api
   useEffect(() => {
     const fetchProperties = async () => {
       setIsLoading(true);
       try {
-        const response = await getData(
-          "properties",
-          {
-            ...filters,
-          },
-          { lang: locale }
-        );
+        const response = await getData("properties", filters, { lang: locale });
         setProperties(response.data.data);
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -73,35 +68,59 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
     fetchProperties();
   }, [locale, filters]);
 
-  // fetch agents form api
-  useEffect(() => {
-    const fetchAgents = async () => {
-      const response = await getData("agents", {}, { lang: locale });
-      setAgents(response.data.data);
-    };
-    fetchAgents();
-  }, []);
-
   // handle status change
   const handleStatusChange = (status: string) => {
-    setFilters({ ...filters, status });
+    setFilters((prev) => ({ ...prev, status }));
   };
+
+  // handle search change
+  const handleSearchChange = (e: { target: { value: string } }) => {
+    setFilters((prev) => ({
+      ...prev,
+      title: e.target.value || null,
+    }));
+  };
+
+  // handle price change
+  const handlePriceChange = (e: { target: { value: string } }) => {
+    setFilters((prev) => ({
+      ...prev,
+      price: e.target.value || null,
+    }));
+  };
+
+  // handle down price change
+  const handleDown_priceChange = (e: { target: { value: string } }) => {
+    setFilters((prev) => ({
+      ...prev,
+      down_price: e.target.value || null,
+    }));
+  };
+
+  // handle agent change
+  const handleAgentChange = (e: { target: { value: string } }) => {
+    setFilters((prev) => ({
+      ...prev,
+      user_id: e.target.value === "all" ? null : e.target.value,
+    }));
+  };
+
+  // handle types change
   const handleTypesChange = (e: { target: { value: string } }) => {
-    if(e.target.value === "all"){
-      setFilters({ ...filters, type_id: null });
-    }else{
-      setFilters({ ...filters, type_id: e.target.value });
-    }
+    setFilters((prev) => ({
+      ...prev,
+      type_id: e.target.value === "all" ? null : e.target.value,
+    }));
   };
 
   // handle location change
   const handleLocationChange = (e: { target: { value: string } }) => {
-    if (e.target.value === "all") {
-      setFilters({ ...filters, area_id: null });
-    } else {
-      setFilters({ ...filters, area_id: e.target.value });
-    }
+    setFilters((prev) => ({
+      ...prev,
+      area_id: e.target.value === "all" ? null : e.target.value,
+    }));
   };
+  console.log(filters);
 
   return (
     <div
@@ -156,18 +175,14 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
 
             <div className="bg-wrapper relative border-layout">
               <DropdownTwo
-                handlePriceDropChange={handlePriceDropChange}
+                handleAgentChange={handleAgentChange}
                 handleSearchChange={handleSearchChange}
-                handleBedroomChange={handleBedroomChange}
-                handleBathroomChange={handleBathroomChange}
                 handlePriceChange={handlePriceChange}
-                maxPrice={maxPrice}
-                priceValue={priceValue}
                 handleResetFilter={handleResetFilter}
-                selectedAmenities={selectedAmenities}
-                handleAmenityChange={handleAmenityChange}
                 handleLocationChange={handleLocationChange}
                 handleTypesChange={handleTypesChange}
+                handleDown_priceChange={handleDown_priceChange}
+                filters={filters}
               />
             </div>
           </div>
@@ -195,7 +210,7 @@ const ListingThreeArea = ({ style }: { style: boolean }) => {
                   { value: "price_low", text: t("price_low") },
                   { value: "price_high", text: t("price_high") },
                 ]}
-                defaultCurrent={0}
+                defaultCurrent={"newest"}
                 onChange={handleTypeChange}
                 name=""
                 placeholder=""

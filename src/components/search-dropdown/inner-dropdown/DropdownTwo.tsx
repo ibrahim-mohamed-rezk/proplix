@@ -1,23 +1,20 @@
+import { Link } from "@/i18n/routing";
 import { getData } from "@/libs/server/backendServer";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
 import NiceSelect from "@/ui/NiceSelect";
 import { useLocale, useTranslations } from "next-intl";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const DropdownTwo = ({
-  handleBathroomChange,
-  handleBedroomChange,
+  filters,
+  handleDown_priceChange,
   handleSearchChange,
   handlePriceChange,
-  maxPrice,
-  priceValue,
   handleResetFilter,
-  selectedAmenities,
-  handleAmenityChange,
+  handleAgentChange,
   handleLocationChange,
   handleTypesChange,
-  handlePriceDropChange,
+  popup = true,
 }: any) => {
   const t = useTranslations("properties");
   const locale = useLocale();
@@ -41,6 +38,7 @@ const DropdownTwo = ({
     };
     fetchAgents();
   }, []);
+
   return (
     <>
       <form onSubmit={(e) => e.preventDefault()}>
@@ -60,7 +58,7 @@ const DropdownTwo = ({
                     text: type.title,
                   })),
                 ]}
-                defaultCurrent={0}
+                defaultCurrent={filters.type_id ? filters.type_id : "all"}
                 onChange={handleTypesChange}
                 name=""
                 placeholder=""
@@ -82,7 +80,7 @@ const DropdownTwo = ({
                     text: area.name,
                   })),
                 ]}
-                defaultCurrent={0}
+                defaultCurrent={filters.area_id || "all"}
                 onChange={handleLocationChange}
                 name=""
                 placeholder=""
@@ -91,34 +89,31 @@ const DropdownTwo = ({
           </div>
           <div className="col-xl-3 col-lg-4">
             <div className="input-box-one border-left border-lg-0">
-              <div className="label">Price Range</div>
-              <NiceSelect
-                className="nice-select"
-                options={[
-                  { value: "1", text: "$10,000 - $200,000" },
-                  { value: "2", text: "$20,000 - $300,000" },
-                  { value: "3", text: "$30,000 - $400,000" },
-                ]}
-                defaultCurrent={0}
-                onChange={(event) => handlePriceDropChange(event.target.value)}
-                name=""
-                placeholder=""
+              <div className="label">{t("property_title")}</div>
+              <input
+                onChange={(e) => handleSearchChange(e)}
+                type="text"
+                placeholder={t("title_placeholder")}
+                className="type-input"
+                value={filters.title || ""}
               />
             </div>
           </div>
           <div className="col-xl-3">
             <div className="input-box-one lg-mt-20">
               <div className="d-flex align-items-center">
-                <Link
-                  href="#"
-                  data-bs-toggle="modal"
-                  data-bs-target="#advanceFilterModal"
-                  className="search-modal-btn sm tran3s text-uppercase fw-500 d-inline-flex align-items-center me-3"
-                >
-                  <i className="fa-light fa-sliders-up"></i>
-                </Link>
+                {popup && (
+                  <Link
+                    href="#"
+                    data-bs-toggle="modal"
+                    data-bs-target="#advanceFilterModal"
+                    className="search-modal-btn sm tran3s text-uppercase fw-500 d-inline-flex align-items-center me-3"
+                  >
+                    <i className="fa-light fa-sliders-up"></i>
+                  </Link>
+                )}
                 <button className="fw-500 text-uppercase tran3s search-btn">
-                  Search
+                  <Link href={!popup ? "/properties" : "#"}>{t("search")}</Link>
                 </button>
               </div>
             </div>
@@ -126,11 +121,11 @@ const DropdownTwo = ({
         </div>
       </form>
       <ListingDropdownModal
-        handleSearchChange={handleSearchChange}
         handlePriceChange={handlePriceChange}
-        maxPrice={maxPrice}
-        priceValue={priceValue}
+        handleDown_priceChange={handleDown_priceChange}
         handleResetFilter={handleResetFilter}
+        handleAgentChange={handleAgentChange}
+        filters={filters}
       />
     </>
   );

@@ -1,16 +1,28 @@
-import PriceRange from "@/components/common/PriceRange";
+import { getData } from "@/libs/server/backendServer";
 import NiceSelect from "@/ui/NiceSelect";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 const ListingDropdownModal = ({
-  handleSearchChange,
   handlePriceChange,
-  maxPrice,
-  priceValue,
+  handleAgentChange,
+  handleDown_priceChange,
   handleResetFilter,
-  handleStatusChange,
+  filters,
 }: any) => {
   const t = useTranslations("properties");
+  const [agents, setAgents] = useState([]);
+  const locale = useLocale();
+
+  // fetch agents form api
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const response = await getData("agents", {}, { lang: locale });
+      setAgents(response.data.data);
+    };
+    fetchAgents();
+  }, []);
+
   return (
     <div
       className="modal fade"
@@ -39,109 +51,95 @@ const ListingDropdownModal = ({
                   <div className="main-bg border-0">
                     <form onSubmit={(e) => e.preventDefault()}>
                       <div className="row gx-lg-5">
-                        <div className="col-md-6">
-                          <div className="input-box-one mb-35">
-                            <div className="label">I&apos;m looking to...</div>
-                            <NiceSelect
-                              className="nice-select fw-normal"
-                              options={[
-                                { value: "apartments", text: "Buy Apartments" },
-                                { value: "condos", text: "Rent Condos" },
-                                { value: "houses", text: "Sell Houses" },
-                                {
-                                  value: "industrial",
-                                  text: "Rent Industrial",
-                                },
-                                { value: "villas", text: "Sell Villas" },
-                              ]}
-                              defaultCurrent={0}
-                              onChange={handleStatusChange}
-                              name=""
-                              placeholder=""
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-box-one mb-35">
-                            <div className="label">{t("property_name")}</div>
-                            <input
-                              onChange={handleSearchChange}
-                              type="text"
-                              placeholder="buy, home, loft, apartment"
-                              className="type-input"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-box-one mb-35">
-                            <div className="label">Property ID</div>
-                            <input
-                              type="text"
-                              placeholder="EM45203014"
-                              className="type-input"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <h6 className="block-title fw-bold mt-45 mb-20">
-                            Price range
-                          </h6>
-                          <div className="price-ranger">
-                            <div className="price-input d-flex align-items-center justify-content-between pt-5">
-                              <div className="field d-flex align-items-center">
-                                <input
-                                  type="number"
-                                  className="input-min"
-                                  value={priceValue[0]}
-                                  onChange={() => handlePriceChange}
-                                />
-                              </div>
-                              <div className="divider-line"></div>
-                              <div className="field d-flex align-items-center">
-                                <input
-                                  type="number"
-                                  className="input-max"
-                                  value={priceValue[0]}
-                                  onChange={() => handlePriceChange}
-                                />
-                              </div>
-                              <div className="currency ps-1">USD</div>
-                            </div>
-                          </div>
-                          <PriceRange
-                            MAX={maxPrice}
-                            MIN={0}
-                            STEP={1}
-                            values={priceValue}
-                            handleChanges={handlePriceChange}
-                          />
-                          <div className="col-md-6">
+                        <div className="col-6">
+                          {/* price */}
+                          <div className="w-full">
                             <h6 className="block-title fw-bold mt-45 mb-20">
-                              SQFT
+                              {t("price")}
                             </h6>
-                            <div className="d-flex align-items-center sqf-ranger">
-                              <input type="text" placeholder="Min" />
-                              <div className="divider"></div>
-                              <input type="text" placeholder="Max" />
+                            <div className="price-ranger w-full">
+                              <div className="price-input d-flex align-items-center justify-content-between pt-5 w-full">
+                                <div className="field d-flex align-items-center flex-grow-1">
+                                  <input
+                                    type="number"
+                                    className="input-min !max-w-full"
+                                    value={filters?.price}
+                                    onChange={(e) => handlePriceChange(e)}
+                                  />
+                                </div>
+                                <div className="currency ps-1">Egp</div>
+                              </div>
                             </div>
                           </div>
+
+                          {/* agents  */}
                           <div className="col-12">
-                            <button className="fw-500 text-uppercase tran3s apply-search w-100 mt-40 mb-25">
-                              <i className="fa-light fa-magnifying-glass"></i>
-                              <span>Search</span>
+                            <div className="input-box-one w-full">
+                              <div className="label">{t("by_agent")}</div>
+                              <NiceSelect
+                                className="nice-select w-full"
+                                options={[
+                                  {
+                                    text: t("all agents"),
+                                    value: "all",
+                                  },
+                                  ...agents?.map((agent: any) => ({
+                                    value: agent.id,
+                                    text: agent.name,
+                                  })),
+                                ]}
+                                defaultCurrent={filters?.agent || "all"}
+                                onChange={handleAgentChange}
+                                name=""
+                                placeholder=""
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-6">
+                          {/* donwn price */}
+                          <div className="w-full">
+                            <h6 className="block-title fw-bold mt-45 mb-20">
+                              {t("down_price")}
+                            </h6>
+                            <div className="price-ranger w-full">
+                              <div className="price-input d-flex align-items-center justify-content-between pt-5 w-full">
+                                <div className="field d-flex w-full align-items-center flex-grow-1">
+                                  <input
+                                    type="number"
+                                    className="input-min !max-w-full"
+                                    value={filters?.down_price}
+                                    onChange={(e) => handleDown_priceChange(e)}
+                                  />
+                                </div>
+                                <div className="currency ps-1">Egp</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* search */}
+                        <div className="col-12">
+                          <button
+                            className="fw-500 text-uppercase tran3s apply-search w-full mt-40 mb-25"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          >
+                            <i className="fa-light fa-magnifying-glass"></i>
+                            <span>{t("search")}</span>
+                          </button>
+                        </div>
+
+                        {/* reset filter */}
+                        <div className="col-12">
+                          <div className="d-flex justify-content-between form-widget">
+                            <button
+                              onClick={handleResetFilter}
+                              style={{ cursor: "pointer" }}
+                              className="tran3s"
+                            >
+                              <i className="fa-regular fa-arrows-rotate"></i>
+                              <span>{t("reset_filter")}</span>
                             </button>
-                          </div>
-                          <div className="col-12">
-                            <div className="d-flex justify-content-between form-widget">
-                              <button
-                                onClick={handleResetFilter}
-                                style={{ cursor: "pointer" }}
-                                className="tran3s"
-                              >
-                                <i className="fa-regular fa-arrows-rotate"></i>
-                                <span>{t("reset_filter")}</span>
-                              </button>
-                            </div>
                           </div>
                         </div>
                       </div>
