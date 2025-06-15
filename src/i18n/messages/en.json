@@ -439,6 +439,8 @@
   },
 
     "DashboardHeaderTwo": {
+      "Dashboard": "Dashboard",
+      "my_properties":"My Properties",
       "Create Property":"Create Property",
       "Account Settings": "Account Settings",
       "Change Password": "Change Password"

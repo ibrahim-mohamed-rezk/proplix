@@ -1,9 +1,12 @@
 import DashboardBody from "./DashboardBody"
+import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
 
-const DashboardIndex = () => {
+
+const DashboardIndex = ({ token }: { token: string }) => {
   return (
     <>
-      <DashboardBody/>
+      <DashboardHeaderOne />
+      <DashboardBody token={token} />
     </>
   )
 }

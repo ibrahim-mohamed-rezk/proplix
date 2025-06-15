@@ -29,7 +29,7 @@ const PropertyListBody = ({ token }: { token: string }) => {
   return (
     <div className="dashboard-body">
       <div className="position-relative">
-        <DashboardHeaderTwo title={t("my_properties")} />
+        <DashboardHeaderTwo title="my_properties" />
         <h2 className="main-title d-block d-lg-none">{t("my_properties")}</h2>
         <div className="bg-white card-box p0">
           <div className="table-responsive pt-25 pb-25 pe-4 ps-4">

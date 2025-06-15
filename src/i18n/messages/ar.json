@@ -414,6 +414,8 @@
     
   },
   "DashboardHeaderTwo": {
+    "my_properties": "عقاراتي",
+    "Dashboard": "لوحة التحكم",
     "Create Property":"إنشاء عقار",
     "Account Settings": "إعدادات الحساب",
     "Change Password": "تغيير كلمة المرور"
