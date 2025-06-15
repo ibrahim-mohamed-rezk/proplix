@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useCallback, useRef, FC, ChangeEvent } from "react";
 import { useClickAway } from "react-use";
+import { useTranslations } from "next-intl";
 
 interface Option {
   value: string;
@@ -39,6 +40,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
     onClose();
   };
 
+  const t = useTranslations("NiceSelect");
   return (
     <div
       className={`nice-select form-select-lg ${className || ""} ${open ? "open" : ""}`}
@@ -48,7 +50,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
       onKeyDown={(e) => e}
       ref={ref}
     >
-      <span className="current">{current?.text || placeholder}</span>
+      <span className="current">{t(current?.text) || placeholder}</span>
       <ul
         className="list"
         role="menubar"
@@ -66,7 +68,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
             onClick={() => currentHandler(item)}
             onKeyDown={(e) => e}
           >
-            {item.text}
+            {t(item.text)}
           </li>
         ))}
       </ul>

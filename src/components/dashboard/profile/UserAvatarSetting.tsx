@@ -1,5 +1,7 @@
 import NiceSelect from "@/ui/NiceSelect";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
 
 interface ProfileData {
   id: number;
@@ -14,112 +16,244 @@ interface ProfileData {
   email_verified_at: string | null;
   role: string;
   modules: any[];
+  descriptions?: string | null;
+  website?: string | null;
+  id_number?: string | null;
+  trade_licence?: string | null;
 }
 
 interface UserAvatarSettingProps {
   profileData: ProfileData | null;
-  onUpdateProfile: (formData: any) => void;
+  onUserDataChange: (userData: any) => void;
   isUpdating: boolean;
 }
 
 const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({ 
   profileData, 
-  onUpdateProfile, 
+  onUserDataChange, 
   isUpdating 
 }) => {
   const [formData, setFormData] = useState({
     username: '',
-    firstName: '',
-    lastName: '',
     email: '',
     position: '',
     phone: '',
     secondPhone: '',
     website: '',
-    about: ''
+    descriptions: '',
+    idFile: null as File | null,
+    tradeLicence: null as File | null
   });
+
+  const t = useTranslations("ProfileBody");
+  const [tradeLicenceFileName, setTradeLicenceFileName] = useState<string>('');
+  const [idFileName, setIdFileName] = useState<string>('');
+  
+  // Add states for image previews
+  const [idImagePreview, setIdImagePreview] = useState<string>('');
+  const [tradeLicenceImagePreview, setTradeLicenceImagePreview] = useState<string>('');
 
   useEffect(() => {
     if (profileData) {
-      // Parse the full name into first and last name
-      const nameParts = profileData.name.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      setFormData({
+      const userData = {
         username: profileData.name,
-        firstName: firstName,
-        lastName: lastName,
         email: profileData.email,
         position: profileData.role,
         phone: profileData.phone,
         secondPhone: profileData.second_phone || '',
-        website: '',
-        about: ''
-      });
+        website: profileData.website || '',
+        descriptions: profileData.descriptions || '',
+        idFile: null,
+        tradeLicence: null
+      };
+
+      setFormData(userData);
+      onUserDataChange(userData);
+      
+      // Set existing file names and images if available
+      if (profileData.trade_licence) {
+        setTradeLicenceFileName(t('Current file uploaded'));
+        // Assuming trade_licence contains the URL or base64 of the image
+        setTradeLicenceImagePreview(profileData.trade_licence);
+      }
+      if (profileData.id_number) {
+        setIdFileName(t('Current file uploaded'));
+        // Assuming id_number contains the URL or base64 of the image
+        setIdImagePreview(profileData.id_number);
+      }
     }
-  }, [profileData]);
+  }, [profileData, onUserDataChange, t]);
 
   const selectHandler = (e: any) => {
-    setFormData(prev => ({
-      ...prev,
+    const updatedData = {
+      ...formData,
       position: e.target.value
-    }));
+    };
+    setFormData(updatedData);
+    onUserDataChange(updatedData);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    const updatedData = {
+      ...formData,
       [name]: value
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Prepare data for API
-    const updateData = {
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      email: formData.email,
-      phone: formData.phone,
-      second_phone: formData.secondPhone,
-      role: formData.position,
-      // Add other fields as needed
-      website: formData.website,
-      about: formData.about
     };
-    
-    onUpdateProfile(updateData);
+    setFormData(updatedData);
+    onUserDataChange(updatedData);
   };
 
-  const handleCancel = () => {
-    // Reset form to original data
-    if (profileData) {
-      const nameParts = profileData.name.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
+  // Helper function to check if file is an image
+  const isImageFile = (file: File) => {
+    return file.type.startsWith('image/');
+  };
 
-      setFormData({
-        username: profileData.name,
-        firstName: firstName,
-        lastName: lastName,
-        email: profileData.email,
-        position: profileData.role,
-        phone: profileData.phone,
-        secondPhone: profileData.second_phone || '',
-        website: '',
-        about: ''
-      });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: 'tradeLicence' | 'idFile') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (25MB limit)
+      const maxSize = 25 * 1024 * 1024; // 25MB in bytes
+      if (file.size > maxSize) {
+        toast.error(t('File size exceeds 25MB limit'));
+        return;
+      }
+
+      const updatedData = {
+        ...formData,
+        [fieldName]: file
+      };
+      setFormData(updatedData);
+      
+      if (fieldName === 'tradeLicence') {
+        setTradeLicenceFileName(file.name);
+        // Create preview for images
+        if (isImageFile(file)) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setTradeLicenceImagePreview(e.target?.result as string);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          setTradeLicenceImagePreview('');
+        }
+      } else {
+        setIdFileName(file.name);
+        // Create preview for images
+        if (isImageFile(file)) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setIdImagePreview(e.target?.result as string);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          setIdImagePreview('');
+        }
+      }
+      
+      onUserDataChange(updatedData);
     }
   };
 
+  const handleRemoveFile = (fieldName: 'tradeLicence' | 'idFile') => {
+    const updatedData = {
+      ...formData,
+      [fieldName]: null
+    };
+    setFormData(updatedData);
+    
+    if (fieldName === 'tradeLicence') {
+      setTradeLicenceFileName('');
+      setTradeLicenceImagePreview('');
+      // Reset file input
+      const fileInput = document.getElementById('tradeLicenceUpload') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    } else {
+      setIdFileName('');
+      setIdImagePreview('');
+      // Reset file input
+      const fileInput = document.getElementById('idUpload') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    }
+    
+    onUserDataChange(updatedData);
+  };
+
+  // Component for displaying file preview
+  const FilePreview: React.FC<{ 
+    fileName: string; 
+    imagePreview: string; 
+    onRemove: () => void;
+    fieldName: string;
+  }> = ({ fileName, imagePreview, onRemove, fieldName }) => (
+    <div style={{ 
+      marginTop: '10px', 
+      padding: '15px', 
+      backgroundColor: '#f8f9fa', 
+      borderRadius: '8px',
+      border: '1px solid #e9ecef'
+    }}>
+      {imagePreview && (
+        <div style={{ marginBottom: '10px' }}>
+          <img 
+            src={imagePreview} 
+            alt={`${fieldName} preview`}
+            style={{
+              maxWidth: '200px',
+              maxHeight: '150px',
+              width: 'auto',
+              height: 'auto',
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
+      )}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div>
+          <span style={{ fontSize: '14px', fontWeight: '500' }}>{fileName}</span>
+          {imagePreview && (
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+              {t("Image Preview Available")}
+            </div>
+          )}
+        </div>
+        <button 
+          type="button"
+          onClick={onRemove}
+          style={{
+            background: '#ff6b35',
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '12px',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e55a2b'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#ff6b35'}
+        >
+          {t("Remove")}
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <div className="row">
         <div className="col-12">
           <div className="dash-input-wrapper mb-30">
-            <label htmlFor="username">Username*</label>
+            <label htmlFor="username">{t("Username*")}</label>
             <input 
               type="text" 
               name="username"
@@ -131,31 +265,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
         </div>
         <div className="col-sm-6">
           <div className="dash-input-wrapper mb-30">
-            <label htmlFor="firstName">First Name*</label>
-            <input 
-              type="text" 
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              placeholder="Mr Johny" 
-            />
-          </div>
-        </div>
-        <div className="col-sm-6">
-          <div className="dash-input-wrapper mb-30">
-            <label htmlFor="lastName">Last Name*</label>
-            <input 
-              type="text" 
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              placeholder="Riolek" 
-            />
-          </div>
-        </div>
-        <div className="col-sm-6">
-          <div className="dash-input-wrapper mb-30">
-            <label htmlFor="email">Email*</label>
+            <label htmlFor="email">{t("Email*")}</label>
             <input 
               type="email" 
               name="email"
@@ -167,7 +277,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
         </div>
         <div className="col-sm-6">
           <div className="dash-input-wrapper mb-30">
-            <label htmlFor="position">Position*</label>
+            <label htmlFor="position">{t("Position*")}</label>
             <NiceSelect 
               className="nice-select"
               options={[
@@ -183,7 +293,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
         </div>
         <div className="col-sm-6">
           <div className="dash-input-wrapper mb-30">
-            <label htmlFor="phone">Phone Number*</label>
+            <label htmlFor="phone">{t("Phone Number*")}</label>
             <input 
               type="tel" 
               name="phone"
@@ -195,7 +305,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
         </div>
         <div className="col-sm-6">
           <div className="dash-input-wrapper mb-30">
-            <label htmlFor="secondPhone">Second Phone</label>
+            <label htmlFor="secondPhone">{t("Second Phone")}</label>
             <input 
               type="tel" 
               name="secondPhone"
@@ -207,7 +317,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
         </div>
         <div className="col-sm-6">
           <div className="dash-input-wrapper mb-30">
-            <label htmlFor="website">Website*</label>
+            <label htmlFor="website">{t("Website*")}</label>
             <input 
               type="text" 
               name="website"
@@ -217,48 +327,135 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
             />
           </div>
         </div>
+       
         <div className="col-12">
           <div className="dash-input-wrapper">
-            <label htmlFor="about">About*</label>
+            <label htmlFor="descriptions">{t("About*")}</label>
             <textarea 
               className="size-lg"
-              name="about"
-              value={formData.about}
+              name="descriptions"
+              value={formData.descriptions}
               onChange={handleInputChange}
               placeholder="I am working for the last 4 years as a web designer, graphics designer and well as UI/UX designer............."
             />
-            <div className="alert-text">Brief description for your profile. URLs are hyperlinked.</div>
+            <div className="alert-text">{t("Brief")}</div>
           </div>
         </div>
-      </div>
-      
-      {/* Action Buttons */}
-      <div className="button-group d-inline-flex align-items-center mt-30">
-        <button 
-          type="submit" 
-          className="dash-btn-two tran3s me-3"
-          disabled={isUpdating}
-        >
-          {isUpdating ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              Updating...
-            </>
-          ) : (
-            'Save'
-          )}
-        </button>
-        <button 
-          type="button" 
-          className="dash-cancel-btn tran3s"
-          onClick={handleCancel}
-          disabled={isUpdating}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  )
+
+        {/* ID Upload Section */}
+        <div className="col-12">
+          <div className="dash-input-wrapper mb-30">
+            <label htmlFor="idFile">{t("ID*")}</label>
+            <div className="upload-area" style={{
+              border: '2px dashed #e0e0e0',
+              borderRadius: '8px',
+              padding: '20px',
+              textAlign: 'center',
+              backgroundColor: '#f9f9f9',
+              position: 'relative',
+              cursor: 'pointer'
+            }}>
+              <div style={{ marginBottom: '10px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="#ff6b35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M7 10L12 5L17 10" stroke="#ff6b35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 5V15" stroke="#ff6b35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{ color: '#ff6b35', marginBottom: '5px', cursor: 'pointer' }}>
+               {t("Click to Upload ID")}
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                {t("or drag and drop")}
+              </div>
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                {t("Max")} 25MB
+              </div>
+              <input 
+                type="file" 
+                id="idUpload"
+                onChange={(e) => handleFileChange(e, 'idFile')}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0,
+                  cursor: 'pointer'
+                }}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              />
+            </div>
+            {idFileName && (
+              <FilePreview
+                fileName={idFileName}
+                imagePreview={idImagePreview}
+                onRemove={() => handleRemoveFile('idFile')}
+                fieldName="ID"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Trade License Upload Section */}
+        <div className="col-12">
+          <div className="dash-input-wrapper mb-30">
+            <label htmlFor="tradeLicence">{t("Trade License*")}</label>
+            <div className="upload-area" style={{
+              border: '2px dashed #e0e0e0',
+              borderRadius: '8px',
+              padding: '20px',
+              textAlign: 'center',
+              backgroundColor: '#f9f9f9',
+              position: 'relative',
+              cursor: 'pointer'
+            }}>
+              <div style={{ marginBottom: '10px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="#ff6b35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M7 10L12 5L17 10" stroke="#ff6b35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 5V15" stroke="#ff6b35" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{ color: '#ff6b35', marginBottom: '5px', cursor: 'pointer' }}>
+                {t("Click to Upload Trade License")}
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                {t("or drag and drop")}
+              </div>
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                {t("Max")} 25MB
+              </div>
+              <input 
+                type="file" 
+                id="tradeLicenceUpload"
+                onChange={(e) => handleFileChange(e, 'tradeLicence')}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0,
+                  cursor: 'pointer'
+                }}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              />
+            </div>
+            {tradeLicenceFileName && (
+              <FilePreview
+                fileName={tradeLicenceFileName}
+                imagePreview={tradeLicenceImagePreview}
+                onRemove={() => handleRemoveFile('tradeLicence')}
+                fieldName="Trade License"
+              />
+            )}
+          </div>
+        </div>
+      </div> {/* row */}
+    </div>
+  );
 }
 
-export default UserAvatarSetting
+export default UserAvatarSetting;
