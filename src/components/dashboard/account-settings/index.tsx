@@ -1,11 +1,11 @@
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne";
 import AccountSettingBody from "./AccountSettingBody";
 
-const DashboardAccountSetting = () => {
+const DashboardAccountSetting = ({ token }: { token: string }) => {
    return (
       <>
          <DashboardHeaderOne />
-         <AccountSettingBody />
+         <AccountSettingBody token={token as string}/>
       </>
    )
 }
