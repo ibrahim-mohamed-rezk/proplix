@@ -164,7 +164,7 @@ const page = async () => {
             <div className="mt-[48px] w-full flex flex-wrap items-center justify-stretch gap-[16px]">
               {[0, 1, 2, 3].map((item) => {
                 return (
-                  <div className="p-4 w-[24%] featured-card rounded-[8px] md:p-6 bg-[#FFF8F4] rounded-lg outline-1 outline-offset-[-1px] outline-[#FFB799] flex flex-col justify-start items-start gap-2">
+                  <div key={item} className="p-4 w-[24%] featured-card rounded-[8px] md:p-6 bg-[#FFF8F4] rounded-lg outline-1 outline-offset-[-1px] outline-[#FFB799] flex flex-col justify-start items-start gap-2">
                     <div className="text-neutral-400 text-sm md:text-base font-normal font-['Gordita'] leading-tight">
                       Total Paid
                     </div>

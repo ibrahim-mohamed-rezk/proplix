@@ -5,9 +5,11 @@ import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 import { useLocale, useTranslations } from "next-intl";
-import { use, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { UserTypes } from "@/libs/types/types";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { Check, ChevronDown } from "lucide-react";
 
 const HeaderOne = ({
   style,
@@ -35,6 +37,11 @@ const HeaderOne = ({
       },
     });
     window.location.href = "/";
+  };
+
+  const flagMap: Record<string, string> = {
+    en: "gb",
+    ar: "sa",
   };
 
   const changeLanguage = (l: string) => {
@@ -119,14 +126,24 @@ const HeaderOne = ({
 
               <div className="right-widget flex gap-[10px] items-center justify-center ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
                 {/* language switcher */}
-                <div className="relative">
+                <div className="relative
+                
+                ">
                   <button
                     onClick={() => setLangOpen((o) => !o)}
                     className="flex items-center hover:border hover:border-white/70 rounded-[clamp(10px,0.833vw,20px)] font-['Libre_Baskerville'] text-[clamp(14px,1.042vw,20px)] font-[400] py-[clamp(3px,0.417vw,5px)] px-[clamp(5px,1.562vw,10px)] justify-center gap-2 text-white cursor-pointer transition focus:outline-none"
                   >
+                    <span className={`fi fi-${flagMap[locale]} mr-1`} />
+                    <Image
+                      src={`/images/${locale}.svg`}
+                      alt="Arrow Down"
+                      width={30}
+                      height={20}
+                    />
                     <span className="uppercase text-[#000] font-medium font-['Libre_Baskerville'] text-[18px]">
                       {locale}
                     </span>
+                    <ChevronDown className="w-4 h-4 text-[18px] text-[#000]" />
                   </button>
                   <div className="" ref={langRef}>
                     <div
@@ -143,9 +160,19 @@ const HeaderOne = ({
                               onClick={() => changeLanguage(l)}
                               className="w-full flex items-center px-3 py-2 hover:bg-gray-100 transition-colors rounded-xl"
                             >
+                              <Image
+                                src={`/images/${l}.svg`}
+                                alt="Arrow Down"
+                                width={30}
+                                height={20}
+                              />
+                              <span className={`fi fi-${flagMap[l]} mr-2`} />
                               <span className="capitalize font-[400] font-['Libre_Baskerville'] text-[clamp(12px,0.938vw,20px)] flex-1">
                                 {l}
                               </span>
+                              {l === locale && (
+                                <Check className="w-4 h-4 text-[#000]" />
+                              )}
                             </button>
                           </li>
                         ))}
