@@ -194,6 +194,7 @@ import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_activ
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_41.svg";
 import { useTranslations } from "next-intl";
+import axios from "axios";
 
 
 const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
@@ -201,6 +202,17 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
    const lang = pathname.split('/')[1];
    const t = useTranslations("dashboard");
    const isRTL = lang === 'ar';
+
+
+   const logout = async () => {
+      await axios.post("/api/auth/logout", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      window.location.href = "/";
+    };
+
 
    return (
       <aside className={`dash-aside-navbar ${isActive ? "show" : ""}`}>
@@ -281,7 +293,7 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                   </Link></li>
                </ul>
             </nav>
-            <div className="plr">
+            <div className="plr" onClick={logout}>
                <Link href="#" className={`d-flex ${isRTL ? 'flex-row-reverse' : ''} w-100 align-items-center logout-btn`}>
                   <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle"><Image src={dashboardIcon_11} alt="" /></div>
                   <span>{t("Logout")}</span>

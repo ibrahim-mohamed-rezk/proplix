@@ -229,7 +229,7 @@ const AddressAndLocation = ({
             id="current_password"
             value={locationData.current_password}
             onChange={(e) => handleInputChange('current_password', e.target.value)}
-            placeholder="Enter your current password"
+            placeholder={t("Enter your current password")}
             disabled={isUpdating}
             className={!canSubmit && locationData.current_password === '' ? 'is-invalid' : ''}
             autoComplete="current-password"
