@@ -439,13 +439,37 @@
   },
 
     "DashboardHeaderTwo": {
+      "Add Listing": "Add Listing",
+      "dashboard":"Dashboard",
       "Dashboard": "Dashboard",
       "my_properties":"My Properties",
       "Create Property":"Create Property",
       "Account Settings": "Account Settings",
       "Change Password": "Change Password"
+    },  "dashboard-index": {
+      "loading": "Loading...",
+      "not_found": "NOT FOUND",
+      "all_properties": "All Properties",
+      "total_pending": "Total Pending",
+      "for_sale": "For Sale",
+      "for_rent": "For Rent",
+      "property_analytics_overview": "Property Analytics Overview",
+      "filter_by": "Filter by:",
+      "weekly": "Weekly",
+      "daily": "Daily",
+      "monthly": "Monthly",
+      "average_price": "Average Price",
+      "cancelled": "Cancelled",
+      "accepted": "Accepted",
+      "immediate_delivery": "Immediate Delivery",
+      "properties_distribution_by_area": "Properties Distribution by Area",
+      "areas": "Areas",
+      "properties": "Properties",
+      "egp": "EGP"
     },
     "ProfileBody": {
+      "Enter your current password": "Enter your current password",
+      "Image Preview Available": "Image Preview Available",
       "Failed to load profile data": "Failed to load profile data",
       "Please enter your current password to save changes": "Please enter your current password to save changes",
       "Profile updated successfully!": "Profile updated successfully!",
@@ -513,6 +537,7 @@
       "Confirm your new password": "Confirm your new password"
     },
     "account-settings": {
+      "Enter your current password": "Enter your current password",
       "Failed to load profile data": "Failed to load profile data",
       "Please enter your current password to save changes": "Please enter your current password to save changes",
       "Profile updated successfully!": "Profile updated successfully!",

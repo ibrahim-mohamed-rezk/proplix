@@ -414,13 +414,38 @@
     
   },
   "DashboardHeaderTwo": {
+    "Add Listing": "إضافة عقار",
+    "dashboard": "لوحة التحكم",
     "my_properties": "عقاراتي",
     "Dashboard": "لوحة التحكم",
     "Create Property":"إنشاء عقار",
     "Account Settings": "إعدادات الحساب",
     "Change Password": "تغيير كلمة المرور"
   },
+  "dashboard-index": {
+    "loading": "جاري التحميل...",
+    "not_found": "غير موجود",
+    "all_properties": "جميع العقارات",
+    "total_pending": "إجمالي قيد الانتظار",
+    "for_sale": "للبيع",
+    "for_rent": "للإيجار",
+    "property_analytics_overview": "نظرة عامة على تحليلات العقارات",
+    "filter_by": "تصفية حسب:",
+    "weekly": "أسبوعي",
+    "daily": "يومي",
+    "monthly": "شهري",
+    "average_price": "متوسط السعر",
+    "cancelled": "ملغي",
+    "accepted": "مقبول",
+    "immediate_delivery": "تسليم فوري",
+    "properties_distribution_by_area": "توزيع العقارات حسب المنطقة",
+    "areas": "مناطق",
+    "properties": "عقارات",
+    "egp": "جنيه مصري"
+  },
   "ProfileBody": {
+    "Enter your current password":"أدخل كلمة المرور الحالية",
+    "ProfileBody":"ملف التعريف",
     "Failed to load profile data": "فشل في تحميل بيانات الملف الشخصي",
     "Please enter your current password to save changes": "يرجى إدخال كلمة المرور الحالية لحفظ التغييرات",
     "Profile updated successfully!": " تم تحديث الملف الشخصي بنجاح!",
@@ -488,6 +513,7 @@
     "Confirm your new password": " تأكيد كلمة المرور الجديدة"
   },
   "account-settings": {
+    "Enter your current password": "أدخل كلمة المرور الحالية",
     "Failed to load profile data": "فشل في تحميل بيانات الملف الشخصي",
     "Please enter your current password to save changes": "يرجى إدخال كلمة المرور الحالية لحفظ التغييرات",
     "Profile updated successfully!": " تم تحديث الملف الشخصي بنجاح!",

@@ -203,7 +203,7 @@ const AccountSettingBody = ({ token }: { token: string }) => {
                   <input
                     type="password"
                     id="password"
-                    placeholder="Enter your current password"
+                    placeholder={t("Enter your current password")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
