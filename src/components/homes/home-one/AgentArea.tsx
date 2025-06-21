@@ -6,6 +6,7 @@ import Slider from "react-slick";
 
 import titleShape from "@/assets/images/shape/title_shape_05.svg";
 import { AgentTypes } from "@/libs/types/types";
+import { useTranslations } from "next-intl";
 
 // Default agent placeholder image
 const defaultAgentImage = "/assets/images/agent/agent-placeholder.jpg";
@@ -19,16 +20,18 @@ const AgentArea = ({
   agents: AgentTypes[];
   loading: Boolean;
 }) => {
+  const t = useTranslations("endUser");
+
   const settings = {
     infinite: agents?.length > 4,
     dots: true,
-    arrows: true,
+    arrows: false,
     centerPadding: "0px",
     slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
-    pauseOnHover: true,
+    navigator: false,
     responsive: [
       {
         breakpoint: 1400,
@@ -79,9 +82,9 @@ const AgentArea = ({
         <div className="position-relative">
           <div className="title-one mb-85 lg-mb-50 wow fadeInLeft">
             <h3>
-              Our{" "}
+              {t("Our")}
               <span>
-                Agents
+                {t("Agents")}
                 {style ? (
                   ""
                 ) : (
@@ -96,20 +99,23 @@ const AgentArea = ({
               </span>
             </h3>
             <p className="fs-22 mt-xs">
-              Meet our professional real estate agents ready to help you
+              {t("Meet our professional real estate agents ready to help you")}
             </p>
           </div>
 
           <div className="wrapper position-relative z-1">
             {loading ? (
-              <div className="text-center p-5">Loading agents...</div>
+              <div className="text-center p-5">{t("Loading agents")}</div>
             ) : agents?.length === 0 ? (
-              <div className="text-center p-5">No agents found</div>
+              <div className="text-center p-5">{t("No agents found")}</div>
             ) : (
               <Slider {...settings} className="agent-slider-one flex">
                 {agents &&
                   agents.map((agent) => (
-                    <div key={agent.id} className="item mb-[30px] rounded-[20px] ">
+                    <div
+                      key={agent.id}
+                      className="item mb-[30px] rounded-[20px] "
+                    >
                       <div className="agent-card-one position-relative">
                         <div className="img  rounded-[20px] overflow-hidden">
                           <img
@@ -139,7 +145,7 @@ const AgentArea = ({
               href="/agent"
               className={`${style ? "btn-eight" : "btn-one fw-normal"}`}
             >
-              Meet Entire Team
+              {t("Meet Entire Team")}
             </Link>
           </div>
         </div>

@@ -99,7 +99,7 @@ import Slider from "react-slick";
 import titleShape from "@/assets/images/shape/title_shape_02.svg";
 // adjust the path to wherever you put your axios file:
 import { getData } from "@/libs/server/backendServer";
-import { useTranslations } from "next-intl";    
+import { useTranslations } from "next-intl";
 
 interface Area {
   id: number;
@@ -109,7 +109,7 @@ interface Area {
 }
 
 export default function BLockFeatureThree() {
-  const t = useTranslations("Feature3");
+  const t = useTranslations("endUser");
   const [areas, setAreas] = useState<Area[]>([]);
   const sliderRef = useRef<Slider | null>(null);
 
@@ -137,9 +137,24 @@ export default function BLockFeatureThree() {
     autoplay: true,
     autoplaySpeed: 3000,
     responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: Math.min(areas.length, 3) } },
-      { breakpoint: 992,  settings: { slidesToShow: Math.min(areas.length, 2) } },
-      { breakpoint: 500,  settings: { slidesToShow: 1 } },
+      {
+        breakpoint: 1200,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 992,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 500,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
     ],
   };
 
@@ -151,16 +166,21 @@ export default function BLockFeatureThree() {
       <div className="container">
         <div className="title-one text-center mb-75 xl-mb-50 md-mb-30 wow fadeInUp">
           <h3>
-            {t("title")} <span>
-            <Image src={titleShape} alt="" className="lazy-img" />
+            {t("Explore Popular Location")}{" "}
+            <span>
+              <Image src={titleShape} alt="" className="lazy-img" />
             </span>
           </h3>
           <p className="fs-22">
-            {t("description")}
+            {t("Explore the latest listings & projects in diverse areas")}
           </p>
         </div>
 
-        <Slider {...settings} ref={sliderRef} className="property-location-slider-one">
+        <Slider
+          {...settings}
+          ref={sliderRef}
+          className="property-location-slider-one"
+        >
           {areas.map((area) => (
             <div key={area.id} className="item-first">
               <div
@@ -174,10 +194,13 @@ export default function BLockFeatureThree() {
                 <div className="content text-center w-100 tran3s">
                   <h5 className="text-white fw-normal">{area.name}</h5>
                   <p className="text-white fw-light">
-                    {t("count_of_properties", { count: area.count_of_properties })}
+                    {`${area.count_of_properties} ${t("properties")}`}
                   </p>
                 </div>
-                <Link href={`/listing?areaId=${area.id}`} className="stretched-link" />
+                <Link
+                  href={`/listing?areaId=${area.id}`}
+                  className="stretched-link"
+                />
               </div>
             </div>
           ))}

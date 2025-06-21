@@ -116,7 +116,7 @@ const feature_data: DataType[] = [
     page: "home_1_feature_3",
     icon: feature3Icon_1,
     title: "Create Account",
-    desc: "It’s very easy to open an account and start your journey.",
+    desc: "It’s very easy to open an account and start your journey",
   },
   {
     id: 2,
@@ -124,14 +124,14 @@ const feature_data: DataType[] = [
     class_name: "arrow position-relative",
     icon: feature3Icon_2,
     title: "Find Home",
-    desc: "Complete your profile with all the info to get attention of client.",
+    desc: "Complete your profile with all the info to get attention of client",
   },
   {
     id: 3,
     page: "home_1_feature_3",
     icon: feature3Icon_3,
     title: "Quick Process",
-    desc: "Apply & get your preferable jobs with all the requirements and get it.",
+    desc: "Apply & get your preferable jobs with all the requirements and get it",
   },
 
   // home_two_feature_1
