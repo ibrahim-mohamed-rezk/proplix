@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 
 const ListingThreeArea = ({ style }: { style: boolean }) => {
   const t = useTranslations("properties");
-  const itemsPerPage = 9;
+  const itemsPerPage = 9; 
   const page = "listing_4";
   const locale = useLocale();
   const [properties, setProperties] = useState([]);

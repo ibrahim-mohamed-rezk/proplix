@@ -7,7 +7,7 @@ import FooterOne from "@/layouts/footers/FooterOne";
 
 const ListingSix = async ({
  
-  searchParams,
+  searchParams, 
 }: {
  
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
