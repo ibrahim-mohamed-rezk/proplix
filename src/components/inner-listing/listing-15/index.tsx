@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 const ListingEleven = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
    }) => {
      const cookiesData = await cookies();
      const token = cookiesData.get("token")?.value;
