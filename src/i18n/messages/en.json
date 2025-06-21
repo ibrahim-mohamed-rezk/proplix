@@ -434,7 +434,6 @@
       "more_details": "More Details"
     }
   },
-
     "DashboardHeaderTwo": {
       "Add Listing": "Add Listing",
       "dashboard":"Dashboard",
@@ -554,13 +553,6 @@
       "Save": "Save",
       "Cancel": "Cancel",
       "": ""},
-  "DashboardHeaderTwo": {
-    "Dashboard": "Dashboard",
-    "my_properties": "My Properties",
-    "Create Property": "Create Property",
-    "Account Settings": "Account Settings",
-    "Change Password": "Change Password"
-  },
   "ProfileBody": {
     "Failed to load profile data": "Failed to load profile data",
     "Please enter your current password to save changes": "Please enter your current password to save changes",
