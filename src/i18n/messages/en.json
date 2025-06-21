@@ -607,8 +607,11 @@
       "desc": "Efficient, knowledgeable, & made our home search a smooth experience. Highly recommended agency!"
     },
     "total_rating": "rating",
-    "rating": "Rating"
-    
-
+    "rating": "Rating",
+    "im_looking_to": "I'm looking to",
+    "area": "Area",
+    "property_title": "Property Title",
+    "title_placeholder": "Enter property title...",
+    "search": "Search"
   }
 }

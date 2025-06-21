@@ -16,7 +16,7 @@ const DropdownTwo = ({
   handleTypesChange,
   popup = true,
 }: any) => {
-  const t = useTranslations("properties");
+  const t = useTranslations("endUser");
   const locale = useLocale();
   const [areas, setAreas] = useState([]);
   const [types, setTypes] = useState([]);
