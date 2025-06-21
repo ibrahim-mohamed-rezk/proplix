@@ -42,7 +42,7 @@ const CommonPropertyOverview = ({ property }: { property: PropertyTypes }) => {
     {
       id: 5,
       icon: icon_5,
-      title: `${t("type")} . ${property?.property_type.title}`,
+      title: `${t("type")} . ${property?.property_type?.title}`,
     },
   ];
   return (

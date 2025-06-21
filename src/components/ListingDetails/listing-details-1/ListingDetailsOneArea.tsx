@@ -71,7 +71,7 @@ const ListingDetailsOneArea = ({
               <CommonProPertyScore />
             </div> */}
             <div className="property-location mb-50">
-              <CommonLocation />
+              <CommonLocation property={property} />
             </div>
 
             {/* <div className="review-panel-one bg-white shadow4 p-40 mb-50">
