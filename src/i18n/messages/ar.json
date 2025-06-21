@@ -103,9 +103,7 @@
   "Failed to add property": "فشل في إضافة العقار",
   "property_id": "معرف العقار",
   "Property Details": "تفاصيل العقار",
-  "Amenities": "المرفقات",
   "Floor Plans": "الخرائط",
-  "Images": "الصور",
   "Back to List": "العودة للقائمة",
   "Main": "الرئيسية",
   "Features": "المميزات",
@@ -411,6 +409,31 @@
     "home": "الرئيسية",
     "installment_plans": "خطط التقسيط",
     "properity": "العقار"
+  },
+  "Feature": {
+    "block_feature_one": {
+      "title": "اكتشف مزايا بروبلكس",
+      "description": "شريكك العقاري الموثوق به في كل معاملة."
+    },
+    "Buy a home": "شراء منزل",
+    "RENT A HOME": "استئجار منزل",
+    "SELL PROPERTY": "بيع الممتلكات",
+    "Explore Problixs 2 million homes and uncover your ideal living space": "استكشف أكثر من 2 مليون منزل في بروبلكس واكتشف مساحة المعيشة المثالية لك.",
+    "Discover a rental youll love on Problix thanks to 35+ filters and tailored keywords": "اكتشف عقارًا للإيجار سيعجبك على بروبلكس، بفضل أكثر من 35 مرشحًا وكلمات رئيسية مخصصة.",
+    "List sell thrive  with our top-notch real estate agency Its super easy  fun": "أدرج، بيع، ازدهر - مع وكالتنا العقارية المتميزة. الأمر في غاية السهولة والمتعة.",
+    "vid": {
+      "title1": "تأمين منزل أحلام عائلتك.",
+      "title2": "من نحن؟",
+      "description": "سنوات من الخبرة بكل فخر.",
+      "description2": "شريكك الأمثل في مجال العقارات. نحول عقاراتك إلى أحلامك. دعنا نرشدك إلى منزلك بخبرتنا الواسعة.",
+      "completed_project": "مشروع مكتمل",
+      "happy_customers": "عملاء سعداء",
+      "loan_and_low_interest_facility": "قرض وتسهيلات فائدة منخفضة",
+      "over_100k_property_and_update_regularly": "أكثر من 100 ألف عقار وتحديثها بانتظام",
+      "expert_agent_consultation": "استشارة وكيل الخبراء",
+      "request_a_callback": "طلب رد الاتصال",
+      "more_details": "مزيد من التفاصيل"
+    }
   },
   "DashboardHeaderTwo": {
     "my_properties": "عقاراتي",
