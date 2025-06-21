@@ -1,26 +1,70 @@
+import { PropertyTypes } from "@/libs/types/types";
+import { useEffect, useRef } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { useTranslations } from "next-intl";
 
-const CommonLocation = () => {
-   return (
-     <>
-       <h4 className="mb-40">Location</h4>
-       <div className="bg-white shadow4   p-30">
-         <div className="map-banner overflow-hidden     ">
-           <div className="gmap_canvas h-100 w-100">
-             <iframe
-               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83088.3595592641!2d-105.54557276330914!3d39.29302101722867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x874014749b1856b7%3A0xc75483314990a7ff!2sColorado%2C%20USA!5e0!3m2!1sen!2sbd!4v1699764452737!5m2!1sen!2sbd"
-               width="600"
-               height="450"
-               style={{ border: 0 }}
-               allowFullScreen={true}
-               loading="lazy"
-               referrerPolicy="no-referrer-when-downgrade"
-               className="w-100 h-100"
-             ></iframe>
-           </div>
-         </div>
-       </div>
-     </>
-   );
-}
+// Set your Mapbox access token
+mapboxgl.accessToken =
+  process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ||
+  "pk.eyJ1IjoicmFzaGFkbnVzaGFkIiwiYSI6ImNseGo1c3E1dDBjeWgybHFlOWp2b3Bsb3UifQ.eG9yV25a_w9Jp-3weVnmPA";
+
+const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const t = useTranslations("endUser");
+
+  useEffect(() => {
+    if (map.current || !mapContainer.current) return; // initialize map only once
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/streets-v12",
+      center: [55.2708, 25.2048], // Default center
+      zoom: 12,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (
+      !map.current ||
+      !property?.property_locations ||
+      property?.property_locations.length === 0
+    )
+      return;
+
+    const locations = property?.property_locations;
+
+    // Add markers to map
+    locations.forEach((location) => {
+      new mapboxgl.Marker({ color: "red" })
+        .setLngLat([location.longitude, location.latitude])
+        .addTo(map.current!);
+    });
+
+    // Fit map to markers
+    if (locations.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      locations.forEach((location) => {
+        bounds.extend([location.longitude, location.latitude]);
+      });
+      map.current.fitBounds(bounds, { padding: 50 });
+    }
+  }, [property]);
+
+  return (
+    <>
+      <h4 className="mb-40">{t("Location")}</h4>
+      <div className="bg-white shadow4 p-30">
+        <div className="map-banner overflow-hidden">
+          <div
+            ref={mapContainer}
+            className="gmap_canvas h-100 w-100"
+            style={{ height: "450px" }}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default CommonLocation;

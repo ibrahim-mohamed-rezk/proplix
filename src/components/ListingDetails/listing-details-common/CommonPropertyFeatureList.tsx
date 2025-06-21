@@ -6,7 +6,7 @@ const CommonPropertyFeatureList = ({
 }: {
   property?: PropertyTypes;
 }) => {
-  const t = useTranslations("features");
+  const t = useTranslations("endUser");
   const locale = useLocale();
 
   const property_feature_list: DataType[] = [

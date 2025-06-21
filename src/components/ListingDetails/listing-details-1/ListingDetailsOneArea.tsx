@@ -24,10 +24,8 @@ const ListingDetailsOneArea = ({
   property: PropertyTypes;
   similar: PropertyTypes[];
 }) => {
-  const selectHandler = (e: any) => {};
-  const t = useTranslations("properties.property");
+  const t = useTranslations("endUser");
 
-  console.log(property);
 
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
@@ -35,7 +33,9 @@ const ListingDetailsOneArea = ({
         {/* <CommonBanner property={property} /> */}
         <MediaGallery property={property} />
         <div className="property-feature-list bg-white shadow4 p-40 mt-50 mb-60">
-          <h4 className="sub-title-one mb-40 lg-mb-20">{t("overview")}</h4>
+          <h4 className="sub-title-one mb-40 lg-mb-20">
+            {t("Property Overview")}
+          </h4>
           <CommonPropertyOverview property={property} />
         </div>
         <div className="row">
@@ -48,7 +48,7 @@ const ListingDetailsOneArea = ({
               />
             </div>
             <div className="property-feature-accordion bg-white shadow4 p-40 mb-50">
-              <h4 className="mb-20">{t("property_features")}</h4>
+              <h4 className="mb-20">{t("Property Features")}</h4>
               <p className="fs-20 lh-lg">
                 {t("property_features_description")}
               </p>
@@ -71,7 +71,7 @@ const ListingDetailsOneArea = ({
               <CommonProPertyScore />
             </div> */}
             <div className="property-location mb-50">
-              <CommonLocation />
+              <CommonLocation property={property} />
             </div>
 
             {/* <div className="review-panel-one bg-white shadow4 p-40 mb-50">

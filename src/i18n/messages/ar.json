@@ -25,7 +25,7 @@
   "table": {
     "my_properties": "عقاراتي",
     "title": "العنوان",
-    "date": "التاريخ", 
+    "date": "التاريخ",
     "view": "المشاهدات",
     "action": "الإجراء",
     "property_deleted_successfully": "تم حذف العقار بنجاح!",
@@ -46,7 +46,7 @@
     "Add Listing": "اضافة عقار",
     "Profile": "الملف الشخصي",
     "Logout": "تسجيل الخروج",
-    "contact":"اتصل بنا"
+    "contact": "اتصل بنا"
   },
   "Create Property": "إنشاء عقار",
   "General Information": "المعلومات العامة",
@@ -103,9 +103,7 @@
   "Failed to add property": "فشل في إضافة العقار",
   "property_id": "معرف العقار",
   "Property Details": "تفاصيل العقار",
-  "Amenities": "المرفقات",
   "Floor Plans": "الخرائط",
-  "Images": "الصور",
   "Back to List": "العودة للقائمة",
   "Main": "الرئيسية",
   "Features": "المميزات",
@@ -236,7 +234,8 @@
     "property/images": "صور العقار",
     "property/floor-plan": "الخرائط",
     "e.g., Swimming Pool, Gym": "مثلا: بركة سباحة، صالة رياضية"
-  },"Home": {
+  },
+  "Home": {
     "totalProperties": "إجمالي العقارات",
     "totalCustomers": "إجمالي العملاء",
     "totalAgents": "إجمالي الوكلاء",
@@ -405,20 +404,43 @@
     "cancel": "إلغاء",
     "": ""
   },
-  "installments":{
+  "installments": {
     "Installment Plans": "خطط التقسيط",
-    "home":"الرئيسية",
-    "installment_plans":"خطط التقسيط",
-    "properity":"العقار"
-    
-    
+    "home": "الرئيسية",
+    "installment_plans": "خطط التقسيط",
+    "properity": "العقار"
+  },
+  "Feature": {
+    "block_feature_one": {
+      "title": "اكتشف مزايا بروبلكس",
+      "description": "شريكك العقاري الموثوق به في كل معاملة."
+    },
+    "Buy a home": "شراء منزل",
+    "RENT A HOME": "استئجار منزل",
+    "SELL PROPERTY": "بيع الممتلكات",
+    "Explore Problixs 2 million homes and uncover your ideal living space": "استكشف أكثر من 2 مليون منزل في بروبلكس واكتشف مساحة المعيشة المثالية لك.",
+    "Discover a rental youll love on Problix thanks to 35+ filters and tailored keywords": "اكتشف عقارًا للإيجار سيعجبك على بروبلكس، بفضل أكثر من 35 مرشحًا وكلمات رئيسية مخصصة.",
+    "List sell thrive  with our top-notch real estate agency Its super easy  fun": "أدرج، بيع، ازدهر - مع وكالتنا العقارية المتميزة. الأمر في غاية السهولة والمتعة.",
+    "vid": {
+      "title1": "تأمين منزل أحلام عائلتك.",
+      "title2": "من نحن؟",
+      "description": "سنوات من الخبرة بكل فخر.",
+      "description2": "شريكك الأمثل في مجال العقارات. نحول عقاراتك إلى أحلامك. دعنا نرشدك إلى منزلك بخبرتنا الواسعة.",
+      "completed_project": "مشروع مكتمل",
+      "happy_customers": "عملاء سعداء",
+      "loan_and_low_interest_facility": "قرض وتسهيلات فائدة منخفضة",
+      "over_100k_property_and_update_regularly": "أكثر من 100 ألف عقار وتحديثها بانتظام",
+      "expert_agent_consultation": "استشارة وكيل الخبراء",
+      "request_a_callback": "طلب رد الاتصال",
+      "more_details": "مزيد من التفاصيل"
+    }
   },
   "DashboardHeaderTwo": {
     "Add Listing": "إضافة عقار",
     "dashboard": "لوحة التحكم",
     "my_properties": "عقاراتي",
     "Dashboard": "لوحة التحكم",
-    "Create Property":"إنشاء عقار",
+    "Create Property": "إنشاء عقار",
     "Account Settings": "إعدادات الحساب",
     "Change Password": "تغيير كلمة المرور"
   },
@@ -537,5 +559,85 @@
   "NiceSelect": {
     "Agent": "وكيل",
     "Agency": "وكالة"
+  },
+  "endUser": {
+    "Property Overview": "معلومات عامة عن العقار",
+    "overview": "نظرة عامة",
+    "Property Features": "خصائص العقار",
+    "amenities": "الخدمات والمرافق",
+    "sqft": "قدم مربع",
+    "bed": "غرفة نوم",
+    "bath": "حمام",
+    "price": "السعر",
+    "location": "الموقع",
+    "Kitchen": "مطبخ",
+    "type": "نوع العقار",
+    "property_features_description": "ما أصله؟ خلافاَ للاعتقاد السائد فإن لوريم إيبسوم ليس نصاَ عشوائياً، بل إن له جذور في الأدب اللاتيني الكلاسيكي منذ العام 45 قبل الميلاد، مما يجعله أكثر من عام في القدم. قام البروفيسور ريتشارد ماك ",
+    "property_feature": "تفاصيل العقار",
+    "utility_detail": "تفاصيل المرافق",
+    "outdoor_feature": "المميزات الخارجية",
+    "indoor_feature": "المميزات الداخليه",
+    "Video Tour": "جولة مرئية",
+    "Location": "الموقع",
+    "Floor Plans": "مخططات الطوابق",
+    "Similar Homes You May Like": "عقارات مشابهة قد تهمك",
+
+    "Explore Popular Location": "اكتشف الموقع المشهور",
+    "Explore the latest listings & projects in diverse areas": "استكشف أحدث القوائم والمشاريع في مناطق متنوعة",
+    "properties": "عقار",
+    "New Listings": "معروض حديثاً",
+    "Explore latest & featured properties for sale": "استكشف أحدث العقارات المميزة للبيع.",
+    "Exclusive Monthly Deal for you": "صفقة شهرية حصرية لك.",
+    "Don't miss out on this personalized monthly exclusive offer for you": "لا تفوت هذا العرض الحصري الشهري المخصص لك.",
+    "More Details": "مزيد من التفاصيل",
+    "FOR SELL": "للبيع",
+    "Luxury duplex orkit villa": "فيلا دوبلكس فاخرة في مافيدا.",
+    "Mirpur 10, National Stadium, 1210, Dhaka, BD": "ميربور 10، استاد دكا 1208",
+    "Check Full Details": "تحقق من التفاصيل الكاملة",
+    "Our": "",
+    "Agents": "وكلائنا",
+    "Meet our professional real estate agents ready to help you": "لا تفوت هذا العرض الحصري الشهري المخصص لك.",
+    "Loading agents": "جار التحميل...",
+    "No agents found": "لا يوجد وكلاء",
+    "Meet Entire Team": "تعرف على الفريق بأكمله",
+    "block_feature_five_title_1": "نحن هنا لمساعدتك",
+    "block_feature_five_title_2": "في الحصول على",
+    "block_feature_five_title_3": "منزل أحلامك",
+    "block_feature_five_subtitle": "من السهل أن تبدأ معنا بهذه الخطوات البسيطة",
+    "Create Account": "إنشاء حساب",
+    "Find Home": "ابحث عن منزل",
+    "Quick Process": "عملية سريعة",
+    "It’s very easy to open an account and start your journey": "من السهل جدًا فتح حساب وبدء رحلتك.",
+    "Complete your profile with all the info to get attention of client": "أكمل ملفك الشخصي بجميع المعلومات لجذب انتباه العميل.",
+    "Apply & get your preferable jobs with all the requirements and get it": "تقدم بطلبك واحصل على وظائفك المفضلة مع جميع المتطلبات.",
+    "banner_start": "ابدأ",
+    "banner_journey": "رحلتك",
+    "banner_as_retailer": "كتاجر تجزئة.",
+    "banner_email_placeholder": "عنوان البريد الإلكتروني",
+    "banner_get_started": "ابدأ الآن",
+    "banner_already_agent": "هل أنت وكيل بالفعل؟",
+    "banner_sign_in": "تسجيل الدخول.",
+    "testimonial_1": {
+      "title": "Jonathan Harry",
+      "country": "Milan, Italy",
+      "desc": "فعالون، على دراية، وجعلوا بحثنا عن منزل تجربة سلسة. وكالة موصى بها للغاية!"
+    },
+    "testimonial_2": {
+      "title": "Sofia Rena",
+      "country": "New York, USA",
+      "desc": "فعالون، على دراية، وجعلوا بحثنا عن منزل تجربة سلسة. وكالة موصى بها للغاية!"
+    },
+    "testimonial_3": {
+      "title": "Rashed Kabir",
+      "country": "Dhaka, BD",
+      "desc": "فعالون، على دراية، وجعلوا بحثنا عن منزل تجربة سلسة. وكالة موصى بها للغاية!"
+    },
+    "total_rating": "تقييم",
+    "rating": "التقييم",
+    "im_looking_to": "أبحث عن",
+    "area": "المنطقة",
+    "property_title": "عنوان العقار",
+    "title_placeholder": "أدخل عنوان العقار...",
+    "search": "بحث"
   }
 }

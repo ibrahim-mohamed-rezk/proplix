@@ -24,7 +24,7 @@ const Property = ({
     loading: boolean;
     token: string | undefined;
 }) => {
-  const t = useTranslations("Feature4");
+  const t = useTranslations("endUser");
 
   // Function to determine tag background class based on property status
   // const getTagBgClass = (status: string): string => {
@@ -51,13 +51,14 @@ const Property = ({
         <div className="position-relative">
           <div className="title-one text-center text-lg-start mb-45 xl-mb-30 lg-mb-20 wow fadeInUp">
             <h3>
-              {t("title")}{" "}
+              {t("New Listings")}{" "}
               <span>
-                {t("title_span")}{" "}
                 <Image src={titleShape} alt="" className="lazy-img" />
               </span>
             </h3>
-            <p className="fs-22 mt-xs">{t("description")}</p>
+            <p className="fs-22 mt-xs">
+              {t("Explore latest & featured properties for sale")}
+            </p>
           </div>
 
           {loading ? (
@@ -66,7 +67,11 @@ const Property = ({
             <div className="row gx-xxl-5">
               {listings.length > 0 ? (
                 listings.map((item, index) => (
-                  <PropertiesCard token={token as string} key={index} item={item} />
+                  <PropertiesCard
+                    token={token as string}
+                    key={index}
+                    item={item}
+                  />
                 ))
               ) : (
                 <div className="col-12 text-center p-5">

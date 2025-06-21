@@ -42,7 +42,7 @@ const setting = {
 };
 
 const CommonSimilarProperty = ({ similar }: { similar: PropertyTypes[] }) => {
-  const t = useTranslations("similar");
+  const t = useTranslations("endUser");
   return (
     <div className="similar-property">
       <h4 className="mb-40">{t("Similar Homes You May Like")}</h4>
