@@ -8,7 +8,7 @@ mapboxgl.accessToken =
   process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ||
   "pk.eyJ1IjoicmFzaGFkbnVzaGFkIiwiYSI6ImNseGo1c3E1dDBjeWgybHFlOWp2b3Bsb3UifQ.eG9yV25a_w9Jp-3weVnmPA";
 
-const CommonLocation = ({ property }: { property: PropertyTypes }) => {
+const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
@@ -25,12 +25,12 @@ const CommonLocation = ({ property }: { property: PropertyTypes }) => {
   useEffect(() => {
     if (
       !map.current ||
-      !property.property_locations ||
-      property.property_locations.length === 0
+      !property?.property_locations ||
+      property?.property_locations.length === 0
     )
       return;
 
-    const locations = property.property_locations;
+    const locations = property?.property_locations;
 
     // Add markers to map
     locations.forEach((location) => {

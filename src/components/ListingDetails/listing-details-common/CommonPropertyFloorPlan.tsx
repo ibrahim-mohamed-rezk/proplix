@@ -10,7 +10,7 @@ const CommonPropertyFloorPlan = ({
   style?: boolean;
   property?: PropertyTypes;
 }) => {
-  const t = useTranslations("floorPlan");
+  const t = useTranslations("endUser");
   return (
     <div
       className={`property-floor-plan ${

@@ -17,7 +17,7 @@ interface DataType {
 
 
 const CommonPropertyOverview = ({ property }: { property: PropertyTypes }) => {
-   const t = useTranslations("Favorites");
+   const t = useTranslations("endUser");
   const property_overview_data: DataType[] = [
     {
       id: 1,
