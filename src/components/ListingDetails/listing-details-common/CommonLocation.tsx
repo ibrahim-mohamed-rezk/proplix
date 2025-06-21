@@ -2,6 +2,7 @@ import { PropertyTypes } from "@/libs/types/types";
 import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useTranslations } from "next-intl";
 
 // Set your Mapbox access token
 mapboxgl.accessToken =
@@ -11,6 +12,7 @@ mapboxgl.accessToken =
 const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const t = useTranslations("endUser");
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // initialize map only once
@@ -51,7 +53,7 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
 
   return (
     <>
-      <h4 className="mb-40">Location</h4>
+      <h4 className="mb-40">{t("Location")}</h4>
       <div className="bg-white shadow4 p-30">
         <div className="map-banner overflow-hidden">
           <div

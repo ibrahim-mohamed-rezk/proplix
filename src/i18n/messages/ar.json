@@ -25,7 +25,7 @@
   "table": {
     "my_properties": "عقاراتي",
     "title": "العنوان",
-    "date": "التاريخ", 
+    "date": "التاريخ",
     "view": "المشاهدات",
     "action": "الإجراء",
     "property_deleted_successfully": "تم حذف العقار بنجاح!",
@@ -46,7 +46,7 @@
     "Add Listing": "اضافة عقار",
     "Profile": "الملف الشخصي",
     "Logout": "تسجيل الخروج",
-    "contact":"اتصل بنا"
+    "contact": "اتصل بنا"
   },
   "Create Property": "إنشاء عقار",
   "General Information": "المعلومات العامة",
@@ -236,7 +236,8 @@
     "property/images": "صور العقار",
     "property/floor-plan": "الخرائط",
     "e.g., Swimming Pool, Gym": "مثلا: بركة سباحة، صالة رياضية"
-  },"Home": {
+  },
+  "Home": {
     "totalProperties": "إجمالي العقارات",
     "totalCustomers": "إجمالي العملاء",
     "totalAgents": "إجمالي الوكلاء",
@@ -405,18 +406,16 @@
     "cancel": "إلغاء",
     "": ""
   },
-  "installments":{
+  "installments": {
     "Installment Plans": "خطط التقسيط",
-    "home":"الرئيسية",
-    "installment_plans":"خطط التقسيط",
-    "properity":"العقار"
-    
-    
+    "home": "الرئيسية",
+    "installment_plans": "خطط التقسيط",
+    "properity": "العقار"
   },
   "DashboardHeaderTwo": {
     "my_properties": "عقاراتي",
     "Dashboard": "لوحة التحكم",
-    "Create Property":"إنشاء عقار",
+    "Create Property": "إنشاء عقار",
     "Account Settings": "إعدادات الحساب",
     "Change Password": "تغيير كلمة المرور"
   },
@@ -511,5 +510,33 @@
   "NiceSelect": {
     "Agent": "وكيل",
     "Agency": "وكالة"
+  },
+  "endUser": {
+    "Property Overview": "معلومات عامة عن العقار",
+    "overview": "نظرة عامة",
+    "Property Features": "خصائص العقار",
+    "amenities": "الخدمات والمرافق",
+    "sqft": "قدم مربع",
+    "bed": "غرفة نوم",
+    "bath": "حمام",
+    "price": "السعر",
+    "location": "الموقع",
+    "Kitchen": "مطبخ",
+    "type": "نوع العقار",
+    "property_features_description": "ما أصله؟ خلافاَ للاعتقاد السائد فإن لوريم إيبسوم ليس نصاَ عشوائياً، بل إن له جذور في الأدب اللاتيني الكلاسيكي منذ العام 45 قبل الميلاد، مما يجعله أكثر من عام في القدم. قام البروفيسور ريتشارد ماك ",
+    "property_feature": "تفاصيل العقار",
+    "utility_detail": "تفاصيل المرافق",
+    "outdoor_feature": "المميزات الخارجية",
+    "indoor_feature": "المميزات الداخليه",
+    "Video Tour": "جولة مرئية",
+    "Location": "الموقع",
+    "Floor Plans": "مخططات الطوابق",
+    "Similar Homes You May Like": "عقارات مشابهة قد تهمك",
+    "": "",
+    "": "",
+    "": "",
+    "": "",
+    "": "",
+    "": ""
   }
 }
