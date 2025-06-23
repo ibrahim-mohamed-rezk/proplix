@@ -55,7 +55,7 @@ interface DropdownSevenProps {
   priceValue: any;
   handleResetFilter: () => void;
   selectedAmenities: string[];
-  handleAmenityChange: (amenity: string) => void;
+  handleAmenityChange: () => void;
   handleLocationChange: (locationData: LocationData | any) => void;
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: string) => void;
