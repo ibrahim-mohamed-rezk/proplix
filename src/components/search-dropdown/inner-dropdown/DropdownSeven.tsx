@@ -50,7 +50,7 @@ interface DropdownSevenProps {
   handleBathroomChange: (event: any) => void;
   handleBedroomChange: (event: any) => void;
   handleSearchChange: (event: any) => void;
-  handlePriceChange: (value: number) => void;
+  handlePriceChange: (value: any) => void;
   maxPrice: number;
   priceValue: number;
   handleResetFilter: () => void;
