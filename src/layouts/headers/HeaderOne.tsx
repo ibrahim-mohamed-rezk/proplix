@@ -124,54 +124,54 @@ const HeaderOne = ({
                 </Link>
               </div>
 
-              <div className="right-widget flex gap-[10px] items-center justify-center ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
+              <div className="right-widget flex gap-2 items-center justify-center ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
                 {/* language switcher */}
-                <div className="relative
-                
-                ">
+                <div className="relative">
                   <button
                     onClick={() => setLangOpen((o) => !o)}
-                    className="flex items-center hover:border hover:border-white/70 rounded-[clamp(10px,0.833vw,20px)] font-['Libre_Baskerville'] text-[clamp(14px,1.042vw,20px)] font-[400] py-[clamp(3px,0.417vw,5px)] px-[clamp(5px,1.562vw,10px)] justify-center gap-2 text-white cursor-pointer transition focus:outline-none"
+                    className="flex items-center border border-transparent hover:border-primary-500 hover:shadow-lg rounded-[clamp(12px,1vw,24px)] font-['Libre_Baskerville'] text-[clamp(15px,1.1vw,22px)] font-semibold py-[clamp(5px,0.6vw,8px)] px-[clamp(5px,1vw,8px)] justify-center gap-[8px] text-black transition-all duration-200 focus:outline-none"
                   >
                     <span className={`fi fi-${flagMap[locale]} mr-1`} />
                     <Image
                       src={`/images/${locale}.svg`}
-                      alt="Arrow Down"
+                      alt="Flag"
                       width={30}
                       height={20}
+                      className="rounded shadow-sm border border-gray-200"
                     />
-                    <span className="uppercase text-[#000] font-medium font-['Libre_Baskerville'] text-[18px]">
+                    <span className="uppercase text-[#222] font-bold font-['Libre_Baskerville'] text-[18px] tracking-wider">
                       {locale}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-[18px] text-[#000]" />
+                    <ChevronDown className="w-4 h-4 text-[18px] text-[#222]" />
                   </button>
-                  <div className="" ref={langRef}>
+                  <div ref={langRef}>
                     <div
-                      className={`absolute  mt-2 w-[clamp(50px,6.5vw,144px)] border border-gray-200 bg-white bg-opacity-95 backdrop-blur-sm rounded-xl shadow-xl transform origin-top-left transition-all duration-150 ${
+                      className={`absolute z-30 mt-2 w-[clamp(80px,8vw,180px)] border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
                         langOpen
                           ? "opacity-100 scale-100 pointer-events-auto"
                           : "opacity-0 scale-95 pointer-events-none"
                       }`}
                     >
-                      <ul className="divide-y divide-gray-100">
+                      <ul className="divide-y !m-[0px] !p-[0px] divide-gray-100">
                         {routing.locales.map((l) => (
                           <li key={l}>
                             <button
                               onClick={() => changeLanguage(l)}
-                              className="w-full flex items-center px-3 py-2 hover:bg-gray-100 transition-colors rounded-xl"
+                              className="w-full flex items-center justify-center px-3 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
                             >
                               <Image
                                 src={`/images/${l}.svg`}
-                                alt="Arrow Down"
+                                alt="Flag"
                                 width={30}
                                 height={20}
+                                className="rounded shadow border border-gray-200"
                               />
-                              <span className={`fi fi-${flagMap[l]} mr-2`} />
-                              <span className="capitalize font-[400] font-['Libre_Baskerville'] text-[clamp(12px,0.938vw,20px)] flex-1">
+                              <span className={`fi fi-${flagMap[l]} mr-2 `} />
+                              <span className="capitalize font-semibold font-['Libre_Baskerville'] text-[clamp(13px,1vw,20px)] w-fit flex-1">
                                 {l}
                               </span>
                               {l === locale && (
-                                <Check className="w-4 h-4 text-[#000]" />
+                                <Check className="w-4 h-4 text-primary-500" />
                               )}
                             </button>
                           </li>
@@ -183,14 +183,15 @@ const HeaderOne = ({
 
                 {/* auth buttons or user icon */}
                 {token ? (
-                  <div className="d-flex align-items-center auth-btns-container ">
+                  <div className="d-flex align-items-center auth-btns-container gap-2">
                     <div className="position-relative">
                       {/* user icon  */}
                       <div
                         onClick={() => setShowDropdown(!showDropdown)}
-                        className="user-icon border rounded-circle justify-content-center p-2 d-flex align-items-center cursor-pointer"
+                        className="user-icon border-2 border-primary-200 hover:border-primary-400 bg-white/80 shadow-md rounded-full justify-content-center p-2 d-flex align-items-center cursor-pointer transition-all duration-150"
+                        style={{ minWidth: 40, minHeight: 40 }}
                       >
-                        <i className="fa-regular fa-user"></i>
+                        <i className="fa-regular fa-user text-primary-600 text-lg"></i>
                       </div>
                       {showDropdown && (
                         <div
@@ -198,19 +199,22 @@ const HeaderOne = ({
                             locale === "ar"
                               ? "-translate-x-1/2"
                               : "translate-x-1/2"
-                          }  mt-2`}
-                          style={{ minWidth: "200px" }}
+                          } mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn`}
+                          style={{ minWidth: "220px" }}
                         >
                           <Link
                             href="/my-profile?page=personal-information"
-                            className="dropdown-item"
+                            className="dropdown-item flex items-center gap-2 px-4 py-3 hover:bg-primary-50 transition-colors"
                           >
-                            <i className="fa-regular fa-user me-2"></i>
-                            {t("Profile")}
+                            <i className="fa-regular fa-user text-primary-500"></i>
+                            <span className="font-medium">{t("Profile")}</span>
                           </Link>
-                          <button onClick={logout} className="dropdown-item">
-                            <i className="fa-regular fa-right-from-bracket me-2"></i>
-                            {t("Logout")}
+                          <button
+                            onClick={logout}
+                            className="dropdown-item flex items-center gap-2 px-4 py-3 hover:bg-red-50 text-red-600 transition-colors w-full"
+                          >
+                            <i className="fa-regular fa-right-from-bracket"></i>
+                            <span className="font-medium">{t("Logout")}</span>
                           </button>
                         </div>
                       )}
@@ -220,7 +224,7 @@ const HeaderOne = ({
                       <li className="d-none d-md-inline-block ms-3">
                         <Link
                           href="/dashboard/add-property"
-                          className="btn-two add-listing"
+                          className="btn-two add-listing bg-gradient-to-r from-[#FF6725] to-[#F26A3F] text-white font-bold px-5 py-2 rounded-xl shadow hover:scale-105 transition-transform"
                           target="_blank"
                         >
                           <span>{t("Add Listing")}</span>{" "}
@@ -230,16 +234,25 @@ const HeaderOne = ({
                     )}
                   </div>
                 ) : (
-                  <ul className="d-flex align-items-center style-none">
-                    <li>
+                  <ul className="d-flex gap-3 align-items-center style-none">
+                    <li className="hidden lggin-btn-descktop">
                       <Link
                         href="#"
                         data-bs-toggle="modal"
                         data-bs-target="#loginModal"
-                        className="btn-one"
+                        className="btn-one flex items-center justify-center gap-2 px-2 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow hover:bg-primary-50 transition-all"
                       >
-                        <i className="fa-regular fa-lock"></i>{" "}
-                        <span>{t("login")}</span>
+                        <i className="fa-regular fa-lock"></i>
+                        <span className="font-semibold">{t("login")}</span>
+                      </Link>
+                    </li>
+                    <li className="hidden lggin-btn-descktop">
+                      <Link
+                        href="/signup-agent"
+                        className="btn-one bg-gradient-to-r from-[#FF6725] to-[#F26A3F] !text-[#fff] flex items-center justify-center gap-2 px-2 py-1 rounded-xl shadow font-semibold hover:scale-105 transition-transform"
+                      >
+                        <i className="fa-regular fa-lock"></i>
+                        <span>{t("signup as agent")}</span>
                       </Link>
                     </li>
                   </ul>

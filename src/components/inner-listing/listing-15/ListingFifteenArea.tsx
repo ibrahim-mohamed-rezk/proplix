@@ -1,37 +1,25 @@
-"use client"
-import DropdownSeven from "@/components/search-dropdown/inner-dropdown/DropdownSeven"
-import UseShortedProperty from "@/hooks/useShortedProperty";
+"use client";
+import DropdownSeven from "@/components/search-dropdown/inner-dropdown/DropdownSeven";
 import NiceSelect from "@/ui/NiceSelect";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 
-import featureIcon_1 from "@/assets/images/icon/icon_04.svg";
-import featureIcon_2 from "@/assets/images/icon/icon_05.svg";
-import featureIcon_3 from "@/assets/images/icon/icon_06.svg";
-import Fancybox from "@/components/common/Fancybox";
 import { getData } from "@/libs/server/backendServer";
 import { Link } from "@/i18n/routing";
-
-const select_type: string[] = [
-  "All",
-  "Apartments",
-  "Villa",
-  "Mortgage",
-  "Loft",
-  "Home",
-  "Flat",
-  "Building",
-  "Office",
-  "Factory",
-  "Industry",
-];
+import { useLocale, useTranslations } from "next-intl";
 
 const ListingFifteenArea = () => {
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [filters, setFilters] = useState({});
-  const [locale, setLocale] = useState("en");
+  const t = useTranslations("endUser");
+  const [filters, setFilters] = useState<{
+    [key: string]: string | number | null;
+  }>({
+    type_id: null,
+  });
+  const locale = useLocale();
+  const [types, setTypes] = useState([]);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -49,73 +37,86 @@ const ListingFifteenArea = () => {
     fetchProperties();
   }, [locale, filters]);
 
+  const [itemOffset, setItemOffset] = useState(0);
   const itemsPerPage = 3;
-  const page = "listing_3";
+  const [pageCount, setPageCount] = useState(0);
 
-  const {
-    itemOffset,
-    sortedProperties,
-    currentItems,
-    pageCount,
-    handlePageClick,
-    handleBathroomChange,
-    handleBedroomChange,
-    handleSearchChange,
-    handlePriceChange,
-    maxPrice,
-    priceValue,
-    resetFilters,
-    selectedAmenities,
-    handleAmenityChange,
-    handleLocationChange,
-    handleStatusChange,
-    handleTypeChange,
-    handlePriceDropChange,
-  } = UseShortedProperty({ itemsPerPage, page });
+  useEffect(() => {
+    setPageCount(Math.ceil(properties.length / itemsPerPage));
+  }, [properties]);
 
-  const handleResetFilter = () => {
-    resetFilters();
+  const endOffset = itemOffset + itemsPerPage;
+  const currentItems = properties.slice(itemOffset, endOffset);
+
+  const handlePageClick = (event: { selected: number }) => {
+    const newOffset = (event.selected * itemsPerPage) % properties.length;
+    setItemOffset(newOffset);
   };
 
-  const [selectedType, setSelectedType] = useState("All");
-
-  const handleTypeClick = (type: string) => {
-    setSelectedType(type);
+  const handleResetFilter = (): void => {
+    const defaultFilters = {
+      status: "sale",
+      price: null,
+      down_price: null,
+      type_id: null,
+    };
+    setFilters(defaultFilters);
+    localStorage.setItem("filters", JSON.stringify(defaultFilters));
   };
+
+  // fetch types form api
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const response = await getData("types", {}, { lang: locale });
+      setTypes(response.data.data);
+    };
+    fetchAgents();
+  }, []);
 
   return (
     <div className="property-listing-eight pt-150 xl-pt-120">
+      {/* dropdown filters */}
       <div className="search-wrapper-three layout-two position-relative">
         <div className="bg-wrapper rounded-0 border-0">
           <DropdownSeven
-            handlePriceDropChange={handlePriceDropChange}
-            handleSearchChange={handleSearchChange}
-            handleBedroomChange={handleBedroomChange}
-            handleBathroomChange={handleBathroomChange}
-            handlePriceChange={handlePriceChange}
-            maxPrice={maxPrice}
-            priceValue={priceValue}
+            handleBathroomChange={() => {}}
+            handleBedroomChange={() => {}}
+            handleSearchChange={() => {}}
+            handlePriceChange={() => {}}
+            maxPrice={0}
+            priceValue={0}
             handleResetFilter={handleResetFilter}
-            selectedAmenities={selectedAmenities}
-            handleAmenityChange={handleAmenityChange}
-            handleLocationChange={handleLocationChange}
-            handleStatusChange={handleStatusChange}
+            selectedAmenities={[]}
+            handleAmenityChange={() => {}}
+            handleLocationChange={() => {}}
+            handleStatusChange={() => {}}
+            handlePriceDropChange={() => {}}
           />
         </div>
       </div>
 
+      {/* property type filter */}
       <div className="listing-type-filter border-0">
         <div className="wrapper">
-          <ul className="style-none d-flex flex-wrap align-items-center justify-content-center justify-content-xxl-between">
-            <li>Select Type:</li>
-            {select_type.map((select, i) => (
-              <li key={i}>
+          <ul className="style-none d-flex flex-wrap align-items-center justify-content-start ">
+            <li>{t(`Select Type`)}</li>
+            <li>
+              <Link
+                href="#"
+                className={filters.type_id === null ? "active" : ""}
+                onClick={() => setFilters({ ...filters, type_id: null })}
+              >
+                {t("all")}
+              </Link>
+            </li>
+            {types?.map((select: { id: string | number; title: string }) => (
+              <li key={select.id}>
                 <Link
                   href="#"
-                  className={selectedType === select ? "active" : ""}
-                  onClick={() => handleTypeClick(select)}
+                  className={filters.type_id === select.id  ? "active" : ""}
+                  onClick={() => setFilters({ ...filters, type_id: select.id })}
                 >
-                  {select}
+                  {select.title}
                 </Link>
               </li>
             ))}
@@ -123,6 +124,7 @@ const ListingFifteenArea = () => {
         </div>
       </div>
 
+      {/* map */}
       <div className="row gx-0">
         <div className="col-xxl-6 col-lg-5">
           <div id="google-map-area" className="h-100">
@@ -140,6 +142,7 @@ const ListingFifteenArea = () => {
             </div>
           </div>
         </div>
+
         <div className="col-xxl-6 col-lg-7">
           <div className="bg-light pl-40 pr-40 pt-35 pb-60">
             <div className="listing-header-filter d-sm-flex justify-content-between align-items-center mb-40 lg-mb-30">
@@ -149,9 +152,7 @@ const ListingFifteenArea = () => {
                   {itemOffset + 1}–{itemOffset + currentItems.length}
                 </span>{" "}
                 of{" "}
-                <span className="color-dark fw-500">
-                  {sortedProperties.length}
-                </span>{" "}
+                <span className="color-dark fw-500">{properties.length}</span>{" "}
                 results
               </div>
               <div className="d-flex align-items-center xs-mt-20">
@@ -167,7 +168,7 @@ const ListingFifteenArea = () => {
                       { value: "price_high", text: "Price High" },
                     ]}
                     defaultCurrent={0}
-                    onChange={handleTypeChange}
+                    onChange={() => {}}
                     name=""
                     placeholder=""
                   />
@@ -184,7 +185,7 @@ const ListingFifteenArea = () => {
             </div>
 
             {/* Render properties from API response */}
-            {properties.map((property: any) => (
+            {currentItems.map((property: any) => (
               <div
                 key={property.id}
                 className="listing-card-seven   p-20 mb-35 wow fadeInUp"
@@ -247,24 +248,12 @@ const ListingFifteenArea = () => {
                 </div>
               </div>
             ))}
-
-            {/* Old rendering using currentItems, commented out for now */}
-            {/**
-             {currentItems.map((item: any) => (
-               <div
-                 key={item.id}
-                 className="listing-card-seven   p-20 mb-35 wow fadeInUp"
-               >
-                 ...
-             ))}
-             */}
-
             <div className="pt-5">
               <ReactPaginate
                 breakLabel="..."
                 nextLabel={<i className="fa-regular fa-chevron-right"></i>}
                 onPageChange={handlePageClick}
-                pageRangeDisplayed={pageCount}
+                pageRangeDisplayed={3}
                 pageCount={pageCount}
                 previousLabel={<i className="fa-regular fa-chevron-left"></i>}
                 renderOnZeroPageCount={null}
