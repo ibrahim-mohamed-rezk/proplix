@@ -51,8 +51,8 @@ interface DropdownSevenProps {
   handleBedroomChange: (event: any) => void;
   handleSearchChange: (event: any) => void;
   handlePriceChange: (value: any) => void;
-  maxPrice: number;
-  priceValue: number;
+  maxPrice: any;
+  priceValue: any;
   handleResetFilter: () => void;
   selectedAmenities: string[];
   handleAmenityChange: (amenity: string) => void;
