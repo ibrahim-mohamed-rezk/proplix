@@ -59,7 +59,7 @@ const ListingSeventeenArea = () => {
                   priceValue={priceValue}
                   handleResetFilter={handleResetFilter}
                   selectedAmenities={selectedAmenities}
-                  handleAmenityChange={handleAmenityChange}
+                  handleAmenityChange={()=>{}}
                   handleLocationChange={handleLocationChange}
                   handleStatusChange={handleStatusChange}
                />
