@@ -399,7 +399,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
         <div className="row gx-0 align-items-center">
           <div className="col-xxl-2 col-xl-3 col-sm-6">
             <div className="input-box-one border-left">
-              <div className="label">I'm looking to...</div>
+              <div className="label">Im looking to...</div>
               <NiceSelect
                 className="nice-select fw-normal"
                 options={[
