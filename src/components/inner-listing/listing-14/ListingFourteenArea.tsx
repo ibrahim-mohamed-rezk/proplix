@@ -55,12 +55,12 @@ const ListingFourteenArea = () => {
              handleSearchChange={handleSearchChange}
              handleBedroomChange={handleBedroomChange}
              handleBathroomChange={handleBathroomChange}
-             handlePriceChange={handlePriceChange}
+             handlePriceChange={() => {}}
              maxPrice={maxPrice}
-             priceValue={priceValue}
+             priceValue={100}
              handleResetFilter={handleResetFilter}
              selectedAmenities={selectedAmenities}
-             handleAmenityChange={handleAmenityChange}
+             handleAmenityChange={() => {}}
              handleLocationChange={handleLocationChange}
              handleStatusChange={handleStatusChange}
            />
