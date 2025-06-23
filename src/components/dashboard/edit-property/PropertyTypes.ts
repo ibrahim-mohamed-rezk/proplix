@@ -11,11 +11,14 @@ export type PropertyUser = {
   role: string;
 };
 
+
 export type PropertyStatistics = {
-  data:{ 
+  data: {
   count_call: number;
-  count_whatsapp: number;}
+  count_whatsapp: number;
+  }
 }
+
 export type PropertyType = {
   id: number;
   title: string;
@@ -91,49 +94,48 @@ export type PropertyModule = {
   module: string;
 };
 export type PropertyData = {
-  data: {
-    token: string;
-    locations: PropertyLocation[];
-    approval_status: string;
-    title: string;
-    id: number;
-    user: PropertyUser;
-    type: PropertyType;
-    area: PropertyArea;
-    price: number;
-    down_price: number;
-    sqt: number;
-    bathroom: number;
-    bedroom: number;
-    kitichen: number;
-    status: string;
-    immediate_delivery: string;
-    descriptions: {
-      en: {
-        title: string;
-        description: string;
-        keywords: string;
-        slug: string;
-        meta_title: string;
-        meta_description: string;
-        meta_keywords: string;
-      };
-      ar: {
-        title: string;
-        description: string;
-        keywords: string;
-        slug: string;
-        meta_title: string;
-        meta_description: string;
-        meta_keywords: string;
-      };
+  data:{
+  locations: PropertyLocation[];
+  approval_status: string;
+  title: string;
+  id: number;
+  user: PropertyUser;
+  type: PropertyType;
+  area: PropertyArea;
+  price: number;
+  down_price: number;
+  sqt: number;
+  bathroom: number;
+  bedroom: number;
+  kitichen: number;
+  status: string;
+  immediate_delivery: string;
+  descriptions: {
+    en: {
+      title: string;
+      description: string;
+      keywords: string;
+      slug: string;
+      meta_title: string;
+      meta_description: string;
+      meta_keywords: string;
     };
-    features: PropertyFeature[];
-    amenities: PropertyAmenity[];
-    property_listing_images: PropertyImage[];
-    property_floor_plans: PropertyFloorPlan[];
-    property_locations: PropertyLocation[];
+    ar: {
+      title: string;
+      description: string;
+      keywords: string;
+      slug: string;
+      meta_title: string;
+      meta_description: string;
+      meta_keywords: string;
+    };
   };
+  features: PropertyFeature[];
+  amenities: PropertyAmenity[];
+  property_listing_images: PropertyImage[];
+  property_floor_plans: PropertyFloorPlan[];
+  property_locations: PropertyLocation[];
+}
 };
 
 export type ToastState = {

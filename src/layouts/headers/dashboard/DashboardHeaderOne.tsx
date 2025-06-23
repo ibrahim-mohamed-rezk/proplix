@@ -293,7 +293,7 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                   </Link></li>
                </ul>
             </nav>
-            <div className="plr" onClick={logout}>
+            <div className="plr mt-4" onClick={logout}>
                <Link href="#" className={`d-flex ${isRTL ? 'flex-row-reverse' : ''} w-100 align-items-center logout-btn`}>
                   <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle"><Image src={dashboardIcon_11} alt="" /></div>
                   <span>{t("Logout")}</span>

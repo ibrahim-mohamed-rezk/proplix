@@ -40,7 +40,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
       case "features":
         return <FeaturesTab property={property} token={token} />;
       case "locations":
-        return <LocationTab property={property} token={token} />;
+        return <LocationTab property={property} token={token as string} />;
       case "images":
         return <ImagesTab property={property} token={token} />;
       case "floorplan":
