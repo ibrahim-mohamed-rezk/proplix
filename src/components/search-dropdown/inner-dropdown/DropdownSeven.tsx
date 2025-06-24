@@ -2,6 +2,9 @@ import NiceSelect from "@/ui/NiceSelect";
 import Link from "next/link";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
 import { useState, useEffect, useRef } from "react";
+import { LocationData } from "@/libs/types/types";
+import { useLocale, useTranslations } from "next-intl";
+import { getData } from "@/libs/server/backendServer";
 
 // Extend Window interface to include Google Maps
 declare global {
@@ -18,15 +21,6 @@ interface PlacePrediction {
   structured_formatting?: {
     main_text: string;
     secondary_text: string;
-  };
-}
-
-interface LocationData {
-  description: string;
-  placeId: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
   };
 }
 
@@ -56,9 +50,9 @@ interface DropdownSevenProps {
   handleResetFilter: () => void;
   selectedAmenities: string[];
   handleAmenityChange: () => void;
-  handleLocationChange: (locationData: LocationData | any) => void;
+  handleLocationChange: (location: LocationData | any) => void;
   handleStatusChange: (event: any) => void;
-  handlePriceDropChange: (value: string) => void;
+  handlePriceDropChange: (value: any) => void;
 }
 
 const DropdownSeven: React.FC<DropdownSevenProps> = ({
@@ -78,23 +72,26 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const [priceRanges, setPriceRanges] = useState<any[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState<boolean>(false);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("endUser");
+  const locale = useLocale();
 
   // Initialize Google Places services (supporting both old and new APIs)
   const autocompleteService =
     useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
 
-  // Default location from the provided Google Maps URL (Colorado, USA)
+  // Default location updated to Egypt (Cairo coordinates)
   const defaultLocation: LocationData = {
-    description: "Colorado, USA",
-    placeId: "ChIJR2kKMCPMaokRGAlJhBgrQXo", // Place ID for Colorado
+    description: "",
+    placeId: "",
     coordinates: {
-      lat: 39.29302101722867,
-      lng: -105.54557276330914,
+      lat: 30.0444, // Cairo, Egypt latitude
+      lng: 31.2357, // Cairo, Egypt longitude
     },
   };
 
@@ -212,16 +209,16 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           includedPrimaryTypes: [
             "locality",
             "administrative_area_level_1",
+            "administrative_area_level_2",
             "country",
-          ], // Cities, states, and countries
+          ], // Cities, states, governorates, and countries
+          includedRegionCodes: ["EG"], // Restrict to Egypt only
           locationBias: {
-            radius: 50000, // Fixed: Changed from 100000 to 50000 (maximum allowed)
-            center: defaultLocation.coordinates
-              ? new google.maps.LatLng(
-                  defaultLocation.coordinates.lat,
-                  defaultLocation.coordinates.lng
-                )
-              : new google.maps.LatLng(39.29302101722867, -105.54557276330914),
+            radius: 50000, // 50km radius
+            center: new google.maps.LatLng(
+              defaultLocation?.coordinates?.lat || 0,
+              defaultLocation?.coordinates?.lng || 0
+            ),
           },
         };
 
@@ -262,8 +259,14 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
       else if (autocompleteService.current) {
         const request: google.maps.places.AutocompletionRequest = {
           input: query,
-          types: ["(cities)"], // Simplified types array
-          componentRestrictions: { country: [] }, // Allow all countries
+          types: ["(cities)"], // Focus on cities
+          componentRestrictions: { country: ["EG"] }, // Restrict to Egypt only
+          // Add location bias to prioritize results near Cairo
+          location: new google.maps.LatLng(
+            defaultLocation.coordinates?.lat || 0,
+            defaultLocation.coordinates?.lng || 0
+          ),
+          radius: 100000, // 100km radius from Cairo
         };
 
         autocompleteService.current.getPlacePredictions(
@@ -293,8 +296,14 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
         try {
           const request: google.maps.places.AutocompletionRequest = {
             input: query,
-            types: ["(cities)"], // Simplified types array
-            componentRestrictions: { country: [] }, // Allow all countries
+            types: ["(cities)"], // Focus on cities
+            componentRestrictions: { country: ["EG"] }, // Restrict to Egypt only
+            // Add location bias to prioritize results near Cairo
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000, // 100km radius from Cairo
           };
 
           autocompleteService.current.getPlacePredictions(
@@ -329,6 +338,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
     setSelectedLocation(suggestion.description);
     setLocationQuery(suggestion.description);
     setShowSuggestions(false);
+    handleLocationChange(suggestion);
 
     // Only get place details if Google Places service is available
     if (placesService.current && isGoogleMapsLoaded) {
@@ -391,13 +401,26 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
     };
   }, []);
 
-  const selectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {};
+  // feach price ranges from api
+  useEffect(() => {
+    const feachData = async () => {
+      try {
+        const response = await getData("price-range", {}, { lang: locale });
+        setPriceRanges(response.data.data.ranges);
+        console.log(response.data.data.ranges);
+      } catch (error) {
+        throw error;
+      }
+    };
+
+    feachData();
+  }, []);
 
   return (
     <>
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="row gx-0 align-items-center">
-          <div className="col-xxl-2 col-xl-3 col-sm-6">
+          {/* <div className="col-xxl-2 col-xl-3 col-sm-6">
             <div className="input-box-one border-left">
               <div className="label">Im looking to...</div>
               <NiceSelect
@@ -415,12 +438,12 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                 placeholder=""
               />
             </div>
-          </div>
+          </div> */}
 
-          {/* Updated Location Section with Google Autocomplete */}
+          {/* Updated Location Section with Google Autocomplete - Egypt Only */}
           <div className="col-xl-3 col-sm-6">
-            <div className="input-box-one border-left">
-              <div className="label">Location</div>
+            <div className="input-box-one ">
+              <div className="label">{t("location")}</div>
               <div
                 className="location-autocomplete-wrapper"
                 style={{ position: "relative" }}
@@ -431,8 +454,8 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                   className="form-control location-input fw-normal"
                   placeholder={
                     isGoogleMapsLoaded
-                      ? "Search for a location..."
-                      : "Loading location services..."
+                      ? t("search_location_placeholder")
+                      : t("loading_location_services")
                   }
                   value={locationQuery}
                   onChange={handleLocationInputChange}
@@ -463,7 +486,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                       color: "#666",
                     }}
                   >
-                    Loading...
+                    {t("loading")}
                   </div>
                 )}
 
@@ -534,16 +557,20 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
 
           <div className="col-xl-3 col-sm-4">
             <div className="input-box-one border-left">
-              <div className="label">Price Range</div>
+              <div className="label">{t("price_range")}</div>
               <NiceSelect
                 className="nice-select fw-normal"
                 options={[
-                  { value: "1", text: "$10,000 - $200,000" },
-                  { value: "2", text: "$20,000 - $300,000" },
-                  { value: "3", text: "$30,000 - $400,000" },
+                  { value: "all", text: t("any") },
+                  ...priceRanges.map((range) => ({
+                    value: `${range.from}-${range.to}`,
+                    text: range.label,
+                  })),
                 ]}
                 defaultCurrent={0}
-                onChange={(event) => handlePriceDropChange(event.target.value)}
+                onChange={(event) => {
+                  handlePriceDropChange(event.target.value);
+                }}
                 name=""
                 placeholder=""
               />
@@ -551,18 +578,18 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           </div>
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
-              <div className="label">Bedroom</div>
+              <div className="label">{t("bed")}</div>
               <NiceSelect
                 className="nice-select fw-normal"
                 options={[
-                  { value: "0", text: "Any" },
+                  { value: "0", text: t("any") },
                   { value: "1", text: "1+" },
                   { value: "2", text: "2+" },
                   { value: "3", text: "3+" },
                   { value: "4", text: "4+" },
                 ]}
                 defaultCurrent={0}
-                onChange={handleBedroomChange}
+                onChange={(event) => handleBedroomChange(event.target.value)}
                 name=""
                 placeholder=""
               />
@@ -570,24 +597,24 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           </div>
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
-              <div className="label">Bath</div>
+              <div className="label">{t("bath")}</div>
               <NiceSelect
                 className="nice-select fw-normal"
                 options={[
-                  { value: "0", text: "Any" },
+                  { value: "0", text: t("any") },
                   { value: "1", text: "1+" },
                   { value: "2", text: "2+" },
                   { value: "3", text: "3+" },
                   { value: "4", text: "4+" },
                 ]}
                 defaultCurrent={0}
-                onChange={handleBathroomChange}
+                onChange={(event) => handleBathroomChange(event.target.value)}
                 name=""
                 placeholder=""
               />
             </div>
           </div>
-          <div className="col-xxl-2 col-xl-1">
+          <div className="col-xxl-2 col-xl-1 !ms-auto ">
             <div className="input-box-one lg-mt-20">
               <div className="d-flex align-items-center justify-content-center justify-content-xl-end">
                 <Link
@@ -597,7 +624,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                   className="search-modal-btn tran3s text-uppercase fw-500 d-inline-flex align-items-center"
                 >
                   <span className="me-3 d-xl-none d-xxl-block">
-                    ADVANCE Search
+                    {t("advance_search")}
                   </span>
                   <i className="fa-light fa-sliders-up"></i>
                 </Link>
@@ -616,7 +643,6 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
         handleResetFilter={handleResetFilter}
         selectedAmenities={selectedAmenities}
         handleAmenityChange={handleAmenityChange}
-        handleLocationChange={handleLocationChange}
         handleStatusChange={handleStatusChange}
       />
     </>

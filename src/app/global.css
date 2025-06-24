@@ -36,8 +36,17 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   left: auto;
 }
 
+.prop-map-container{
+  min-height: 500px !important;
+}
+
 @media(min-width: 992px) {
   .lggin-btn-descktop{
     display: block !important;
   }
+
+  .prop-map-container{
+    min-height: 1300px !important;
+  }
 }
+
