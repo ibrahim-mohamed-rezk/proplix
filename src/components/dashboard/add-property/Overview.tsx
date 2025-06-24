@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import RichTextEditor from "@/components/RichTextEditor";
-import NiceSelect from "@/ui/NiceSelect";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 type FormInputs = {
   // General Information
@@ -64,22 +64,24 @@ type AreaOption = {
   };
 };
 
+type ImagePreview = {
+  file: File;
+  url: string;
+  id: string;
+};
+
 const CreatePropertyPage = ({ token }: { token: string }) => {
   const t = useTranslations("properties");
   const router = useRouter();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormInputs>();
-
-  // Tab state - starting with general information
-  const [activeTab, setActiveTab] = useState<"general" | "ar" | "en" | "seo">("general");
-
   const [descriptionEn, setDescriptionEn] = useState<string>("");
   const [descriptionAr, setDescriptionAr] = useState<string>("");
-  const [images, setImages] = useState<FileList | null>(null);
+  const [imagesPreviews, setImagesPreviews] = useState<ImagePreview[]>([]);
 
   // State for dropdown values
   const [selectValues, setSelectValues] = useState({
@@ -114,6 +116,50 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   const handleImmediateDeliveryChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectValues(prev => ({ ...prev, immediate_delivery: e.target.value }));
   };
+
+  // Image handling functions
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newPreviews: ImagePreview[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const url = URL.createObjectURL(file);
+      const id = Date.now().toString() + i;
+
+      newPreviews.push({
+        file,
+        url,
+        id
+      });
+    }
+
+    setImagesPreviews(prev => [...prev, ...newPreviews]);
+
+    // Reset the input value to allow selecting the same files again
+    e.target.value = '';
+  };
+
+  const removeImage = (imageId: string) => {
+    setImagesPreviews(prev => {
+      const imageToRemove = prev.find(img => img.id === imageId);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.url);
+      }
+      return prev.filter(img => img.id !== imageId);
+    });
+  };
+
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      imagesPreviews.forEach(preview => {
+        URL.revokeObjectURL(preview.url);
+      });
+    };
+  }, []);
 
   // Fetch dropdown data on component mount
   useEffect(() => {
@@ -177,25 +223,17 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     formData.append("description[en]", descriptionEn);
     formData.append("keywords[en]", data.keywords_en);
     formData.append("slug[en]", data.slug_en);
-    formData.append("meta_title[en]", data.meta_title_en);
-    formData.append("meta_description[en]", data.meta_description_en);
-    formData.append("meta_keywords[en]", data.meta_keywords_en);
     
     // Add Arabic fields
     formData.append("title[ar]", data.title_ar);
     formData.append("description[ar]", descriptionAr);
     formData.append("keywords[ar]", data.keywords_ar);
     formData.append("slug[ar]", data.slug_ar);
-    formData.append("meta_title[ar]", data.meta_title_ar);
-    formData.append("meta_description[ar]", data.meta_description_ar);
-    formData.append("meta_keywords[ar]", data.meta_keywords_ar);
 
     // Add images
-    if (images) {
-      for (let i = 0; i < images.length; i++) {
-        formData.append("cover", images[i]);
-      }
-    }
+    imagesPreviews.forEach(preview => {
+      formData.append("cover", preview.file);
+    });
 
     try {
       await postData("agent/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
@@ -207,493 +245,685 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     }
   };
 
-  const TabButton = ({ label, isActive, onClick }: {
-    label: string;
-    isActive: boolean;
-    onClick: () => void;
-  }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`dash-btn-two ${isActive ? "active" : ""}`}
-    >
-      {label}
-    </button>
-  );
-
   return (
-    <div className="">
-      <div className="bg-white card-box">
-        <h4 className="dash-title-three">{t("Create Property")}</h4>
-        
-        {/* Tab Navigation */}
-        <div className="dash-input-wrapper mb-30">
-          <div className="tab-navigation d-flex gap-2">
-            <TabButton
-              label={t("General Information")}
-              isActive={activeTab === "general"}
-              onClick={() => setActiveTab("general")}
-            />
-            <TabButton
-              label={t("Arabic Content")}
-              isActive={activeTab === "ar"}
-              onClick={() => setActiveTab("ar")}
-            />
-            <TabButton
-              label={t("English Content")}
-              isActive={activeTab === "en"}
-              onClick={() => setActiveTab("en")}
-            />
-            <TabButton
-              label={t("SEO Settings")}
-              isActive={activeTab === "seo"}
-              onClick={() => setActiveTab("seo")}
-            />
+    <div className="row justify-content-center">
+      <div className="">
+        <div className="card rounded-4">
+          <div className="card-body p-4">
+            <form onSubmit={handleSubmit(onSubmit)}>
+
+              {/* Basic Information Section */}
+              <div className="accordion mb-4" id="propertyAccordion">
+
+                {/* Property Details */}
+                <div className=" mb-3">
+                  <h2 className="accordion-header ">
+                    <button className="accordion-button fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#propertyDetails" aria-expanded="true">
+                      Property Details
+                    </button>
+                  </h2>
+                  <div id="propertyDetails" className="accordion-collapse collapse show" data-bs-parent="#propertyAccordion">
+                    <div className="accordion-body">
+                      <div className="row g-4">
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <select
+                              className={`form-select ${!selectValues.type_id ? 'is-invalid' : ''}`}
+                              value={selectValues.type_id}
+                              onChange={handleTypeChange}
+                              style={{
+                                border: '2px solid #e9ecef',
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                fontWeight: '500',
+                                color: '#495057',
+                                backgroundColor: '#fff',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                height: '5vw', // Much taller height
+                                paddingTop: '28px', // Increased padding for floating label
+                                paddingBottom: '0px',
+                                lineHeight: '1' // Better line spacing
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = '#0d6efd';
+                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = '#e9ecef';
+                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                              }}
+                            >
+                              <option value="">{t("Select Type")}</option>
+                              {propertyTypes?.data?.map((type) => (
+                                <option key={type.id} value={type.id}>
+                                  {type.title || type.name || ""}
+                                </option>
+                              ))}
+                            </select>
+                            <label className="fw-medium">{t("Property Type")} *</label>
+                            {!selectValues.type_id && (
+                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <select
+                              className={`form-select ${!selectValues.area_id ? 'is-invalid' : ''}`}
+                              value={selectValues.area_id}
+                              onChange={handleAreaChange}
+                              style={{
+                                border: '2px solid #e9ecef',
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                fontWeight: '500',
+                                color: '#495057',
+                                backgroundColor: '#fff',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                height: '5vw', // Much taller height
+                                paddingTop: '28px', // Increased padding for floating label
+                                paddingBottom: '0px',
+                                lineHeight: '1' // Better line spacing
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = '#0d6efd';
+                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = '#e9ecef';
+                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                              }}
+                            >
+                              <option value="">{t("Select Area")}</option>
+                              {areas?.data?.map((area) => (
+                                <option key={area.id} value={area.id.toString()}>
+                                  {`${area.name} / ${area.name}`}
+                                </option>
+                              ))}
+                            </select>
+                            <label className="fw-medium">{t("Area")} *</label>
+                            {!selectValues.area_id && (
+                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <select
+                              className={`form-select ${!selectValues.status ? 'is-invalid' : ''}`}
+                              value={selectValues.status}
+                              onChange={handleStatusChange}
+                              style={{
+                                border: '2px solid #e9ecef',
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                fontWeight: '500',
+                                color: '#495057',
+                                backgroundColor: '#fff',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                height: '5vw', // Much taller height
+                                paddingTop: '28px', // Increased padding for floating label
+                                paddingBottom: '0px',
+                                lineHeight: '1' // Better line spacing
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = '#0d6efd';
+                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = '#e9ecef';
+                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                              }}
+                            >
+                              <option value="">{t("Select Status")}</option>
+                              <option value="rent">{t("Rent")}</option>
+                              <option value="sale">{t("Sale")}</option>
+                            </select>
+                            <label className="fw-medium">{t("Status")} *</label>
+                            {!selectValues.status && (
+                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <select
+                              className={`form-select ${!selectValues.type ? 'is-invalid' : ''}`}
+                              value={selectValues.type}
+                              onChange={handleTypeSelectChange}
+                              style={{
+                                border: '2px solid #e9ecef',
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                fontWeight: '500',
+                                color: '#495057',
+                                backgroundColor: '#fff',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                height: '5vw', // Much taller height
+                                paddingTop: '28px', // Increased padding for floating label
+                                paddingBottom: '0px',
+                                lineHeight: '1' // Better line spacing
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = '#0d6efd';
+                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = '#e9ecef';
+                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                              }}
+                            >
+                              <option value="">{t("Select Type")}</option>
+                              <option value="apartment">{t("Apartment")}</option>
+                              <option value="office">{t("Office")}</option>
+                            </select>
+                            <label className="fw-medium">{t("Type")} *</label>
+                            {!selectValues.type && (
+                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <select
+                              className={`form-select ${!selectValues.immediate_delivery ? 'is-invalid' : ''}`}
+                              value={selectValues.immediate_delivery}
+                              onChange={handleImmediateDeliveryChange}
+                              style={{
+                                border: '2px solid #e9ecef',
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                fontWeight: '500',
+                                color: '#495057',
+                                backgroundColor: '#fff',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                height: '5vw', // Much taller height
+                                paddingTop: '28px', // Increased padding for floating label
+                                paddingBottom: '0px',
+                                lineHeight: '1' // Better line spacing
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = '#0d6efd';
+                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = '#e9ecef';
+                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                              }}
+                            >
+                              <option value="">{t("Select Option")}</option>
+                              <option value="yes">{t("Yes")}</option>
+                              <option value="no">{t("No")}</option>
+                            </select>
+                            <label className="fw-medium">{t("Immediate Delivery")} *</label>
+                            {!selectValues.immediate_delivery && (
+                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing Information */}
+                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                  <h2 className="accordion-header">
+                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#pricingInfo">
+                      Pricing Information
+                    </button>
+                  </h2>
+                  <div id="pricingInfo" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
+                    <div className="accordion-body">
+                      <div className="row g-4">
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("price", { required: true })}
+                              type="number"
+                              className={`form-control ${errors.price ? 'is-invalid' : ''}`}
+                              placeholder={t("Your Price")}
+                            />
+                            <label className="fw-medium">{t("Price")} *</label>
+                            {errors.price && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("down_price", { required: true })}
+                              type="number"
+                              className={`form-control ${errors.down_price ? 'is-invalid' : ''}`}
+                              placeholder={t("Down Price")}
+                            />
+                            <label className="fw-medium">{t("Down Price")} *</label>
+                            {errors.down_price && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("sqt", { required: true })}
+                              type="number"
+                              className={`form-control ${errors.sqt ? 'is-invalid' : ''}`}
+                              placeholder={t("Square Meters")}
+                            />
+                            <label className="fw-medium">{t("Square Meters")} *</label>
+                            {errors.sqt && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Room Configuration */}
+                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                  <h2 className="accordion-header">
+                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#roomConfig">
+                      Room Configuration
+                    </button>
+                  </h2>
+                  <div id="roomConfig" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
+                    <div className="accordion-body">
+                      <div className="row g-4">
+                        <div className="col-md-4">
+                          <div className="form-floating">
+                            <input
+                              {...register("bedroom", { required: true })}
+                              type="number"
+                              className={`form-control ${errors.bedroom ? 'is-invalid' : ''}`}
+                              placeholder={t("Number of Bedrooms")}
+                            />
+                            <label className="fw-medium">{t("Bedroom")} *</label>
+                            {errors.bedroom && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-4">
+                          <div className="form-floating">
+                            <input
+                              {...register("bathroom", { required: true })}
+                              type="number"
+                              className={`form-control ${errors.bathroom ? 'is-invalid' : ''}`}
+                              placeholder={t("Number of Bathrooms")}
+                            />
+                            <label className="fw-medium">{t("Bathroom")} *</label>
+                            {errors.bathroom && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-4">
+                          <div className="form-floating">
+                            <input
+                              {...register("kitichen", { required: true })}
+                              type="number"
+                              className={`form-control ${errors.kitichen ? 'is-invalid' : ''}`}
+                              placeholder={t("Number of kitichen s")}
+                            />
+                            <label className="fw-medium">{t("kitchen")} *</label>
+                            {errors.kitichen && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Arabic Content */}
+                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                  <h2 className="accordion-header">
+                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#arabicContent">
+                      Arabic Content
+                    </button>
+                  </h2>
+                  <div id="arabicContent" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
+                    <div className="accordion-body">
+                      <div className="row g-4">
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("title_ar", { required: true })}
+                              className={`form-control ${errors.title_ar ? 'is-invalid' : ''}`}
+                              placeholder={t("Property Title in Arabic")}
+                              dir="rtl"
+                            />
+                            <label className="fw-medium">{t("Title (AR)")} *</label>
+                            {errors.title_ar && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("slug_ar", { required: true })}
+                              className={`form-control ${errors.slug_ar ? 'is-invalid' : ''}`}
+                              placeholder={t("URL Slug in Arabic")}
+                              dir="rtl"
+                            />
+                            <label className="fw-medium">{t("Slug (AR)")} *</label>
+                            {errors.slug_ar && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-12">
+                          <div className="form-floating">
+                            <input
+                              {...register("keywords_ar", { required: true })}
+                              className={`form-control ${errors.keywords_ar ? 'is-invalid' : ''}`}
+                              placeholder={t("Keywords in Arabic")}
+                              dir="rtl"
+                            />
+                            <label className="fw-medium">{t("Keywords (AR)")} *</label>
+                            {errors.keywords_ar && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-12">
+                          <label className="form-label fw-medium">{t("Description (AR)")} *</label>
+                          <div className="border rounded-3 p-3 bg-light">
+                            <RichTextEditor
+                              value={descriptionAr}
+                              onChange={setDescriptionAr}
+                              label=""
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* English Content */}
+                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                  <h2 className="accordion-header">
+                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#englishContent">
+                      English Content
+                    </button>
+                  </h2>
+                  <div id="englishContent" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
+                    <div className="accordion-body">
+                      <div className="row g-4">
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("title_en", { required: true })}
+                              className={`form-control ${errors.title_en ? 'is-invalid' : ''}`}
+                              placeholder={t("Property Title in English")}
+                            />
+                            <label className="fw-medium">{t("Title (EN)")} *</label>
+                            {errors.title_en && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              {...register("slug_en", { required: true })}
+                              className={`form-control ${errors.slug_en ? 'is-invalid' : ''}`}
+                              placeholder={t("URL Slug in English")}
+                            />
+                            <label className="fw-medium">{t("Slug (EN)")} *</label>
+                            {errors.slug_en && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-12">
+                          <div className="form-floating">
+                            <input
+                              {...register("keywords_en", { required: true })}
+                              className={`form-control ${errors.keywords_en ? 'is-invalid' : ''}`}
+                              placeholder={t("Keywords in English")}
+                            />
+                            <label className="fw-medium">{t("Keywords (EN)")} *</label>
+                            {errors.keywords_en && (
+                              <div className="invalid-feedback">{t("This field is required")}</div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-12">
+                          <label className="form-label fw-medium">{t("Description (EN)")} *</label>
+                          <div className="border rounded-3 p-3 bg-light">
+                            <RichTextEditor
+                              value={descriptionEn}
+                              onChange={setDescriptionEn}
+                              label=""
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Property Images - Moved to bottom */}
+                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                  <h2 className="accordion-header">
+                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#propertyImages">
+                      Property Images
+                    </button>
+                  </h2>
+                  <div id="propertyImages" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
+                    <div className="accordion-body">
+                      <div className="mb-4">
+                        <label className="form-label fw-medium">{t("Property Images")} *</label>
+                        <div className="d-flex align-items-center gap-3 mb-3">
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            className="form-control form-control-lg"
+                            onChange={handleImageChange}
+                            style={{
+                              border: '2px dashed #0d6efd',
+                              borderRadius: '12px',
+                              padding: '20px',
+                              backgroundColor: '#f8f9ff',
+                              fontSize: '16px',
+                              fontWeight: '500'
+                            }}
+                          />
+                          {/* <button
+                            type="button"
+                            className="btn btn-outline-primary btn-lg"
+                            // onClick={() => document.querySelector('input[type="file"]')?.click()}
+                            onClick={() => {
+                              const fileInput = document.querySelector('input[type="file"]') as HTMLElement;
+                              fileInput?.click();
+                            }}
+                            style={{
+                              borderRadius: '12px',
+                              fontWeight: '600',
+                              minWidth: '150px'
+                            }}
+                          >
+                            <i className="fas fa-plus me-2"></i>
+                            {t("Add More")}
+                          </button> */}
+                        </div>
+                        <div className="form-text mb-3">
+                          {t("Select multiple images for the property")}
+                        </div>
+
+                        {/* Image Previews */}
+                        {imagesPreviews.length > 0 && (
+                          <div className="row g-3">
+                            {imagesPreviews.map((preview) => (
+                              <div key={preview.id} className="col-lg-3 col-md-4 col-sm-6">
+                                <div
+                                  className="position-relative"
+                                  style={{
+                                    borderRadius: '12px',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    transition: 'transform 0.3s ease'
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.02)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                  }}
+                                >
+                                  <Image
+                                    width={40}
+                                    height={40}
+                                    src={preview.url}
+                                    alt="Property preview"
+                                    className="w-100"
+                                    style={{
+                                      height: '200px',
+                                      objectFit: 'cover',
+                                      borderRadius: '12px'
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
+                                    onClick={() => removeImage(preview.id)}
+                                    style={{
+                                      width: '35px',
+                                      height: '35px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '16px',
+                                      fontWeight: 'bold',
+                                      boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)',
+                                      border: 'none',
+                                      transition: 'all 0.3s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.transform = 'scale(1.1)';
+                                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(220, 53, 69, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.transform = 'scale(1)';
+                                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(220, 53, 69, 0.3)';
+                                    }}
+                                    title={t("Remove image")}
+                                  >
+                                    ×
+                                  </button>
+                                  <div
+                                    className="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-2"
+                                    style={{
+                                      fontSize: '12px',
+                                      fontWeight: '500'
+                                    }}
+                                  >
+                                    {preview.file.name.length > 20
+                                      ? preview.file.name.substring(0, 17) + '...'
+                                      : preview.file.name}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Empty state */}
+                        {imagesPreviews.length === 0 && (
+                          <div
+                            className="text-center py-5"
+                            style={{
+                              border: '2px dashed #dee2e6',
+                              borderRadius: '12px',
+                              backgroundColor: '#f8f9fa'
+                            }}
+                          >
+                            <i
+                              className="fas fa-image mb-3"
+                              style={{
+                                fontSize: '48px',
+                                color: '#6c757d'
+                              }}
+                            ></i>
+                            <p className="text-muted mb-0">
+                              {t("No images selected yet")}
+                            </p>
+                            <small className="text-muted">
+                              {t("Click 'Add More' or use the file input above to select images")}
+                            </small>
+                          </div>
+                        )}
+
+                        {/* Images counter */}
+                        {imagesPreviews.length > 0 && (
+                          <div className="mt-3">
+                            <div
+                              className="badge bg-primary fs-6 px-3 py-2"
+                              style={{
+                                borderRadius: '8px'
+                              }}
+                            >
+                              {/* {imagesPreviews.length} {imagesPreviews.length === 1 ? t("image selected") : t("images selected")} */}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Action Buttons */}
+              <div className="d-flex justify-content-end gap-3 pt-4 border-top">
+                <button
+                  type="button"
+                  onClick={() => router.back()}
+                  className="btn btn-outline-secondary btn-lg px-4 py-2 rounded-3"
+                >
+                  {t("Cancel")}
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg px-4 py-2 rounded-3 shadow-sm"
+                >
+                  {t("Submit")}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          
-          {/* General Information Tab */}
-          {activeTab === "general" && (
-            <div>
-              <div className="row align-items-end">
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Property Type")}*</label>
-                    <NiceSelect
-                      className="nice-select"
-                      options={[
-                        { value: "", text: t("Select Type") },
-                        ...propertyTypes?.data?.map((type) => ({
-                          value: type.id,
-                          text: type.title || type.name || ""
-                        }))
-                      ]}
-                      defaultCurrent={0}
-                      onChange={handleTypeChange}
-                      name="type_id"
-                      placeholder=""
-                    />
-                    {!selectValues.type_id && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Area")}*</label>
-                    <NiceSelect
-                      className="nice-select"
-                      options={[
-                        { value: "", text: t("Select Area") },
-                        ...areas?.data?.map((area) => ({
-                          value: area.id.toString(),
-                          text: `${area.name} / ${area.name}`
-                        }))
-                      ]}
-                      defaultCurrent={0}
-                      onChange={handleAreaChange}
-                      name="area_id"
-                      placeholder=""
-                    />
-                    {!selectValues.area_id && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Price")}*</label>
-                    <input
-                      {...register("price", { required: true })}
-                      type="number"
-                      placeholder={t("Your Price")}
-                    />
-                    {errors.price && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Down Price")}*</label>
-                    <input
-                      {...register("down_price", { required: true })}
-                      type="number"
-                      placeholder={t("Down Price")}
-                    />
-                    {errors.down_price && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Square Meters")}*</label>
-                    <input
-                      {...register("sqt", { required: true })}
-                      type="number"
-                      placeholder={t("Square Meters")}
-                    />
-                    {errors.sqt && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Bedroom")}*</label>
-                    <input
-                      {...register("bedroom", { required: true })}
-                      type="number"
-                      placeholder={t("Number of Bedrooms")}
-                    />
-                    {errors.bedroom && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Bathroom")}*</label>
-                    <input
-                      {...register("bathroom", { required: true })}
-                      type="number"
-                      placeholder={t("Number of Bathrooms")}
-                    />
-                    {errors.bathroom && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("kitchen")}*</label>
-                    <input
-                      {...register("kitichen", { required: true })}
-                      type="number"
-                      placeholder={t("Number of kitichen s")}
-                    />
-                    {errors.kitichen  && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Status")}*</label>
-                    <NiceSelect
-                      className="nice-select"
-                      options={[
-                        { value: "", text: t("Select Status") },
-                        { value: "rent", text: t("Rent") },
-                        { value: "sale", text: t("Sale") }
-                      ]}
-                      defaultCurrent={0}
-                      onChange={handleStatusChange}
-                      name="status"
-                      placeholder=""
-                    />
-                    {!selectValues.status && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Type")}*</label>
-                    <NiceSelect
-                      className="nice-select"
-                      options={[
-                        { value: "", text: t("Select Type") },
-                        { value: "apartment", text: t("Apartment") },
-                        { value: "office", text: t("Office") }
-                      ]}
-                      defaultCurrent={0}
-                      onChange={handleTypeSelectChange}
-                      name="type"
-                      placeholder=""
-                    />
-                    {!selectValues.type && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Immediate Delivery")}*</label>
-                    <NiceSelect
-                      className="nice-select"
-                      options={[
-                        { value: "", text: t("Select Option") },
-                        { value: "yes", text: t("Yes") },
-                        { value: "no", text: t("No") }
-                      ]}
-                      defaultCurrent={0}
-                      onChange={handleImmediateDeliveryChange}
-                      name="immediate_delivery"
-                      placeholder=""
-                    />
-                    {!selectValues.immediate_delivery && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Image Upload */}
-              <div className="dash-input-wrapper mb-30">
-                <label htmlFor="">{t("Property Images")}*</label>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => setImages(e.target.files)}
-                  required
-                />
-                <small className="form-text text-muted">{t("Select multiple images for the property")}</small>
-              </div>
-            </div>
-          )}
-
-          {/* Arabic Content Tab */}
-          {activeTab === "ar" && (
-            <div>
-              <div className="row align-items-end">
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Title (AR)")}*</label>
-                    <input
-                      {...register("title_ar", { required: true })}
-                      placeholder={t("Property Title in Arabic")}
-                      dir="rtl"
-                    />
-                    {errors.title_ar && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Slug (AR)")}*</label>
-                    <input
-                      {...register("slug_ar", { required: true })}
-                      placeholder={t("URL Slug in Arabic")}
-                      dir="rtl"
-                    />
-                    {errors.slug_ar && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Keywords (AR)")}*</label>
-                    <input
-                      {...register("keywords_ar", { required: true })}
-                      placeholder={t("Keywords in Arabic")}
-                      dir="rtl"
-                    />
-                    {errors.keywords_ar && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="dash-input-wrapper mb-30">
-                <label htmlFor="">{t("Description (AR)")}*</label>
-                <RichTextEditor
-                  value={descriptionAr}
-                  onChange={setDescriptionAr}
-                  label=""
-                />
-              </div>
-            </div>
-          )}
-
-          {/* English Content Tab */}
-          {activeTab === "en" && (
-            <div>
-              <div className="row align-items-end">
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Title (EN)")}*</label>
-                    <input
-                      {...register("title_en", { required: true })}
-                      placeholder={t("Property Title in English")}
-                    />
-                    {errors.title_en && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Slug (EN)")}*</label>
-                    <input
-                      {...register("slug_en", { required: true })}
-                      placeholder={t("URL Slug in English")}
-                    />
-                    {errors.slug_en && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Keywords (EN)")}*</label>
-                    <input
-                      {...register("keywords_en", { required: true })}
-                      placeholder={t("Keywords in English")}
-                    />
-                    {errors.keywords_en && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="dash-input-wrapper mb-30">
-                <label htmlFor="">{t("Description (EN)")}*</label>
-                <RichTextEditor
-                  value={descriptionEn}
-                  onChange={setDescriptionEn}
-                  label=""
-                />
-              </div>
-            </div>
-          )}
-
-          {/* SEO Settings Tab */}
-          {activeTab === "seo" && (
-            <div>
-              <h4 className="dash-title-three">{t("English SEO")}</h4>
-              <div className="row align-items-end">
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Meta Title (EN)")}*</label>
-                    <input
-                      {...register("meta_title_en", { required: true })}
-                      placeholder={t("Meta Title in English")}
-                    />
-                    {errors.meta_title_en && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Meta Keywords (EN)")}*</label>
-                    <input
-                      {...register("meta_keywords_en", { required: true })}
-                      placeholder={t("Meta Keywords in English")}
-                    />
-                    {errors.meta_keywords_en && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-12">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Meta Description (EN)")}*</label>
-                    <textarea
-                      {...register("meta_description_en", { required: true })}
-                      className="size-lg"
-                      placeholder={t("Meta Description in English")}
-                    />
-                    {errors.meta_description_en && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <h4 className="dash-title-three">{t("Arabic SEO")}</h4>
-              <div className="row align-items-end">
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Meta Title (AR)")}*</label>
-                    <input
-                      {...register("meta_title_ar", { required: true })}
-                      placeholder={t("Meta Title in Arabic")}
-                      dir="rtl"
-                    />
-                    {errors.meta_title_ar && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Meta Keywords (AR)")}*</label>
-                    <input
-                      {...register("meta_keywords_ar", { required: true })}
-                      placeholder={t("Meta Keywords in Arabic")}
-                      dir="rtl"
-                    />
-                    {errors.meta_keywords_ar && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-12">
-                  <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">{t("Meta Description (AR)")}*</label>
-                    <textarea
-                      {...register("meta_description_ar", { required: true })}
-                      className="size-lg"
-                      placeholder={t("Meta Description in Arabic")}
-                      dir="rtl"
-                    />
-                    {errors.meta_description_ar && (
-                      <div className="text-danger">{t("This field is required")}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="button-group d-inline-flex" style={{ gap: '10px' }}>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="dash-btn-two tran3s me-3 rounded-3"
-            >
-              {t("Cancel")}
-            </button>
-            <button
-              type="submit"
-              className="dash-btn-one d-flex align-items-center"
-              style={{ gap: '10px' }}
-            >
-              <i className="fa-regular fa-floppy-disk"></i>
-              {t("Submit")}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
+
   );
 };
 
