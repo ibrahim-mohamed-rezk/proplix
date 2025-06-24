@@ -54,6 +54,25 @@ export default async function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap"
         />
+
+        {/* Fixed Google Maps script with proper libraries and callback */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.initGoogleMaps = function() {
+                console.log('Google Maps API loaded successfully');
+                // Dispatch custom event to notify components
+                window.dispatchEvent(new CustomEvent('googleMapsLoaded'));
+              };
+            `,
+          }}
+        />
+        <script
+          async
+          defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4rQ9DdkG71tIdyYlOl0JHgoWt7IxyHu8&libraries=places&callback=initGoogleMaps"
+        />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

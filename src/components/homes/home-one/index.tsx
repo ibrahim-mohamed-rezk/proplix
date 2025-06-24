@@ -40,7 +40,7 @@ const HomeOne = async ({ locale }: { locale: string }) => {
       <HeaderOne user={user} token={token} style={false} />
       <Banner />
       <BLockFeatureOne />
-      <BLockFeatureTwo />
+      {/* <BLockFeatureTwo /> */}
       {/* location */}
       <BLockFeatureThree />
       <Property
@@ -48,10 +48,10 @@ const HomeOne = async ({ locale }: { locale: string }) => {
         listings={homeData?.data?.property_listings}
         loading={false}
       />
-      <FancyBannerOne style={false} />
-      <AgentArea style={false} agents={homeData.data.agents} loading={false} />
+      {/* <FancyBannerOne style={false} /> */}
+      {/* <AgentArea style={false} agents={homeData.data.agents} loading={false} /> */}
       {/* <BLockFeatureFour /> */}
-      <BLockFeatureFive style={false} />
+      {/* <BLockFeatureFive style={false} /> */}
       <FancyBanner style={false} />
       {/* <FancyBannerThree /> */}
       <Feedback />

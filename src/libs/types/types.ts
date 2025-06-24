@@ -198,3 +198,13 @@ export interface DataType {
   }[] | undefined;
 }
 [];
+
+
+export interface LocationData {
+  description: string;
+  placeId: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
