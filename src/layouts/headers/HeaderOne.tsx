@@ -5,7 +5,7 @@ import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UserTypes } from "@/libs/types/types";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -14,11 +14,9 @@ import { Check, ChevronDown } from "lucide-react";
 const HeaderOne = ({
   style,
   token,
-  user,
 }: {
   style?: boolean;
   token?: string | null;
-  user?: UserTypes;
 }) => {
   const { sticky } = UseSticky();
   const t = useTranslations("header");
@@ -29,6 +27,7 @@ const HeaderOne = ({
   const pathname = usePathname();
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef(null);
+  const [user, setUser] = useState<UserTypes | null>(null);
 
   const logout = async () => {
     await axios.post("/api/auth/logout", {
@@ -43,6 +42,21 @@ const HeaderOne = ({
     en: "gb",
     ar: "sa",
   };
+
+  const feachUser = async () => {
+    const res = await axios.get("/api/auth/getToken", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setUser(JSON.parse(res.data.user));
+  }
+
+  useEffect(() => {
+    feachUser();
+  },[])
+
 
   const changeLanguage = (l: string) => {
     const paramsString = searchParams.toString();
@@ -202,7 +216,7 @@ const HeaderOne = ({
                           } mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn`}
                         >
                           <Link
-                            href="/my-profile?page=personal-information"
+                            href={user?.role === "customer" ? "/my-profile?page=personal-information" : "/dashboard/profile"}
                             className="dropdown-item justify-center !w-fit !flex items-center gap-[8px] px-4 py-3 hover:bg-primary-50 transition-colors"
                           >
                             <i className="fa-regular fa-user text-primary-500"></i>

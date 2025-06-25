@@ -720,7 +720,8 @@
     "Rent Office": "Rent Office",
     "Faq's": "Faq's",
     "​Buy Apartments": "Buy Apartments",
-    "Faq’s": "Faq’s"
+    "Faq’s": "Faq’s",
+    "Properties": "Properties"
   },
   "SignupPage": {
     "Create Agent Account": "Create Agent Account",
@@ -770,7 +771,19 @@
     "Password is required": "Password is required",
     "Passwords do not match": "Passwords do not match",
     "Password must be at least 8 characters": "Password must be at least 8 characters",
-    "Account created successfully!": "Account created successfully!"
+    "Account created successfully!": "Account created successfully!",
+    "Image size should be less than 5MB": "Image size should be less than 5MB",
+    "Please select a valid image file": "Please select a valid image file",
+    "File size should be less than 10MB": "File size should be less than 10MB",
+    "Document uploaded successfully": "Document uploaded successfully",
+    "Click to change": "Click to change",
+    "Upload ID Document": "Upload ID Document",
+    "PDF, JPG, PNG (Max 10MB)": "PDF, JPG, PNG (Max 10MB)",
+    "Upload Trade License": "Upload Trade License",
+    "Max file size: 5MB JPG, PNG formats only": "Max file size: 5MB. JPG, PNG formats only.",
+    "Change Photo": "Change Photo",
+    "Upload Photo": "Upload Photo",
+    "Remove image": "Remove image"
   },
   "footer": {
     "address": "11910 Clyde Rapid Suite 70, Willyand, Virginia, United States",

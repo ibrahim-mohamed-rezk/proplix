@@ -19,10 +19,8 @@ const footer_data: DataType[] = [
     footer_link: [
       { link: "/", link_title: "Home" },
       { link: "/about_us_01", link_title: "About Company" },
-      { link: "/blog_01", link_title: "Blog" },
-      { link: "/blog_02", link_title: "Explore Careers" },
-      { link: "/pricing_02", link_title: "Pricing" },
-      { link: "/dashboard/dashboard-index", link_title: "Dashboard" },
+      { link: "/blogs", link_title: "Blog" },
+      { link: "/properties", link_title: "Properties" },
     ],
   },
   {

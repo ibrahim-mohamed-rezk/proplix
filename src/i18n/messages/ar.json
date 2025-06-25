@@ -776,7 +776,8 @@
     "Dashboard": "لوحة التحكم",
     "​Buy Apartments": "شراء شقق",
     "Blogs": "المقالات",
-    "Faq’s": "الاسئلة الشائعة"
+    "Faq’s": "الاسئلة الشائعة",
+    "Properties": "العقارات"
   },
   "SignupPage": {
     "Create Agent Account": "إنشاء حساب وكيل",
@@ -826,6 +827,18 @@
     "Password is required": "كلمة المرور مطلوبة",
     "Passwords do not match": "كلمتا المرور غير متطابقتين",
     "Password must be at least 8 characters": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-    "Account created successfully!": "تم إنشاء الحساب بنجاح!"
+    "Account created successfully!": "تم إنشاء الحساب بنجاح!",
+    "Image size should be less than 5MB": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت",
+    "Please select a valid image file": "يرجى اختيار ملف صورة صالح",
+    "File size should be less than 10MB": "يجب أن يكون حجم الملف أقل من 10 ميجابايت",
+    "Document uploaded successfully": "تم تحميل المستند بنجاح",
+    "Click to change": "انقر للتغيير",
+    "Upload ID Document": "تحميل وثيقة الهوية",
+    "PDF, JPG, PNG (Max 10MB)": "PDF, JPG, PNG (بحد أقصى 10 ميجابايت)",
+    "Upload Trade License": "تحميل الرخصة التجارية",
+    "Max file size: 5MB JPG, PNG formats only": "الحد الأقصى لحجم الملف: 5 ميجابايت. فقط JPG, PNG.",
+    "Change Photo": "تغيير الصورة",
+    "Upload Photo": "تحميل صورة",
+    "Remove image": "إزالة الصورة"
   }
 }
