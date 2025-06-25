@@ -9,7 +9,7 @@ import { getData } from "@/libs/server/backendServer";
 // Extend Window interface to include Google Maps
 declare global {
   interface Window {
-    google: typeof google;
+    google: any;
     initGoogleMaps?: () => void;
   }
 }

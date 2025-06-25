@@ -32,7 +32,7 @@ const Banner = () => {
     if (e.target.value === "") {
       setFilters({ ...filters, title: null });
     } else {
-      setFilters({ ...filters, title: e.target.value });
+      setFilters({ ...filters, location: e.target.value });
     }
   };
 

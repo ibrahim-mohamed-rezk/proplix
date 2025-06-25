@@ -4,7 +4,14 @@ import ListingDropdownModal from "@/modals/ListingDropdownModal";
 import NiceSelect from "@/ui/NiceSelect";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
-import listing_data from "@/data/inner-data/ListingData";
+
+// Google Maps types
+declare global {
+  interface Window {
+    google: any;
+    initGoogleMaps?: () => void;
+  }
+}
 
 const DropdownTwo = ({
   filters,
@@ -21,70 +28,154 @@ const DropdownTwo = ({
   const locale = useLocale();
   const [areas, setAreas] = useState([]);
   const [types, setTypes] = useState([]);
-  const [titleQuery, setTitleQuery] = useState("");
-  const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
-  const [showTitleSuggestions, setShowTitleSuggestions] = useState(false);
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const titleSuggestionsRef = useRef<HTMLDivElement>(null);
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
+  const locationInputRef = useRef<HTMLInputElement>(null);
+  const locationSuggestionsRef = useRef<HTMLDivElement>(null);
+  const autocompleteService = useRef<any>(null);
+  const placesService = useRef<any>(null);
 
-  // fetch areas form api
+  // Load Google Maps API
+  useEffect(() => {
+    const loadGoogleMapsAPI = () => {
+      if (window.google && window.google.maps) {
+        initializeGoogleMapsServices();
+        return;
+      }
+
+      if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
+        window.initGoogleMaps = initializeGoogleMapsServices;
+
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initGoogleMaps`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    };
+
+    const initializeGoogleMapsServices = () => {
+      if (window.google && window.google.maps) {
+        autocompleteService.current =
+          new window.google.maps.places.AutocompleteService();
+        // Create a dummy div for PlacesService (required but not used for display)
+        const dummyDiv = document.createElement("div");
+        placesService.current = new window.google.maps.places.PlacesService(
+          dummyDiv
+        );
+        setIsGoogleMapsLoaded(true);
+      }
+    };
+
+    loadGoogleMapsAPI();
+  }, []);
+
+  // fetch areas from api
   useEffect(() => {
     const fetchAreas = async () => {
       const response = await getData("areas", {}, { lang: locale });
       setAreas(response.data.data);
     };
     fetchAreas();
-  }, []);
+  }, [locale]);
 
-  // fetch types form api
+  // fetch types from api
   useEffect(() => {
-    const fetchAgents = async () => {
+    const fetchTypes = async () => {
       const response = await getData("types", {}, { lang: locale });
       setTypes(response.data.data);
     };
-    fetchAgents();
-  }, []);
+    fetchTypes();
+  }, [locale]);
 
-  // Extract unique property titles
-  const allTitles = Array.from(
-    new Set(listing_data.map((item: any) => item.title))
-  );
-
-  // Handle title input change
-  const handleTitleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle location input change with Google Maps autocomplete
+  const handleLocationInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const query = e.target.value;
-    setTitleQuery(query);
-    if (query.length > 1) {
-      const filtered = allTitles.filter((title) =>
-        title.toLowerCase().includes(query.toLowerCase())
+    setLocationQuery(query);
+
+    if (query.length > 2 && isGoogleMapsLoaded && autocompleteService.current) {
+      const request = {
+        input: query,
+        types: ["establishment", "geocode"], // You can customize this based on your needs
+        // You can add country restrictions if needed:
+        // componentRestrictions: { country: 'us' }
+      };
+
+      autocompleteService.current.getPlacePredictions(
+        request,
+        (predictions: any[], status: any) => {
+          if (
+            status === window.google.maps.places.PlacesServiceStatus.OK &&
+            predictions
+          ) {
+            setLocationSuggestions(predictions);
+            setShowLocationSuggestions(true);
+          } else {
+            setLocationSuggestions([]);
+            setShowLocationSuggestions(false);
+          }
+        }
       );
-      setTitleSuggestions(filtered);
-      setShowTitleSuggestions(filtered.length > 0);
     } else {
-      setTitleSuggestions([]);
-      setShowTitleSuggestions(false);
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
     }
-    // Optionally trigger search change on typing
+
+    // Trigger search change on typing
     handleSearchChange({ target: { value: query } });
   };
 
-  // Handle suggestion selection
-  const handleTitleSuggestionSelect = (title: string) => {
-    setTitleQuery(title);
-    setShowTitleSuggestions(false);
-    handleSearchChange({ target: { value: title } });
+  // Handle location suggestion selection
+  const handleLocationSuggestionSelect = (prediction: any) => {
+    setLocationQuery(prediction.description);
+    setShowLocationSuggestions(false);
+
+    // Get place details if needed
+    if (placesService.current) {
+      const request = {
+        placeId: prediction.place_id,
+        fields: ["geometry", "formatted_address", "name"],
+      };
+
+      placesService.current.getDetails(request, (place: any, status: any) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+          // You can use place.geometry.location.lat() and place.geometry.location.lng()
+          // to get coordinates if needed for your search functionality
+          const locationData = {
+            address: prediction.description,
+            placeId: prediction.place_id,
+            lat: place.geometry?.location?.lat(),
+            lng: place.geometry?.location?.lng(),
+          };
+
+          // Pass the location data to your search handler
+          handleSearchChange({
+            target: {
+              value: prediction.description,
+              locationData: locationData,
+            },
+          });
+        }
+      });
+    } else {
+      handleSearchChange({ target: { value: prediction.description } });
+    }
   };
 
   // Hide suggestions on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        titleSuggestionsRef.current &&
-        !titleSuggestionsRef.current.contains(event.target as Node) &&
-        titleInputRef.current &&
-        !titleInputRef.current.contains(event.target as Node)
+        locationSuggestionsRef.current &&
+        !locationSuggestionsRef.current.contains(event.target as Node) &&
+        locationInputRef.current &&
+        !locationInputRef.current.contains(event.target as Node)
       ) {
-        setShowTitleSuggestions(false);
+        setShowLocationSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -143,24 +234,27 @@ const DropdownTwo = ({
           </div>
           <div className="col-xl-3 col-lg-4">
             <div className="input-box-one border-left border-lg-0">
-              <div className="label">{t("property_title")}</div>
+              <div className="label">{t("location")}</div>
               <div style={{ position: "relative" }}>
                 <input
-                  ref={titleInputRef}
+                  ref={locationInputRef}
                   type="text"
-                  placeholder={t("title_placeholder")}
+                  placeholder={
+                    t("search_location_placeholder") || "Enter location..."
+                  }
                   className="type-input"
-                  value={titleQuery}
-                  onChange={handleTitleInputChange}
+                  value={locationQuery}
+                  onChange={handleLocationInputChange}
                   onFocus={() =>
-                    titleSuggestions.length > 0 && setShowTitleSuggestions(true)
+                    locationSuggestions.length > 0 &&
+                    setShowLocationSuggestions(true)
                   }
                   autoComplete="off"
                 />
-                {showTitleSuggestions && titleSuggestions.length > 0 && (
+                {showLocationSuggestions && locationSuggestions.length > 0 && (
                   <div
-                    ref={titleSuggestionsRef}
-                    className="title-suggestions"
+                    ref={locationSuggestionsRef}
+                    className="location-suggestions"
                     style={{
                       position: "absolute",
                       top: "100%",
@@ -176,20 +270,24 @@ const DropdownTwo = ({
                       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    {titleSuggestions.map((suggestion, idx) => (
+                    {locationSuggestions.map((suggestion, idx) => (
                       <div
-                        key={suggestion + idx}
+                        key={suggestion.place_id}
                         className="suggestion-item"
-                        onClick={() => handleTitleSuggestionSelect(suggestion)}
+                        onClick={() =>
+                          handleLocationSuggestionSelect(suggestion)
+                        }
                         style={{
                           padding: "12px 15px",
                           cursor: "pointer",
                           borderBottom:
-                            idx < titleSuggestions.length - 1
+                            idx < locationSuggestions.length - 1
                               ? "1px solid #f0f0f0"
                               : "none",
                           fontSize: "14px",
                           transition: "background-color 0.2s",
+                          display: "flex",
+                          alignItems: "center",
                         }}
                         onMouseEnter={(e) =>
                           ((e.target as HTMLElement).style.backgroundColor =
@@ -200,9 +298,47 @@ const DropdownTwo = ({
                             "#fff")
                         }
                       >
-                        {suggestion}
+                        <i
+                          className="fa-light fa-location-dot"
+                          style={{ marginRight: "8px", color: "#666" }}
+                        ></i>
+                        <div>
+                          <div style={{ fontWeight: "500", color: "#333" }}>
+                            {suggestion.structured_formatting?.main_text ||
+                              suggestion.description}
+                          </div>
+                          {suggestion.structured_formatting?.secondary_text && (
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                color: "#666",
+                                marginTop: "2px",
+                              }}
+                            >
+                              {suggestion.structured_formatting.secondary_text}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
+                  </div>
+                )}
+                {!isGoogleMapsLoaded && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      padding: "8px 12px",
+                      fontSize: "12px",
+                      color: "#666",
+                      backgroundColor: "#f8f9fa",
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "0 0 4px 4px",
+                    }}
+                  >
+                    Loading location services...
                   </div>
                 )}
               </div>

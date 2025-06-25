@@ -5,11 +5,15 @@ import { useEffect, useState, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import featureIcon_1 from "@/assets/images/icon/icon_04.svg";
+import featureIcon_2 from "@/assets/images/icon/icon_05.svg";
+import featureIcon_3 from "@/assets/images/icon/icon_06.svg";
 
 import { getData } from "@/libs/server/backendServer";
 import { Link } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
 import { LocationData } from "@/libs/types/types";
+import Image from "next/image";
 
 const ListingFifteenArea = () => {
   const [properties, setProperties] = useState([]);
@@ -121,13 +125,17 @@ const ListingFifteenArea = () => {
   }, [locationData]);
 
   return (
-    <div className="property-listing-eight pt-150 xl-pt-120">
+    <div className="property-listing-eight pt-150  xl-pt-120">
       {/* dropdown filters */}
       <div className="search-wrapper-three layout-two position-relative">
         <div className="bg-wrapper rounded-0 border-0">
           <DropdownSeven
-            handleBathroomChange={(value) => {setFilters({...filters, bathrooms: value})}}
-            handleBedroomChange={(value) => {setFilters({...filters, bedrooms: value})}}
+            handleBathroomChange={(value) => {
+              setFilters({ ...filters, bathrooms: value });
+            }}
+            handleBedroomChange={(value) => {
+              setFilters({ ...filters, bedrooms: value });
+            }}
             handleSearchChange={() => {}}
             handlePriceChange={() => {}}
             maxPrice={0}
@@ -184,7 +192,10 @@ const ListingFifteenArea = () => {
       </div>
 
       {/* map */}
-      <div className="row gx-0" style={{ height: "100%" }}>
+      <div
+        className="row gx-0 max-w-[1920px] mx-auto"
+        style={{ height: "100%" }}
+      >
         <div className="col-xxl-6 col-lg-5">
           <div
             id="google-map-area"
@@ -249,37 +260,39 @@ const ListingFifteenArea = () => {
             {currentItems.map((property: any) => (
               <div
                 key={property.id}
-                className="listing-card-seven !rounded-[20px]  p-20 mb-35 wow fadeInUp"
+                className="listing-card-seven !rounded-[20px] p-20 mb-35 wow fadeInUp"
               >
-                <div className="d-flex flex-wrap layout-one">
+                <div className="d-flex flex-wrap items-stretch justify-stretch layout-one h-full">
                   <div
-                    className={
-                      "img-gallery position-relative z-1 rounded-[20px]  overflow-hidden"
-                    }
-                    style={{ backgroundImage: "none" }}
+                    className="img-gallery position-relative z-1 rounded-[20px] flex-shrink-0 overflow-hidden"
+                    style={{
+                      backgroundImage: "none",
+                      width: "294px",
+                      height: "269px",
+                    }}
                   >
                     <button onClick={() => {}} className="fav-btn z-50 tran3s">
                       <i className="fa-light fa-heart"></i>
                     </button>
                     <Link
-                      className="flex items-center justify-center w-full h-full"
+                      className="flex w-full h-full items-center justify-center"
                       href={`properties/${property.slug}`}
                     >
                       <img
-                        className="w-full h-full"
+                        className="w-full h-full object-cover"
                         src={property.cover}
                         alt={property.title}
                       />
                     </Link>
                   </div>
 
-                  <div className="property-info">
-                    <div className={`tag  rounded-[25px] fw-500`}>
+                  <div className="property-info flex-1">
+                    <div className={`tag rounded-[25px] fw-500`}>
                       {property.status}
                     </div>
                     <Link
                       href={`properties/${property.slug}`}
-                      className={`text-[#FF6625] line-clamp-2 mt-[10px] text-[32px] fw-500`}
+                      className={`text-[#FF6625] line-clamp-1 mt-[10px] text-[32px] fw-500`}
                     >
                       {property.title}
                     </Link>
@@ -287,12 +300,19 @@ const ListingFifteenArea = () => {
                       <i className="bi bi-geo-alt"></i>
                       {property.area?.name}
                     </div>
-                    <div className="feature2 fs-16 color-dark mt-20 mb-30 pb-5">
-                      <ul className="style-none border-t border-b pb-[10px] d-flex flex-wrap align-items-center justify-content-between">
+                    <div className="feature2 fs-16 color-dark mt-[5px] pb-5">
+                      <ul className="style-none border-t border-b pb-[10px] !my-0 !py-0 d-flex flex-wrap align-items-center justify-content-between">
                         <li className="d-flex align-items-center mt-15">
-                          <span className="fs-16 text-center">
-                            {property.sqt} <br /> {t(`sqft`)}
-                          </span>
+                          <Image
+                            src={featureIcon_1}
+                            alt=""
+                            className="lazy-img icon w-[24px] mx-2"
+                          />
+                          <div>
+                            <span className="fs-16 text-center">
+                              {property.sqt} <br /> {t(`sqft`)}
+                            </span>
+                          </div>
                         </li>
                         <li>
                           <svg
@@ -309,9 +329,16 @@ const ListingFifteenArea = () => {
                           </svg>
                         </li>
                         <li className="d-flex align-items-center mt-15">
-                          <span className="fs-16 text-center">
-                            {property.bedroom} <br /> {t(`bed`)}
-                          </span>
+                          <Image
+                            src={featureIcon_2}
+                            alt=""
+                            className="lazy-img icon w-[30px] mx-2"
+                          />
+                          <div>
+                            <span className="fs-16 text-center">
+                              {property.bedroom} <br /> {t(`bed`)}
+                            </span>
+                          </div>
                         </li>
                         <li>
                           <svg
@@ -328,9 +355,16 @@ const ListingFifteenArea = () => {
                           </svg>
                         </li>
                         <li className="d-flex align-items-center mt-15">
-                          <span className="fs-16 text-center">
-                            {property.bathroom} <br /> {t(`bath`)}
-                          </span>
+                          <Image
+                            src={featureIcon_3}
+                            alt=""
+                            className="lazy-img icon w-[24px] mx-2"
+                          />
+                          <div>
+                            <span className="fs-16 text-center">
+                              {property.bathroom} <br /> {t(`bath`)}
+                            </span>
+                          </div>
                         </li>
                       </ul>
                     </div>
@@ -371,8 +405,8 @@ const ListingFifteenArea = () => {
                               fill="url(#paint0_linear_1146_3343)"
                             />
                             <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
+                              fillRule="evenodd"
+                              clipRule="evenodd"
                               d="M20.4403 17.7395C20.1691 17.1375 19.8841 17.1237 19.6268 17.1168C19.4183 17.1099 19.175 17.1099 18.9316 17.1099C18.6883 17.1099 18.299 17.1998 17.9653 17.5596C17.6316 17.9194 16.7 18.7912 16.7 20.5695C16.7 22.3408 18 24.0568 18.1808 24.2989C18.3615 24.5411 20.6905 28.2982 24.3683 29.7444C27.4273 30.9483 28.053 30.7061 28.7134 30.6439C29.3739 30.5816 30.8547 29.772 31.1606 28.9279C31.4596 28.0837 31.4596 27.3641 31.3692 27.2119C31.2788 27.0597 31.0355 26.9697 30.674 26.7898C30.3125 26.61 28.5327 25.7381 28.199 25.6136C27.8653 25.496 27.6219 25.4337 27.3856 25.7935C27.1422 26.1533 26.447 26.9628 26.2384 27.205C26.0299 27.4472 25.8144 27.4749 25.4528 27.295C25.0913 27.1151 23.9233 26.7345 22.5398 25.5029C21.4622 24.548 20.7323 23.3648 20.5237 23.005C20.3151 22.6452 20.5028 22.4515 20.6836 22.2716C20.8435 22.1125 21.0451 21.8495 21.2259 21.642C21.4066 21.4344 21.4692 21.2822 21.5874 21.04C21.7056 20.7978 21.65 20.5902 21.5596 20.4103C21.4692 20.2373 20.7601 18.4522 20.4403 17.7395Z"
                               fill="white"
                             />
@@ -385,8 +419,8 @@ const ListingFifteenArea = () => {
                                 y2="9.34668"
                                 gradientUnits="userSpaceOnUse"
                               >
-                                <stop stop-color="#F9F9F9" />
-                                <stop offset="1" stop-color="white" />
+                                <stop stopColor="#F9F9F9" />
+                                <stop offset="1" stopColor="white" />
                               </linearGradient>
                             </defs>
                           </svg>

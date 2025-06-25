@@ -128,7 +128,7 @@ export default function BLockFeatureThree() {
   const settings = {
     infinite: areas.length > 1,
     speed: 300,
-    slidesToShow: Math.min(areas.length, 4),
+    slidesToShow: 4,
     slidesToScroll: 1,
     centerMode: true,
     centerPadding: "0",
@@ -179,10 +179,10 @@ export default function BLockFeatureThree() {
         <Slider
           {...settings}
           ref={sliderRef}
-          className="property-location-slider-one"
+          className="property-location-slider-one "
         >
           {areas.map((area) => (
-            <div key={area.id} className="item-first">
+            <div key={area.id} className="item-first max-w-[315px]">
               <div
                 className="location-card-one position-relative z-1 d-flex align-items-end"
                 style={{
@@ -198,7 +198,7 @@ export default function BLockFeatureThree() {
                   </p>
                 </div>
                 <Link
-                  href={`/listing?areaId=${area.id}`}
+                  href="#"
                   className="stretched-link"
                 />
               </div>

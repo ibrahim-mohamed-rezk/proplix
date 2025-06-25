@@ -17,7 +17,7 @@ const PropertiesCard = ({
   item: PropertyTypes;
   token: string;
 }) => {
-  const t = useTranslations("Favorites");
+  const t = useTranslations("endUser");
   const addToFavorites = async (id: string | number) => {
     try {
       const response = await postData(
@@ -41,10 +41,10 @@ const PropertiesCard = ({
   return (
     <div
       key={item.id}
-      className="col-lg-3 d-flex mb-50 wow fadeInUp"
+      className="col-lg-4 col-sm-6 d-flex mb-50 wow fadeInUp"
       data-wow-delay={item.data_delay_time}
     >
-      <div className={`listing-card-one rounded-[25px] `}>
+      <div className={`listing-card-one rounded-[25px] w-full `}>
         <div className="img-gallery p-15">
           <div className="position-relative overflow-hidden">
             <div
@@ -121,9 +121,8 @@ const PropertiesCard = ({
               <Link href={`/properties/${item.slug}`} className="d-block">
                 <img
                   src={item.cover}
-                  className="w-[100%] rounded-[25px] h-full"
+                  className="w-full h-[295px] rounded-[25px]"
                   alt={item.title}
-                  
                 />
               </Link>
             </div>
@@ -165,11 +164,11 @@ const PropertiesCard = ({
           </ul>
           <div className="pl-footer top-border d-flex align-items-center justify-content-between">
             <strong className="price fw-500 color-[#000]">
-              $
               {item.price?.toLocaleString(undefined, {
                 minimumFractionDigits: item.price ? 0 : 2,
                 maximumFractionDigits: 2,
               })}
+              EGP
               {/* {item.price && (
                          <>
                            /<sub>m</sub>
