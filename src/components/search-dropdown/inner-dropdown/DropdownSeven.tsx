@@ -53,7 +53,7 @@ interface DropdownSevenProps {
   handleLocationChange: (location: LocationData | any) => void;
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: any) => void;
-  handleAgentChange: (value: any) => void;
+  handleAgentChange?: (value: any) => void;
 }
 
 const DropdownSeven: React.FC<DropdownSevenProps> = ({
@@ -645,7 +645,9 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                   })),
                 ]}
                 defaultCurrent={"all"}
-                onChange={handleAgentChange}
+                onChange={(event) =>
+                  handleAgentChange && handleAgentChange(event.target.value)
+                }
                 name=""
                 placeholder=""
               />
