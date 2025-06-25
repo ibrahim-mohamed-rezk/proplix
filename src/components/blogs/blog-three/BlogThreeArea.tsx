@@ -11,7 +11,7 @@ const BlogThreeArea = () => {
   const [types, setTypes] = useState<blogFilterTypes[]>([]);
   const [blogs, setBlogs] = useState<blogTypes[]>([]);
   const [type, setType] = useState<string>("all");
-  const t = useTranslations("blogs");
+  const t = useTranslations("endUser");
   const locale = useLocale();
 
   useEffect(() => {
@@ -79,11 +79,11 @@ const BlogThreeArea = () => {
         <div className="row isotop-gallery-2-wrapper pt-60 lg-pt-40">
           {blogs && blogs.length > 0 ? (
             blogs.map((item: blogTypes) => (
-              <div key={item.id} className="col-lg-6">
+              <div key={item.id} className="col-lg-4 col-sm-6">
                 <div className="isotop-item villa sale">
-                  <article className="blog-meta-one mb-70 lg-mb-40">
+                  <article className="blog-meta-one  mb-70 lg-mb-40">
                     <figure
-                      className={`post-img    position-relative m0`}
+                      className={`post-img   rounded-[24px] position-relative m0`}
                       style={{
                         backgroundImage: `url(${item.cover})`,
                       }}

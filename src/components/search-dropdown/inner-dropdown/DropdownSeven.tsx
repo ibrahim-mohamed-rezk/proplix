@@ -54,6 +54,7 @@ interface DropdownSevenProps {
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: any) => void;
   handleAgentChange?: (value: any) => void;
+  filters?: any;
 }
 
 const DropdownSeven: React.FC<DropdownSevenProps> = ({
@@ -70,6 +71,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   handleStatusChange,
   handlePriceDropChange,
   handleAgentChange,
+  filters
 }) => {
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
@@ -570,7 +572,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
             <div className="input-box-one border-left">
               <div className="label">{t("price_range")}</div>
               <NiceSelect
-                className="nice-select fw-normal"
+                className="nice-select border border-[#e0e0e0] fw-normal"
                 options={[
                   { value: "all", text: t("any") },
                   ...priceRanges.map((range) => ({
@@ -592,7 +594,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
             <div className="input-box-one border-left">
               <div className="label">{t("bed")}</div>
               <NiceSelect
-                className="nice-select fw-normal"
+                className="nice-select border border-[#e0e0e0]  fw-normal"
                 options={[
                   { value: "0", text: t("any") },
                   { value: "1", text: "1+" },
@@ -612,7 +614,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
             <div className="input-box-one border-left">
               <div className="label">{t("bath")}</div>
               <NiceSelect
-                className="nice-select fw-normal"
+                className="nice-select border border-[#e0e0e0]  fw-normal"
                 options={[
                   { value: "0", text: t("any") },
                   { value: "1", text: "1+" },
@@ -630,10 +632,10 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
 
           {/* agents  */}
           <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-leftl">
+            <div className="input-box-one border-left">
               <div className="label">{t("by_agent")}</div>
               <NiceSelect
-                className="nice-select w-full"
+                className="nice-select border border-[#e0e0e0]  w-full"
                 options={[
                   {
                     text: t("all agents"),
@@ -644,7 +646,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                     text: agent.name,
                   })),
                 ]}
-                defaultCurrent={"all"}
+                defaultCurrent={filters.user_id ? filters.user_id : "all"}
                 onChange={(event) =>
                   handleAgentChange && handleAgentChange(event.target.value)
                 }

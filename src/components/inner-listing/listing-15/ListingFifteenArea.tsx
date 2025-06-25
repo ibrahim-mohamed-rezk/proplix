@@ -137,13 +137,20 @@ const ListingFifteenArea = () => {
               setFilters({ ...filters, bedrooms: value });
             }}
             handleSearchChange={() => {}}
-            handleAgentChange={(value) => {setFilters({ ...filters, user_id: value });}}
+            handleAgentChange={(value) => {
+              if (value === "all") {
+                setFilters({ ...filters, user_id: null });
+              } else {
+                setFilters({ ...filters, user_id: value });
+              }
+            }}
             handlePriceChange={() => {}}
             maxPrice={0}
             priceValue={0}
             handleResetFilter={handleResetFilter}
             selectedAmenities={[]}
             handleAmenityChange={() => {}}
+            filters={filters}
             handleLocationChange={(location) => {
               setFilters({ ...filters, location: location.description });
               setLocationData(location);
@@ -152,12 +159,13 @@ const ListingFifteenArea = () => {
             handlePriceDropChange={(value) => {
               if (value === "all") {
                 setFilters({ ...filters, price: null, down_price: null });
+              } else {
+                setFilters({
+                  ...filters,
+                  price: value.split("-")[0],
+                  down_price: value.split("-")[1],
+                });
               }
-              setFilters({
-                ...filters,
-                price: value.split("-")[0],
-                down_price: value.split("-")[1],
-              });
             }}
           />
         </div>
