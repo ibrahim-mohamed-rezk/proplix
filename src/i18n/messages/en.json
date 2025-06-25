@@ -745,7 +745,11 @@
     "loading": "Loading...",
     "price_range": "Price Range",
     "any": "All",
-    "advance_search": "ADVANCE Search"
+    "advance_search": "ADVANCE Search",
+    "by_agent":"By Agent",
+    "all agents":"All Agents",
+    "":"",
+    "":""
   },
   "SignupPage": {
     "Create Agent Account": "Create Agent Account",

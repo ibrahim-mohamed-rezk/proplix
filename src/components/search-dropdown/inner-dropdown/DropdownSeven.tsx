@@ -1,5 +1,5 @@
 import NiceSelect from "@/ui/NiceSelect";
-import Link from "next/link";
+// import Link from "next/link";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
 import { useState, useEffect, useRef } from "react";
 import { LocationData } from "@/libs/types/types";
@@ -53,6 +53,7 @@ interface DropdownSevenProps {
   handleLocationChange: (location: LocationData | any) => void;
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: any) => void;
+  handleAgentChange: (value: any) => void;
 }
 
 const DropdownSeven: React.FC<DropdownSevenProps> = ({
@@ -68,6 +69,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   handleLocationChange,
   handleStatusChange,
   handlePriceDropChange,
+  handleAgentChange,
 }) => {
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
@@ -79,6 +81,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("endUser");
   const locale = useLocale();
+  const [agents, setAgents] = useState<any[]>([]);
 
   // Initialize Google Places services (supporting both old and new APIs)
   const autocompleteService =
@@ -94,6 +97,14 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
       lng: 31.2357, // Cairo, Egypt longitude
     },
   };
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const response = await getData("agents", {}, { lang: locale });
+      setAgents(response.data.data);
+    };
+    fetchAgents();
+  }, []);
 
   // Function to check if Google Maps is fully loaded
   const isGoogleMapsReady = (): boolean => {
@@ -555,7 +566,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
             </div>
           </div>
 
-          <div className="col-xl-3 col-sm-4">
+          <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("price_range")}</div>
               <NiceSelect
@@ -576,6 +587,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
               />
             </div>
           </div>
+
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("bed")}</div>
@@ -595,6 +607,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
               />
             </div>
           </div>
+
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("bath")}</div>
@@ -614,7 +627,33 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
               />
             </div>
           </div>
-          <div className="col-xxl-2 col-xl-1 !ms-auto ">
+
+          {/* agents  */}
+          <div className="col-xl-1 col-sm-4 col-6">
+            <div className="input-box-one border-leftl">
+              <div className="label">{t("by_agent")}</div>
+              <NiceSelect
+                className="nice-select w-full"
+                options={[
+                  {
+                    text: t("all agents"),
+                    value: "all",
+                  },
+                  ...agents?.map((agent: any) => ({
+                    value: agent.id,
+                    text: agent.name,
+                  })),
+                ]}
+                defaultCurrent={"all"}
+                onChange={handleAgentChange}
+                name=""
+                placeholder=""
+              />
+            </div>
+          </div>
+
+          {/* advanced search button */}
+          {/* <div className="col-xxl-2 col-xl-1 !ms-auto ">
             <div className="input-box-one lg-mt-20">
               <div className="d-flex align-items-center justify-content-center justify-content-xl-end">
                 <Link
@@ -630,10 +669,10 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                 </Link>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </form>
-      <ListingDropdownModal
+      {/* <ListingDropdownModal
         handleSearchChange={handleSearchChange}
         handleBedroomChange={handleBedroomChange}
         handleBathroomChange={handleBathroomChange}
@@ -644,7 +683,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
         selectedAmenities={selectedAmenities}
         handleAmenityChange={handleAmenityChange}
         handleStatusChange={handleStatusChange}
-      />
+      /> */}
     </>
   );
 };

@@ -137,6 +137,7 @@ const ListingFifteenArea = () => {
               setFilters({ ...filters, bedrooms: value });
             }}
             handleSearchChange={() => {}}
+            handleAgentChange={() => {}}
             handlePriceChange={() => {}}
             maxPrice={0}
             priceValue={0}

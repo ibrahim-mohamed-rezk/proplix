@@ -746,7 +746,9 @@
     "loading_location_services": "جاري تحميل خدمات الموقع...",
     "price_range": "نطاق السعر",
     "any": "الكل",
-    "advance_search": "بحث متقدم"
+    "advance_search": "بحث متقدم",
+    "by_agent": "بواسطة الوكيل",
+    "all agents": "جميع الوكلاء"
   },
   "SignupPage": {
     "Create Agent Account": "إنشاء حساب وكيل",
