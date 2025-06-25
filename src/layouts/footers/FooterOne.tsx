@@ -1,12 +1,12 @@
-import Image from "next/image"
-import Link from "next/link"
-import footer_data from "@/data/home-data/FooterData"
+import Image from "next/image";
+import footer_data from "@/data/home-data/FooterData";
 
 import footerShape_1 from "@/assets/images/shape/shape_32.svg";
 import footerShape_2 from "@/assets/images/shape/shape_33.svg";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
-const icon_1: string[] = ["facebook", "twitter", "instagram"]
+const icon_1: string[] = ["facebook", "twitter", "instagram"];
 
 const FooterOne = ({ style }: any) => {
   const t = useTranslations("endUser");
@@ -72,9 +72,7 @@ const FooterOne = ({ style }: any) => {
                       </svg>
                     </Link>
                   </div>
-                  <p className="mb-60 lg-mb-40 md-mb-20">
-                    {t("address")}
-                  </p>
+                  <p className="mb-60 lg-mb-40 md-mb-20">{t("address")}</p>
                   <h6>{t("contact")}</h6>
                   <Link
                     href="#"
@@ -122,22 +120,12 @@ const FooterOne = ({ style }: any) => {
                       <h5
                         className={`footer-title ${style ? "text-white" : ""}`}
                       >
-                        {t(
-                          `${item.widget_title
-                            .replace(/\s+/g, "_")
-                            .toLowerCase()}`
-                        )}
+                        {t(`${item.widget_title}`)}
                       </h5>
                       <ul className="footer-nav-link style-none">
                         {item.footer_link.map((li, i) => (
                           <li key={i}>
-                            <Link href={li.link}>
-                              {t(
-                                `${li.link_title
-                                  .replace(/\s+|&|’|'/g, "_")
-                                  .toLowerCase()}`
-                              )}
-                            </Link>
+                            <Link href={li.link}>{t(li.link_title)}</Link>
                           </li>
                         ))}
                       </ul>
@@ -157,6 +145,6 @@ const FooterOne = ({ style }: any) => {
       </div>
     </div>
   );
-}
+};
 
-export default FooterOne
+export default FooterOne;

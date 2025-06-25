@@ -749,7 +749,7 @@
     "advance_search": "بحث متقدم",
     "by_agent": "بواسطة الوكيل",
     "all agents": "جميع الوكلاء",
-    "address": "11910 جناح كليد رابيد 70، ويلياند، فيرجينيا، الولايات المتحدة الأمريكية",
+    "address": "11910 كلايد رابيد، جناح 210، ويلياند، فيرجينيا، الولايات المتحدة",
     "email": "Problixreal@demo.com",
     "copyright": "جميع الحقوق محفوظة @2024 بروبليكس inc.",
     "Company": "الشركة",
@@ -775,7 +775,8 @@
     "Rent Office": "تأجير مكاتب",
     "Dashboard": "لوحة التحكم",
     "​Buy Apartments": "شراء شقق",
-    "Blogs": "المقالات"
+    "Blogs": "المقالات",
+    "Faq’s": "الاسئلة الشائعة"
   },
   "SignupPage": {
     "Create Agent Account": "إنشاء حساب وكيل",
@@ -826,30 +827,5 @@
     "Passwords do not match": "كلمتا المرور غير متطابقتين",
     "Password must be at least 8 characters": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
     "Account created successfully!": "تم إنشاء الحساب بنجاح!"
-  },
-  "footer": {
-    "address": "11910 جناح كليد رابيد 70، ويلياند، فيرجينيا، الولايات المتحدة الأمريكية",
-    "contact": "تواصل",
-    "email": "Problixreal@demo.com",
-    "links": "روابط",
-    "legal": "قانوني",
-    "new_listing": "قائمة جديدة",
-    "home": "الرئيسية",
-    "membership": "العضوية",
-    "about_company": "عن الشركة",
-    "blog": "مدونة",
-    "explore_careers": "استكشاف الوظائف",
-    "pricing": "الأسعار",
-    "dashboard": "لوحة التحكم",
-    "terms___conditions": "الشروط والأحكام",
-    "cookie": "ملفات تعريف الارتباط",
-    "privacy_policy": "سياسة الخصوصية",
-    "faq_s": "الأسئلة الشائعة",
-    "buy_apartments": "شراء شقق",
-    "buy_condos": "شراء شقق سكنية",
-    "rent_houses": "تأجير منازل",
-    "rent_industrial": "تأجير صناعي",
-    "buy_villas": "شراء فيلات",
-    "rent_office": "تأجير مكاتب"
   }
 }
