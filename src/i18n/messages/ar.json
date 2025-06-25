@@ -2,7 +2,15 @@
   "home": {
     "banner": {
       "title": "الحصول على المنزل المثالي لأسرتك",
-      "description": "لدينا أكثر من 745,000 فيلات ومنازل وأراضي"
+      "description": "لدينا أكثر من 745,000 فيلات ومنازل وأراضي",
+      "selectSaleType": "اختر نوع البيع",
+      "selectRentType": "اختر نوع الإيجار",
+      "sale": "بيع",
+      "Residentialsale": "بيع سكني",
+      "Commercialsale": "بيع تجاري",
+      "rent": "إيجار",
+      "Residentialrent": "إيجار سكني",
+      "Commercialrent": "إيجار تجاري"
     }
   },
   "dashboard": {

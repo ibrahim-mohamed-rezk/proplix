@@ -184,7 +184,7 @@ const HeaderOne = ({
                 {/* auth buttons or user icon */}
                 {token ? (
                   <div className="d-flex align-items-center auth-btns-container gap-2">
-                    <div className="position-relative">
+                    <div className="position-relative me-[10px]">
                       {/* user icon  */}
                       <div
                         onClick={() => setShowDropdown(!showDropdown)}
@@ -195,23 +195,22 @@ const HeaderOne = ({
                       </div>
                       {showDropdown && (
                         <div
-                          className={`dropdown-menu show position-absolute end-1/2 transform ${
+                          className={`dropdown-menu !min-w-fit !w-fit show position-absolute end-1/2 transform ${
                             locale === "ar"
                               ? "-translate-x-1/2"
                               : "translate-x-1/2"
                           } mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn`}
-                          style={{ minWidth: "220px" }}
                         >
                           <Link
                             href="/my-profile?page=personal-information"
-                            className="dropdown-item flex items-center gap-2 px-4 py-3 hover:bg-primary-50 transition-colors"
+                            className="dropdown-item justify-center !w-fit !flex items-center gap-[8px] px-4 py-3 hover:bg-primary-50 transition-colors"
                           >
                             <i className="fa-regular fa-user text-primary-500"></i>
                             <span className="font-medium">{t("Profile")}</span>
                           </Link>
                           <button
                             onClick={logout}
-                            className="dropdown-item flex items-center gap-2 px-4 py-3 hover:bg-red-50 text-red-600 transition-colors w-full"
+                            className="dropdown-item !flex items-center justify-center gap-2 px-4 py-3 hover:bg-red-50 text-red-600 transition-colors w-full"
                           >
                             <i className="fa-regular fa-right-from-bracket"></i>
                             <span className="font-medium">{t("Logout")}</span>

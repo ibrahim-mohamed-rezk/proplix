@@ -32,7 +32,15 @@
   "home": {
     "banner": {
       "title": "Get the perfect home for your family",
-      "description": "We have over 745,000 villas, houses, and lands"
+      "description": "We have over 745,000 villas, houses, and lands",
+      "selectSaleType": "Select Sale Type",
+      "selectRentType": "Select Rent Type",
+      "sale": "Sale",
+      "Residentialsale": "Residential Sale",
+      "Commercialsale": "Commercial Sale",
+      "rent": "Rent",
+      "Residentialrent": "Residential Rent",
+      "Commercialrent": "Commercial Rent"
     }
   },
   "header": {
