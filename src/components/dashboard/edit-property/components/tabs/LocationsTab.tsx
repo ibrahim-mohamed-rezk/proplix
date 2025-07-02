@@ -1,16 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapPin, Eye, EyeOff } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import { PropertyData, PropertyLocation, LocationPoint } from '../../PropertyTypes';
-import { postData } from '@/libs/server/backendServer';
-import { AxiosHeaders } from 'axios';
-import mapboxgl from 'mapbox-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import { useTranslations } from 'next-intl';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { MapPin, Eye, EyeOff, Send } from "lucide-react";
+import { useParams } from "next/navigation";
+import {
+  PropertyData,
+  PropertyLocation,
+  LocationPoint,
+} from "../../PropertyTypes";
+import { postData } from "@/libs/server/backendServer";
+import { AxiosHeaders } from "axios";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { useTranslations } from "next-intl";
+import GoogleLocationInput from "@/components/common/GoogleLocationInput";
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || 'your-mapbox-token-here';
+mapboxgl.accessToken =
+  process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "your-mapbox-token-here";
 
 interface LocationTabProps {
   token: string;
@@ -23,7 +27,7 @@ interface LocationGroup {
 }
 
 interface PolygonGeoJSONFeature {
-  type: 'Feature';
+  type: "Feature";
   properties: {
     name: string;
     color: string;
@@ -33,13 +37,22 @@ interface PolygonGeoJSONFeature {
     location_points?: LocationPoint[];
   };
   geometry: {
-    type: 'Polygon';
-    coordinates: number[][][]; // Polygon coordinates (array of rings)
+    type: "Polygon";
+    coordinates: number[][][];
+  };
+}
+
+interface LocationData {
+  description: string;
+  placeId: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
   };
 }
 
 interface PointGeoJSONFeature {
-  type: 'Feature';
+  type: "Feature";
   properties: {
     name: string;
     color: string;
@@ -49,25 +62,28 @@ interface PointGeoJSONFeature {
     location_points?: LocationPoint[];
   };
   geometry: {
-    type: 'Point';
-    coordinates: number[]; // Point coordinates
+    type: "Point";
+    coordinates: number[];
   };
 }
 
-interface DrawEvent {
-  features: Array<{
-    geometry: {
-      type: string;
-      coordinates: number[][][]; // For polygons
-    };
-  }>;
+function getInitialSelectedLocation(): LocationData | null {
+  return null;
 }
 
-export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,token }) => {
+function getInitialLocationValue(): string {
+  return "";
+}
+
+export const LocationTab: React.FC<LocationTabProps> = ({
+  property,
+  onUpdate,
+  token,
+}) => {
   const params = useParams();
   const propertyId = params?.id as string;
-  console.log('Property Locations:', property);
-  const t = useTranslations('properties');
+  console.log("Property Locations:", property);
+  const t = useTranslations("properties");
 
   // Extract property data - handle both nested and direct structure
   const propertyData = property?.data || property;
@@ -75,28 +91,36 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
 
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const draw = useRef<MapboxDraw | null>(null);
   const existingMarkers = useRef<mapboxgl.Marker[]>([]);
+  const selectedLocationMarker = useRef<mapboxgl.Marker | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [showOldLocations, setShowOldLocations] = useState(true);
-  const [newSelectedPolygon, setNewSelectedPolygon] = useState<Array<{ lng: number; lat: number }>>([]);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupName, setPopupName] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(
+    getInitialSelectedLocation()
+  );
+  const [locationValue, setLocationValue] = useState<string>(
+    getInitialLocationValue()
+  );
 
   const loadExistingLocations = useCallback(() => {
     if (!map.current || !propertyLocations.length) return;
 
     // Clear existing markers and sources
-    existingMarkers.current.forEach(marker => marker.remove());
+    existingMarkers.current.forEach((marker) => marker.remove());
     existingMarkers.current = [];
 
     // Remove existing sources and layers
-    const existingSources = ['existing-areas', 'existing-points'];
-    existingSources.forEach(sourceId => {
+    const existingSources = ["existing-areas", "existing-points"];
+    existingSources.forEach((sourceId) => {
       if (map.current!.getSource(sourceId)) {
-        const layersToRemove = [`${sourceId}-fill`, `${sourceId}-stroke`, `${sourceId}-labels`, `${sourceId}-points`];
-        layersToRemove.forEach(layerId => {
+        const layersToRemove = [
+          `${sourceId}-fill`,
+          `${sourceId}-stroke`,
+          `${sourceId}-labels`,
+          `${sourceId}-points`,
+        ];
+        layersToRemove.forEach((layerId) => {
           if (map.current!.getLayer(layerId)) {
             map.current!.removeLayer(layerId);
           }
@@ -106,18 +130,30 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
     });
 
     // Group locations by name with proper typing
-    const locationGroups: LocationGroup = propertyLocations.reduce((groups: LocationGroup, location: PropertyLocation) => {
-      if (!groups[location.name]) {
-        groups[location.name] = [];
-      }
-      groups[location.name].push(location);
-      return groups;
-    }, {});
+    const locationGroups: LocationGroup = propertyLocations.reduce(
+      (groups: LocationGroup, location: PropertyLocation) => {
+        if (!groups[location.name]) {
+          groups[location.name] = [];
+        }
+        groups[location.name].push(location);
+        return groups;
+      },
+      {}
+    );
 
     // Create areas for each group
     const areaFeatures: PolygonGeoJSONFeature[] = [];
     const pointFeatures: PointGeoJSONFeature[] = [];
-    const colors = ['#45B7D1', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
+    const colors = [
+      "#45B7D1",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#FFEAA7",
+      "#DDA0DD",
+      "#98D8C8",
+      "#F7DC6F",
+    ];
     let colorIndex = 0;
 
     Object.entries(locationGroups).forEach(([name, locations]) => {
@@ -126,39 +162,40 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
 
       if (locations.length >= 3) {
         // Create polygon for 3+ points
-        const coordinates = locations.map(loc => [loc.longitude, loc.latitude]);
-
-        // Close the polygon by adding the first point at the end
+        const coordinates = locations.map((loc) => [
+          loc.longitude,
+          loc.latitude,
+        ]);
         coordinates.push(coordinates[0]);
 
         areaFeatures.push({
-          type: 'Feature',
+          type: "Feature",
           properties: {
             name: name,
             color: color,
             pointCount: locations.length,
-            locations: locations
+            locations: locations,
           },
           geometry: {
-            type: 'Polygon',
-            coordinates: [coordinates]
-          }
+            type: "Polygon",
+            coordinates: [coordinates],
+          },
         });
       } else {
         // Create points for 1-2 points
-        locations.forEach(location => {
+        locations.forEach((location) => {
           pointFeatures.push({
-            type: 'Feature',
+            type: "Feature",
             properties: {
               name: name,
               color: color,
               id: location.id,
-              location_points: location.location_points
+              location_points: location.location_points,
             },
             geometry: {
-              type: 'Point',
-              coordinates: [location.longitude, location.latitude]
-            }
+              type: "Point",
+              coordinates: [location.longitude, location.latitude],
+            },
           });
         });
       }
@@ -166,156 +203,168 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
 
     // Add area source and layers
     if (areaFeatures.length > 0) {
-      map.current!.addSource('existing-areas', {
-        type: 'geojson',
+      map.current!.addSource("existing-areas", {
+        type: "geojson",
         data: {
-          type: 'FeatureCollection',
-          features: areaFeatures
-        }
+          type: "FeatureCollection",
+          features: areaFeatures,
+        },
       });
 
       // Add fill layer
       map.current!.addLayer({
-        id: 'existing-areas-fill',
-        type: 'fill',
-        source: 'existing-areas',
+        id: "existing-areas-fill",
+        type: "fill",
+        source: "existing-areas",
         paint: {
-          'fill-color': ['get', 'color'],
-          'fill-opacity': 0.3
-        }
+          "fill-color": ["get", "color"],
+          "fill-opacity": 0.3,
+        },
       });
 
       // Add stroke layer
       map.current!.addLayer({
-        id: 'existing-areas-stroke',
-        type: 'line',
-        source: 'existing-areas',
+        id: "existing-areas-stroke",
+        type: "line",
+        source: "existing-areas",
         paint: {
-          'line-color': ['get', 'color'],
-          'line-width': 2,
-          'line-opacity': 0.8
-        }
+          "line-color": ["get", "color"],
+          "line-width": 2,
+          "line-opacity": 0.8,
+        },
       });
 
       // Add labels layer for area names
       map.current!.addLayer({
-        id: 'existing-areas-labels',
-        type: 'symbol',
-        source: 'existing-areas',
+        id: "existing-areas-labels",
+        type: "symbol",
+        source: "existing-areas",
         layout: {
-          'text-field': ['get', 'name'],
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-size': 14,
-          'text-anchor': 'center',
-          'text-allow-overlap': false,
-          'text-ignore-placement': false
+          "text-field": ["get", "name"],
+          "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+          "text-size": 14,
+          "text-anchor": "center",
+          "text-allow-overlap": false,
+          "text-ignore-placement": false,
         },
         paint: {
-          'text-color': '#000000',
-          'text-halo-color': '#ffffff',
-          'text-halo-width': 2,
-          'text-halo-blur': 1
-        }
+          "text-color": "#000000",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 2,
+          "text-halo-blur": 1,
+        },
       });
 
       // Add click handler for areas
-      map.current!.on('click', 'existing-areas-fill', (e: mapboxgl.MapMouseEvent) => {
-        if (e.features && e.features[0] && e.features[0].properties) {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .addTo(map.current!);
+      map.current!.on(
+        "click",
+        "existing-areas-fill",
+        (e: mapboxgl.MapMouseEvent) => {
+          if (e.features && e.features[0] && e.features[0].properties) {
+            new mapboxgl.Popup().setLngLat(e.lngLat).addTo(map.current!);
+          }
         }
-      });
+      );
 
       // Change cursor on hover
-      map.current!.on('mouseenter', 'existing-areas-fill', () => {
+      map.current!.on("mouseenter", "existing-areas-fill", () => {
         if (map.current) {
-          map.current.getCanvas().style.cursor = 'pointer';
+          map.current.getCanvas().style.cursor = "pointer";
         }
       });
 
-      map.current!.on('mouseleave', 'existing-areas-fill', () => {
+      map.current!.on("mouseleave", "existing-areas-fill", () => {
         if (map.current) {
-          map.current.getCanvas().style.cursor = '';
+          map.current.getCanvas().style.cursor = "";
         }
       });
     }
 
     // Add point source and layers for single/double points
     if (pointFeatures.length > 0) {
-      map.current!.addSource('existing-points', {
-        type: 'geojson',
+      map.current!.addSource("existing-points", {
+        type: "geojson",
         data: {
-          type: 'FeatureCollection',
-          features: pointFeatures
-        }
+          type: "FeatureCollection",
+          features: pointFeatures,
+        },
       });
 
       map.current!.addLayer({
-        id: 'existing-points-points',
-        type: 'circle',
-        source: 'existing-points',
+        id: "existing-points-points",
+        type: "circle",
+        source: "existing-points",
         paint: {
-          'circle-color': ['get', 'color'],
-          'circle-radius': 8,
-          'circle-opacity': 0.8,
-          'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 2
-        }
+          "circle-color": ["get", "color"],
+          "circle-radius": 8,
+          "circle-opacity": 0.8,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
+        },
       });
 
       // Add labels for individual points
       map.current!.addLayer({
-        id: 'existing-points-labels',
-        type: 'symbol',
-        source: 'existing-points',
+        id: "existing-points-labels",
+        type: "symbol",
+        source: "existing-points",
         layout: {
-          'text-field': ['get', 'name'],
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-size': 12,
-          'text-anchor': 'top',
-          'text-offset': [0, 1.5],
-          'text-allow-overlap': false,
-          'text-ignore-placement': false
+          "text-field": ["get", "name"],
+          "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+          "text-size": 12,
+          "text-anchor": "top",
+          "text-offset": [0, 1.5],
+          "text-allow-overlap": false,
+          "text-ignore-placement": false,
         },
         paint: {
-          'text-color': '#000000',
-          'text-halo-color': '#ffffff',
-          'text-halo-width': 2,
-          'text-halo-blur': 1
-        }
+          "text-color": "#000000",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 2,
+          "text-halo-blur": 1,
+        },
       });
 
       // Add click handler for points
-      map.current!.on('click', 'existing-points-points', (e: mapboxgl.MapMouseEvent) => {
-        if (e.features && e.features[0] && e.features[0].properties) {
-          const properties = e.features[0].properties;
+      map.current!.on(
+        "click",
+        "existing-points-points",
+        (e: mapboxgl.MapMouseEvent) => {
+          if (e.features && e.features[0] && e.features[0].properties) {
+            const properties = e.features[0].properties;
 
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(
+                `
               <div>
-                <p><strong>Name:</strong> ${properties.name || 'N/A'}</p>
-                <p><strong>ID:</strong> ${properties.id || 'N/A'}</p>
-                ${properties.location_points && properties.location_points.length > 0 ?
-                `<p><strong>Location Points:</strong> ${properties.location_points.length}</p>` : ''}
+                <p><strong>Name:</strong> ${properties.name || "N/A"}</p>
+                <p><strong>ID:</strong> ${properties.id || "N/A"}</p>
+                ${
+                  properties.location_points &&
+                  properties.location_points.length > 0
+                    ? `<p><strong>Location Points:</strong> ${properties.location_points.length}</p>`
+                    : ""
+                }
                 <p><strong>Type:</strong> Point Location</p>
               </div>
-            `)
-            .addTo(map.current!);
+            `
+              )
+              .addTo(map.current!);
+          }
         }
-      });
+      );
 
       // Change cursor on hover
-      map.current!.on('mouseenter', 'existing-points-points', () => {
+      map.current!.on("mouseenter", "existing-points-points", () => {
         if (map.current) {
-          map.current.getCanvas().style.cursor = 'pointer';
+          map.current.getCanvas().style.cursor = "pointer";
         }
       });
 
-      map.current!.on('mouseleave', 'existing-points-points', () => {
+      map.current!.on("mouseleave", "existing-points-points", () => {
         if (map.current) {
-          map.current.getCanvas().style.cursor = '';
+          map.current.getCanvas().style.cursor = "";
         }
       });
     }
@@ -335,136 +384,165 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [31.2357, 30.0444], // Default to Cairo, Egypt
-      zoom: 12
+      zoom: 12,
+      interactive: true, // Keep map interactive for viewing but no drawing
     });
 
-    draw.current = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        polygon: true
-      },
-      defaultMode: 'draw_polygon'
-    });
-
-    map.current.addControl(draw.current);
-
-    map.current.on('load', () => {
+    map.current.on("load", () => {
       if (propertyLocations.length > 0) {
         loadExistingLocations();
       }
     });
 
-    map.current.on('click', handleMapClick);
-
-    // Listen for draw events
-    map.current.on('draw.create', handleDrawCreate);
-    map.current.on('draw.update', handleDrawUpdate);
-    map.current.on('draw.delete', handleDrawDelete);
+    // Center map on selected location when it changes
+    if (selectedLocation && selectedLocation.coordinates && map.current) {
+      map.current.setCenter([
+        selectedLocation.coordinates.lng,
+        selectedLocation.coordinates.lat,
+      ]);
+      map.current.setZoom(15);
+    }
 
     return () => {
       if (map.current) {
         map.current.remove();
         map.current = null;
       }
+      // Clean up selected location marker
+      if (selectedLocationMarker.current) {
+        selectedLocationMarker.current.remove();
+        selectedLocationMarker.current = null;
+      }
     };
-  }, [mapContainer, propertyLocations, loadExistingLocations]);
+  }, [
+    mapContainer,
+    propertyLocations,
+    loadExistingLocations,
+    selectedLocation,
+  ]);
 
   const toggleOldLocations = () => {
     setShowOldLocations(!showOldLocations);
 
     // Toggle visibility of area and point layers
-    const layers = ['existing-areas-fill', 'existing-areas-stroke', 'existing-areas-labels', 'existing-points-points', 'existing-points-labels'];
+    const layers = [
+      "existing-areas-fill",
+      "existing-areas-stroke",
+      "existing-areas-labels",
+      "existing-points-points",
+      "existing-points-labels",
+    ];
 
-    layers.forEach(layerId => {
+    layers.forEach((layerId) => {
       if (map.current && map.current.getLayer(layerId)) {
         map.current.setLayoutProperty(
           layerId,
-          'visibility',
-          showOldLocations ? 'none' : 'visible'
+          "visibility",
+          showOldLocations ? "none" : "visible"
         );
       }
     });
   };
 
-  const handleMapClick = () => {
-  // Map click is now only used for polygon drawing via MapboxDraw
-  // No manual point selection needed
-  };
+  const handleLocationChange = (locationData: LocationData) => {
+    console.log("Location selected:", locationData);
+    setSelectedLocation(locationData);
 
-  const handleDrawCreate = (e: DrawEvent) => {
-    // Handle polygon creation
-    if (e.features && e.features[0] && e.features[0].geometry.type === 'Polygon') {
-      const coordinates = e.features[0].geometry.coordinates[0];
-      setNewSelectedPolygon(coordinates.map((coord: number[]) => ({ lng: coord[0], lat: coord[1] })));
-      console.log('New polygon created:', coordinates);
+    // Remove previous selected location marker
+    if (selectedLocationMarker.current) {
+      selectedLocationMarker.current.remove();
+      selectedLocationMarker.current = null;
+    }
+
+    // Center map on selected location and add marker
+    if (locationData.coordinates && map.current) {
+      map.current.setCenter([
+        locationData.coordinates.lng,
+        locationData.coordinates.lat,
+      ]);
+      map.current.setZoom(15);
+
+      // Create a custom marker element with map pointer design
+      const markerElement = document.createElement("div");
+      markerElement.className = "custom-marker";
+      markerElement.style.cssText = `
+        width: 40px;
+        height: 50px;
+        cursor: pointer !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+        z-index: 1000;
+        position: relative;
+        filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));
+      `;
+
+      // Create the map pin pointer shape
+      markerElement.innerHTML = `
+        <svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
+          <!-- Pin body -->
+          <path d="M20 0C9 0 0 9 0 20C0 35 20 50 20 50S40 35 40 20C40 9 31 0 20 0Z" 
+                fill="#dc3545" stroke="#fff" stroke-width="2"/>
+          <!-- Inner circle -->
+          <circle cx="20" cy="20" r="8" fill="#fff"/>
+          <!-- Pin icon -->
+          <text x="20" y="26" text-anchor="middle" font-size="12" fill="#dc3545">📍</text>
+        </svg>
+      `;
+
+      // Add hover effects
+      markerElement.addEventListener("mouseenter", () => {
+        markerElement.style.transform = "scale(1.1)";
+        markerElement.style.filter = "drop-shadow(0 4px 15px rgba(0,0,0,0.4))";
+      });
+
+      markerElement.addEventListener("mouseleave", () => {
+        markerElement.style.transform = "scale(1)";
+        markerElement.style.filter = "drop-shadow(0 2px 10px rgba(0,0,0,0.3))";
+      });
+
+      // Add the marker for the selected location
+      selectedLocationMarker.current = new mapboxgl.Marker(markerElement)
+        .setLngLat([locationData.coordinates.lng, locationData.coordinates.lat])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 }).setHTML(`
+              <div style="padding: 10px;">
+                <h6 style="margin: 0 0 8px 0; color: #dc3545; font-weight: bold;">Selected Location</h6>
+                <p style="margin: 0 0 4px 0;"><strong>Name:</strong> ${
+                  locationData.description
+                }</p>
+                <p style="margin: 0 0 4px 0;"><strong>Coordinates:</strong> ${locationData.coordinates.lat.toFixed(
+                  6
+                )}, ${locationData.coordinates.lng.toFixed(6)}</p>
+                <p style="margin: 0;"><strong>Place ID:</strong> ${
+                  locationData.placeId
+                }</p>
+              </div>
+            `)
+        )
+        .addTo(map.current);
     }
   };
 
-  const handleDrawUpdate = (e: DrawEvent) => {
-    // Handle polygon update
-    if (e.features && e.features[0] && e.features[0].geometry.type === 'Polygon') {
-      const coordinates = e.features[0].geometry.coordinates[0];
-      setNewSelectedPolygon(coordinates.map((coord: number[]) => ({ lng: coord[0], lat: coord[1] })));
-      console.log('Polygon updated:', coordinates);
-    }
-  };
-
-  const handleDrawDelete = () => {
-    // Handle polygon deletion
-    setNewSelectedPolygon([]);
-    console.log('Polygon deleted');
-  };
-
-  const getCurrentCoordinates = (): number[][] => {
-    if (!draw.current) return [];
-
-    // Check if there are drawn features (polygons)
-    const data = draw.current.getAll();
-    if (data.features.length > 0) {
-      const feature = data.features[0];
-      if (feature.geometry.type === 'Polygon') {
-        return feature.geometry.coordinates[0] as number[][];
-      }
-    }
-
-    return [];
-  };
-
-  const clearNewPolygon = () => {
-    setNewSelectedPolygon([]);
-
-    // Clear any drawn features
-    if (draw.current) {
-      draw.current.deleteAll();
-    }
-  };
-
-  const handleLogCoordinates = async () => {
-    // const token = localStorage.getItem('token');
+  const handleSendLocation = async () => {
     if (!token) {
-      alert('You are not authenticated');
+      alert("You are not authenticated");
       return;
     }
 
-    const currentCoordinates = getCurrentCoordinates();
-
-    if (currentCoordinates.length === 0) {
-      alert('Please draw a polygon area first');
+    if (!selectedLocation || !selectedLocation.coordinates) {
+      alert("Please select a location from the Google suggestions first");
       return;
     }
 
-    if (!popupName.trim()) {
-      alert('Please enter a name for the coordinates');
-      return;
-    }
-
-    console.log('Logging Coordinates:', {
+    console.log("Sending Location:", {
       propertyId,
-      name: popupName,
-      coordinates: currentCoordinates,
-      totalPoints: currentCoordinates.length
+      description: selectedLocation.description,
+      placeId: selectedLocation.placeId,
+      coordinates: selectedLocation.coordinates,
     });
 
     try {
@@ -474,146 +552,107 @@ export const LocationTab: React.FC<LocationTabProps> = ({ property, onUpdate,tok
         `agent/locations`,
         {
           property_listing_id: propertyId,
-          name: popupName.trim(),
-          polygon: currentCoordinates
+          name: selectedLocation.description,
+          latitude: selectedLocation.coordinates.lat,
+          longitude: selectedLocation.coordinates.lng,
+          place_id: selectedLocation.placeId,
         },
         new AxiosHeaders({
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         })
       );
 
-      alert('Coordinates logged successfully!');
+      alert("Location sent successfully!");
+
+      // Clear the selection
+      setSelectedLocation(null);
+      setLocationValue("");
+
+      // Remove selected location marker
+      if (selectedLocationMarker.current) {
+        selectedLocationMarker.current.remove();
+        selectedLocationMarker.current = null;
+      }
 
       // Call onUpdate function
       if (onUpdate) {
         onUpdate();
       }
-
     } catch (error) {
-      console.error('Error logging coordinates:', error);
-      alert('Failed to log coordinates');
+      console.error("Error sending location:", error);
+      alert("Failed to send location");
     } finally {
       setLoading(false);
-      setShowPopup(false);
-      setPopupName('');
     }
-  };
-
-  const handlePopupNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPopupName(e.target.value);
   };
 
   return (
     <div className="mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="h5 fw-semibold text-muted">
-          {t("Property Locations")}
-        </h3>
+      {/* <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="h5 fw-semibold text-muted">{t("Property Locations")}</h3>
         <div className="d-flex gap-2">
           <button
             onClick={toggleOldLocations}
-            className={`btn fw-medium shadow-sm transition-all d-flex align-items-center gap-2 ${showOldLocations
-              ? 'btn-primary'
-              : 'btn-secondary'
-              }`}
+            className={`btn fw-medium shadow-sm transition-all d-flex align-items-center gap-2 ${
+              showOldLocations ? "btn-primary" : "btn-secondary"
+            }`}
           >
             {showOldLocations ? <Eye size={20} /> : <EyeOff size={20} />}
-            {showOldLocations ? t('Hide Old Locations') : t('Show Old Locations')}
-          </button>
-
-          {!showOldLocations && (
-            <button
-              onClick={clearNewPolygon}
-              className="btn btn-danger fw-medium shadow-sm transition-all"
-            >
-              {t("Clear Polygon")}
-            </button>
-          )}
-
-          <button
-            onClick={() => setShowPopup(true)}
-            className="btn btn-primary fw-medium shadow-sm transition-all d-flex align-items-center gap-2"
-            disabled={getCurrentCoordinates().length === 0}
-          >
-            <MapPin size={20} />
-            {t("create Area")} ({getCurrentCoordinates().length} {t("points")})
+            {showOldLocations
+              ? t("Hide Old Locations")
+              : t("Show Old Locations")}
           </button>
         </div>
+      </div> */}
+
+      {/* Google Location Search Section */}
+      <div className="mb-4 p-3 bg-light border border-primary border-opacity-25 rounded">
+        <h4 className="h6 fw-semibold mb-3 text-primary">
+          {t("Search and Select Location")}
+        </h4>
+
+        <div className="mb-3">
+          <GoogleLocationInput
+            onLocationChange={handleLocationChange}
+            defaultValue=""
+            placeholder={t("Search for a location...")}
+            disabled={loading}
+          />
+        </div>
+
+
+        {/* Send Location Button */}
+        <button
+          onClick={handleSendLocation}
+          className="btn btn-success fw-medium shadow-sm transition-all d-flex align-items-center gap-2"
+          disabled={
+            loading || !selectedLocation || !selectedLocation.coordinates
+          }
+        >
+          <Send size={20} />
+          {loading ? t("Sending...") : t("Send Location")}
+        </button>
       </div>
 
       {/* Instructions */}
-      <div className="mb-4 p-3 bg-light border border-primary border-opacity-25 rounded">
-        <p className="small text-primary mb-0">
-          <strong className="px-3">{t("Instructions")}       :</strong>
-          {showOldLocations
-            ? t('Click')
-            : t('Use the')
-          }
+      <div className="mb-4 p-3 bg-light border border-info border-opacity-25 rounded">
+        <p className="small text-info mb-0">
+          <strong>{t("Instructions")}:</strong>{" "}
+          {t(
+            "Use the search box above to find and select a location from Google's suggestions, then click 'Send Location' to add it to the property."
+          )}
         </p>
       </div>
 
+      {/* Map Display */}
       <div className="mb-4">
         <div
           ref={mapContainer}
           className="rounded border border-secondary-subtle"
-          style={{ height: '400px' }}
+          style={{ height: "400px" }}
         />
       </div>
-
-      {/* Show summary of selected polygon */}
-      {newSelectedPolygon.length > 0 && (
-        <div className="mb-4 p-3 bg-light border border-primary border-opacity-25 rounded">
-          <p className="small text-primary mb-0">
-            <strong>{t("New Polygon Area:")}</strong> {newSelectedPolygon.length} {t("points")}
-          </p>
-          <div className="mt-2" style={{ maxHeight: '8rem', overflowY: 'auto' }}>
-            {newSelectedPolygon.map((point, index) => (
-              <div key={index} className="small text-primary">
-                {t("Point")} {index + 1}: {point.lat.toFixed(6)}, {point.lng.toFixed(6)}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Popup to enter name and log coordinates */}
-      {showPopup && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
-          <div className="bg-white p-4 rounded shadow" style={{ width: '33.333333%', maxWidth: '28rem' }}>
-            <h3 className="h5 fw-semibold mb-3">{t("Enter Name for Area")}</h3>
-            <p className="small text-muted mb-3">
-              {t("Enter Name for Area")} {getCurrentCoordinates().length} {t("coordinate points")}
-            </p>
-            <input
-              type="text"
-              value={popupName}
-              onChange={handlePopupNameChange}
-              className="form-control mb-3"
-              placeholder="Enter area name"
-              autoFocus
-            />
-            <div className="d-flex justify-content-end gap-3">
-              <button
-                onClick={() => {
-                  setShowPopup(false);
-                  setPopupName('');
-                }}
-                className="btn btn-outline-secondary transition-all"
-              >
-                {t("Cancel")}
-              </button>
-              <button
-                onClick={handleLogCoordinates}
-                className="btn btn-success transition-all"
-                disabled={loading || !popupName.trim()}
-              >
-                {loading ? t('loading') : t('create Area')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

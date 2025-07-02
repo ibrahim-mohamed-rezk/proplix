@@ -36,7 +36,9 @@ const PropertyListBody = ({ token }: { token: string }) => {
             <table className="table property-list-table">
               <thead>
                 <tr>
+                  <th scope="col">{t("image")}</th>
                   <th scope="col">{t("title")}</th>
+                  <th scope="col">{t("price")}</th>
                   <th scope="col">{t("date")}</th>
                   <th scope="col">{t("view")}</th>
                   <th scope="col">{tProps("Status")}</th>

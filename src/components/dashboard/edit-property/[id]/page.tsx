@@ -24,8 +24,10 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
   const propertyId = params?.id as string;
 
   // const { property, loading, toast } = useProperty(propertyId, token);
-  const { property, propertystat, loading, toast } = useProperty(propertyId, token);
-
+  const { property, propertystat, loading, toast } = useProperty(
+    propertyId,
+    token
+  );
 
   const [activeTab, setActiveTab] = useState<TabType>("main");
 
@@ -34,7 +36,13 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
 
     switch (activeTab) {
       case "main":
-        return propertystat ? <MainTab token={token} property={property} propertystat={propertystat} /> : null;
+        return propertystat ? (
+          <MainTab
+            token={token}
+            property={property}
+            propertystat={propertystat}
+          />
+        ) : null;
       case "amenities":
         return <AmenitiesTab property={property} token={token} />;
       case "features":
@@ -46,7 +54,13 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
       case "floorplan":
         return <FloorPlanTab property={property} token={token} />;
       default:
-        return propertystat ? <MainTab token={token} property={property} propertystat={propertystat} /> : null;
+        return propertystat ? (
+          <MainTab
+            token={token}
+            property={property}
+            propertystat={propertystat}
+          />
+        ) : null;
     }
   };
 
@@ -65,10 +79,10 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
       )}
 
       <div className="container bg-red-500 rounded b overflow-hidden">
-        <div className="">
+        <div className=" m-0 p-0">
           {/* Header */}
-          <div className="d-flex justify-content-between align-items-center m-4">
-            <div>
+          <div className="d-flex justify-content-between  my-4">
+            <div className="d-flex justify-between container ">
               <h2 className="h3 font-weight-bold text-dark mb-2">
                 {t("property_title")}: {property?.data?.descriptions?.en?.title}
               </h2>
@@ -96,20 +110,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
                   </span>
                 </div>
               </div>
-
             </div>
-            {/* <div className="d-flex space-x-3">
-              <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className={`btn ${isFavorite ? 'btn-danger' : 'btn-secondary'} text-white`}
-              >
-                <Heart
-                  size={20}
-                  className={`mr-2 ${isFavorite ? 'fill-current' : ''}`}
-                />
-                {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-              </button>
-            </div> */}
           </div>
 
           {/* Tab Navigation */}
@@ -120,8 +121,9 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
                 label={t(tab.label)}
                 isActive={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`btn ${activeTab === tab.id ? "btn-primary" : "btn-light"
-                  }`}
+                className={`btn ${
+                  activeTab === tab.id ? "btn-primary" : "btn-light"
+                }`}
               />
             ))}
           </div>

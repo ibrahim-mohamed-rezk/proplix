@@ -14,33 +14,37 @@ const ConfirmationModal = ({
   message,
   confirmText,
   cancelText,
-  locale = "en"
+  locale = "en",
 }: {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-    title: string;
-    message: string;
-    confirmText: string;
-    cancelText: string;
+  title: string;
+  message: string;
+  confirmText: string;
+  cancelText: string;
   locale?: string;
 }) => {
   if (!isOpen) return null;
 
   // Determine if the locale is RTL based on the locale string
-  const isRTL = locale === 'ar';
-  const direction = isRTL ? 'rtl' : 'ltr';
-  
+  const isRTL = locale === "ar";
+  const direction = isRTL ? "rtl" : "ltr";
+
   return (
-    <div 
-      className="modal fade show d-block" 
-      tabIndex={-1} 
-      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+    <div
+      className="modal fade show d-block"
+      tabIndex={-1}
+      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
       dir={direction}
     >
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
-          <div className={`modal-header ${isRTL ? 'justify-content-between flex-row-reverse' : ''}`}>
+          <div
+            className={`modal-header ${
+              isRTL ? "justify-content-between flex-row-reverse" : ""
+            }`}
+          >
             <h5 className="modal-title">{title}</h5>
             <button
               type="button"
@@ -49,13 +53,13 @@ const ConfirmationModal = ({
               aria-label="Close"
             ></button>
           </div>
-          <div className={`modal-body ${isRTL ? 'text-end' : 'text-start'}`}>
+          <div className={`modal-body ${isRTL ? "text-end" : "text-start"}`}>
             <p className="mb-0">{message}</p>
           </div>
-          <div className={`modal-footer ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={`modal-footer ${isRTL ? "flex-row-reverse" : ""}`}>
             <button
               type="button"
-              className={`btn btn-secondary ${isRTL ? 'ms-2' : 'me-2'}`}
+              className={`btn btn-secondary ${isRTL ? "ms-2" : "me-2"}`}
               onClick={onClose}
             >
               {cancelText}
@@ -121,6 +125,31 @@ const PropertyTableBody = ({
     setPropertyToDelete(null);
   };
 
+  // Helper function to format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  // Helper function to get status background class
+  const getStatusBgClass = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "rent":
+        return "bg-success";
+      case "sale":
+        return "bg-primary";
+      case "pending":
+        return "bg-warning";
+      default:
+        return "bg-secondary";
+    }
+  };
+
+  // Helper function to capitalize status
+  const capitalizeStatus = (status: string) => {
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
   return (
     <>
       <tbody className="border-0">
@@ -129,7 +158,7 @@ const PropertyTableBody = ({
             <tr key={item.id}>
               <td>
                 <div
-                  className="d-lg-flex align-items-center position-relative"
+                  className=" align-items-center position-relative"
                   style={{ gap: "10px" }}
                 >
                   <Image
@@ -140,27 +169,37 @@ const PropertyTableBody = ({
                     className="p-img"
                     style={{ objectFit: "cover" }}
                   />
-                  <div className="ps-lg-4 md-pt-10">
+                  {/* <div className="ps-lg-4 md-pt-10">
                     <a
                       href="#"
                       className="property-name tran3s color-dark fw-500 fs-20 stretched-link"
                     >
                       {item.title}
                     </a>
-                    <div className="address">{item.address}</div>
+                    <div className="address">
+                      {item.area?.description?.en?.name ||
+                        item.area?.name ||
+                        "No address"}
+                    </div>
                     <strong className="price color-dark">${item.price}</strong>
-                  </div>
+                  </div> */}
                 </div>
               </td>
-              <td>{item.date}</td>
-              <td>{item.view}</td>
+              <td>{item.title}</td>
+              <td>{item.price} EGY</td>
+              <td>{formatDate(item.created_at)}</td>
+              <td>{item.views || 0}</td>
               <td>
-                <div className={`property-status ${item.status_bg}`}>
-                  {item.status}
+                <div
+                  className={`property-status ${getStatusBgClass(
+                    item.status
+                  )} text-white px-2 py-1 rounded`}
+                >
+                  {capitalizeStatus(item.status)}
                 </div>
               </td>
               <td>
-                <div className="action-dots float-end">
+                <div className="action-dots float-end px-4">
                   <button
                     className="action-btn dropdown-toggle"
                     type="button"
@@ -170,7 +209,7 @@ const PropertyTableBody = ({
                     <span></span>
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end">
-                    <li>
+                    {/* <li>
                       <a
                         className="dropdown-item"
                         href={`/${locale}/dashboard/add-property`}
@@ -184,7 +223,7 @@ const PropertyTableBody = ({
                         />{" "}
                         {tProps("Create Property")}
                       </a>
-                    </li>
+                    </li> */}
                     <li>
                       <a
                         className="dropdown-item"
