@@ -37,7 +37,7 @@ const HomeOne = async ({ locale }: { locale: string }) => {
 
   return (
     <>
-      <HeaderOne user={user} token={token} style={false} />
+      <HeaderOne token={token} style={false} />
       <Banner />
       <BLockFeatureOne />
       {/* <BLockFeatureTwo /> */}

@@ -105,7 +105,7 @@ const page = async () => {
 
   return (
     <div className="!bg-[#fff]">
-      <HeaderOne user={user} token={token} style={false} />
+      <HeaderOne token={token} style={false} />
       <Banner />
       <div className="z-1 pt-[64px] pb-250 xl-pb-150 position-relative">
         <div className="container mx-auto">
