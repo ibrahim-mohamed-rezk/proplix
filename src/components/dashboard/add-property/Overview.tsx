@@ -1,25 +1,28 @@
-"use client";
+"use client"; 
 
-import React, { useState, useEffect, ChangeEvent, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import GoogleLocationInput from "@/components/common/GoogleLocationInput";
 import { useForm } from "react-hook-form";
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import RichTextEditor from "@/components/RichTextEditor";
 import { toast } from "react-toastify";
+import RichTextEditor from "@/components/RichTextEditor";
+import { ChevronDown, ChevronUp, DollarSign, Home, FileText, Globe, Camera, Check, X } from "lucide-react";
 import Image from "next/image";
 
 type FormInputs = {
   // General Information
   type_id: string;
   area_id: string;
+  // userId: string;
   price: string;
   down_price: string;
   sqt: string;
   bedroom: string;
   bathroom: string;
-  kitichen : string;
+  kitchen: string;
   status: string;
   type: string;
   immediate_delivery: string;
@@ -29,18 +32,12 @@ type FormInputs = {
   description_en: string;
   keywords_en: string;
   slug_en: string;
-  meta_title_en: string;
-  meta_description_en: string;
-  meta_keywords_en: string;
   
   // Arabic fields
   title_ar: string;
   description_ar: string;
   keywords_ar: string;
   slug_ar: string;
-  meta_title_ar: string;
-  meta_description_ar: string;
-  meta_keywords_ar: string;
 };
 
 type SelectOption = {
@@ -64,6 +61,23 @@ type AreaOption = {
   };
 };
 
+interface LocationData {
+  description: string;
+  placeId: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
+
+type AgentOption = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+};
+
 type ImagePreview = {
   file: File;
   url: string;
@@ -73,857 +87,825 @@ type ImagePreview = {
 const CreatePropertyPage = ({ token }: { token: string }) => {
   const t = useTranslations("properties");
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormInputs>();
+
   const [descriptionEn, setDescriptionEn] = useState<string>("");
   const [descriptionAr, setDescriptionAr] = useState<string>("");
-  const [imagesPreviews, setImagesPreviews] = useState<ImagePreview[]>([]);
+  const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
 
-  // State for dropdown values
-  const [selectValues, setSelectValues] = useState({
-    type_id: '',
-    area_id: '',
-    status: '',
-    type: '',
-    immediate_delivery: ''
+  // Collapsible sections state
+  const [expandedSections, setExpandedSections] = useState({
+    basic: true,
+    pricing: true,
+    rooms: true,
+    details: true,
+    arabic: true,
+    english: true,
+    images: true
   });
 
   // State for dropdown options
-  const [propertyTypes, setPropertyTypes] = useState<{ data: SelectOption[] }>({ data: [] });
-  const [areas, setAreas] = useState<{data:AreaOption[]}>({data:[]});
+  const [propertyTypes, setPropertyTypes] = useState<SelectOption[]>([]);
+  const [areas, setAreas] = useState<AreaOption[]>([]);
+  // const [agents, setAgents] = useState<AgentOption[]>([]);
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
 
-  // Dropdown handlers
-  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectValues(prev => ({ ...prev, type_id: e.target.value }));
+  const showToast = (message: string, type: "success" | "error" | "info" = "info") => {
+    if (type === "success") {
+      toast.success(message);
+    } else if (type === "error") {
+      toast.error(message);
+    } else {
+      toast.info(message);
+    }
   };
 
-  const handleAreaChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectValues(prev => ({ ...prev, area_id: e.target.value }));
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
-  const handleStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectValues(prev => ({ ...prev, status: e.target.value }));
-  };
+  const handleImageSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
 
-  const handleTypeSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectValues(prev => ({ ...prev, type: e.target.value }));
-  };
-
-  const handleImmediateDeliveryChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectValues(prev => ({ ...prev, immediate_delivery: e.target.value }));
-  };
-
-  // Image handling functions
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const newPreviews: ImagePreview[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const url = URL.createObjectURL(file);
-      const id = Date.now().toString() + i;
-
-      newPreviews.push({
-        file,
-        url,
-        id
-      });
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview.url);
     }
 
-    setImagesPreviews(prev => [...prev, ...newPreviews]);
+    const file = files[0];
+    const url = URL.createObjectURL(file);
+    const id = `${Date.now()}-${Math.random()}`;
 
-    // Reset the input value to allow selecting the same files again
-    e.target.value = '';
+    setImagePreview({ file, url, id });
   };
 
-  const removeImage = (imageId: string) => {
-    setImagesPreviews(prev => {
-      const imageToRemove = prev.find(img => img.id === imageId);
-      if (imageToRemove) {
-        URL.revokeObjectURL(imageToRemove.url);
-      }
-      return prev.filter(img => img.id !== imageId);
-    });
+  const handleRemoveImage = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview.url);
+      setImagePreview(null);
+    }
   };
 
-  // Clean up object URLs when component unmounts
   useEffect(() => {
     return () => {
-      imagesPreviews.forEach(preview => {
-        URL.revokeObjectURL(preview.url);
-      });
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview.url);
+      }
     };
   }, []);
 
-  // Fetch dropdown data on component mount
   useEffect(() => {
     const fetchDropdownData = async () => {
+      // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
       if (!token) {
-        toast.error("Authentication token not found");
+        showToast(t("auth_token_not_found"), "error");
         return;
       }
 
       try {
-        // Fetch types and areas - adjust API endpoints as needed
         const [typesResponse, areasResponse] = await Promise.all([
           getData("types", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` })),
-          getData("areas", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` }))
+          getData("areas", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` })),
+          // getData("owner/agents", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` }))
         ]);
 
-        if (typesResponse.status) setPropertyTypes(typesResponse.data);
-        if (areasResponse.status) setAreas(areasResponse.data);
+        if (typesResponse.status) setPropertyTypes(typesResponse.data.data);
+        if (areasResponse.status) setAreas(areasResponse.data.data);
+        // setAgents(agentsResponse);
+
       } catch (error) {
         console.error("Error fetching dropdown data:", error);
-        toast.error("Error fetching dropdown data");
+        showToast(t("error_fetching_dropdown_data"), "error");
       }
     };
 
     fetchDropdownData();
-  }, [token]);
+  }, []);
 
   const onSubmit = async (data: FormInputs) => {
-    if (!token) {
-      toast.error("Authentication token not found");
-      return;
-    }
+  // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+  if (!token) {
+    showToast(t("auth_token_not_found"), "error");
+    return;
+  }
 
-    // Check if required select values are filled
-    if (!selectValues.type_id || !selectValues.area_id || !selectValues.status || 
-        !selectValues.type || !selectValues.immediate_delivery) {
-      toast.error("Please fill all required dropdown fields");
-      return;
-    }
+  if (!imagePreview) {
+    showToast(t("please_select_an_image"), "error");
+    return;
+  }
 
-    console.log('Form data:', data);
-    console.log('Select values:', selectValues);
+  const formData = new FormData();
+  
+  formData.append("type_id", data.type_id);
+  formData.append("area_id", data.area_id);
+  // formData.append("user_id", data.userId);
+  formData.append("price", data.price);
+  formData.append("down_price", data.down_price);
+  formData.append("sqt", data.sqt);
+  formData.append("bedroom", data.bedroom);
+  formData.append("bathroom", data.bathroom);
+  formData.append("kitichen", data.kitchen);
+  formData.append("status", data.status);
+  formData.append("type", data.type);
+  formData.append("immediate_delivery", data.immediate_delivery);
 
-    const formData = new FormData();
+  // Send location data as separate fields instead of JSON string
+  if (locationData) {
+    formData.append("location", locationData.description);
+    formData.append("location_place_id", locationData.placeId);
     
-    // Add general fields - use selectValues for dropdowns
-    formData.append("type_id", selectValues.type_id);
-    formData.append("area_id", selectValues.area_id);
-    formData.append("price", data.price);
-    formData.append("down_price", data.down_price);
-    formData.append("sqt", data.sqt);
-    formData.append("bedroom", data.bedroom);
-    formData.append("bathroom", data.bathroom);
-    formData.append("kitichen ", data.kitichen ); // Fixed typo from "kitichen"
-    formData.append("status", selectValues.status);
-    formData.append("type", selectValues.type);
-    formData.append("immediate_delivery", selectValues.immediate_delivery);
-    
-    // Add English fields
-    formData.append("title[en]", data.title_en);
-    formData.append("description[en]", descriptionEn);
-    formData.append("keywords[en]", data.keywords_en);
-    formData.append("slug[en]", data.slug_en);
-    
-    // Add Arabic fields
-    formData.append("title[ar]", data.title_ar);
-    formData.append("description[ar]", descriptionAr);
-    formData.append("keywords[ar]", data.keywords_ar);
-    formData.append("slug[ar]", data.slug_ar);
-
-    // Add images
-    imagesPreviews.forEach(preview => {
-      formData.append("cover", preview.file);
-    });
-
-    try {
-      await postData("agent/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
-      toast.success(t("Property added successfully"));
-      router.back();
-    } catch (error) {
-      console.error("Failed to create property:", error);
-      toast.error(t("Failed to add property"));
+    if (locationData.coordinates) {
+      formData.append("location_lat", locationData.coordinates.lat.toString());
+      formData.append("location_lng", locationData.coordinates.lng.toString());
     }
-  };
+  }
 
-  return (
-    <div className="row justify-content-center">
-      <div className="">
-        <div className="card rounded-4">
-          <div className="card-body p-4">
-            <form onSubmit={handleSubmit(onSubmit)}>
+  formData.append("title[en]", data.title_en);
+  formData.append("description[en]", descriptionEn);
+  formData.append("keywords[en]", data.keywords_en);
+  formData.append("slug[en]", data.slug_en);
 
-              {/* Basic Information Section */}
-              <div className="accordion mb-4" id="propertyAccordion">
+  formData.append("title[ar]", data.title_ar);
+  formData.append("description[ar]", descriptionAr);
+  formData.append("keywords[ar]", data.keywords_ar);
+  formData.append("slug[ar]", data.slug_ar);
 
-                {/* Property Details */}
-                <div className=" mb-3">
-                  <h2 className="accordion-header ">
-                    <button className="accordion-button fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#propertyDetails" aria-expanded="true">
-                      Property Details
-                    </button>
-                  </h2>
-                  <div id="propertyDetails" className="accordion-collapse collapse show" data-bs-parent="#propertyAccordion">
-                    <div className="accordion-body">
-                      <div className="row g-4">
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <select
-                              className={`form-select ${!selectValues.type_id ? 'is-invalid' : ''}`}
-                              value={selectValues.type_id}
-                              onChange={handleTypeChange}
-                              style={{
-                                border: '2px solid #e9ecef',
-                                borderRadius: '12px',
-                                fontSize: '16px',
-                                fontWeight: '500',
-                                color: '#495057',
-                                backgroundColor: '#fff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                height: '5vw', // Much taller height
-                                paddingTop: '28px', // Increased padding for floating label
-                                paddingBottom: '0px',
-                                lineHeight: '1' // Better line spacing
-                              }}
-                              onFocus={(e) => {
-                                e.target.style.borderColor = '#0d6efd';
-                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
-                              }}
-                              onBlur={(e) => {
-                                e.target.style.borderColor = '#e9ecef';
-                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                              }}
-                            >
-                              <option value="">{t("Select Type")}</option>
-                              {propertyTypes?.data?.map((type) => (
-                                <option key={type.id} value={type.id}>
-                                  {type.title || type.name || ""}
-                                </option>
-                              ))}
-                            </select>
-                            <label className="fw-medium">{t("Property Type")} *</label>
-                            {!selectValues.type_id && (
-                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
+  formData.append("cover", imagePreview.file);
 
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <select
-                              className={`form-select ${!selectValues.area_id ? 'is-invalid' : ''}`}
-                              value={selectValues.area_id}
-                              onChange={handleAreaChange}
-                              style={{
-                                border: '2px solid #e9ecef',
-                                borderRadius: '12px',
-                                fontSize: '16px',
-                                fontWeight: '500',
-                                color: '#495057',
-                                backgroundColor: '#fff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                height: '5vw', // Much taller height
-                                paddingTop: '28px', // Increased padding for floating label
-                                paddingBottom: '0px',
-                                lineHeight: '1' // Better line spacing
-                              }}
-                              onFocus={(e) => {
-                                e.target.style.borderColor = '#0d6efd';
-                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
-                              }}
-                              onBlur={(e) => {
-                                e.target.style.borderColor = '#e9ecef';
-                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                              }}
-                            >
-                              <option value="">{t("Select Area")}</option>
-                              {areas?.data?.map((area) => (
-                                <option key={area.id} value={area.id.toString()}>
-                                  {`${area.name} / ${area.name}`}
-                                </option>
-                              ))}
-                            </select>
-                            <label className="fw-medium">{t("Area")} *</label>
-                            {!selectValues.area_id && (
-                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
+  try {
+    const response = await postData("agnet/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
+    showToast(t("property_added_successfully"), "success");
+    router.push(`/properties/view/${response?.data?.id}`);
+  } catch (error) {
+    console.error("Failed to create property:", error);
+    showToast(t("failed_to_add_property"), "error");
+  }
+};
 
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <select
-                              className={`form-select ${!selectValues.status ? 'is-invalid' : ''}`}
-                              value={selectValues.status}
-                              onChange={handleStatusChange}
-                              style={{
-                                border: '2px solid #e9ecef',
-                                borderRadius: '12px',
-                                fontSize: '16px',
-                                fontWeight: '500',
-                                color: '#495057',
-                                backgroundColor: '#fff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                height: '5vw', // Much taller height
-                                paddingTop: '28px', // Increased padding for floating label
-                                paddingBottom: '0px',
-                                lineHeight: '1' // Better line spacing
-                              }}
-                              onFocus={(e) => {
-                                e.target.style.borderColor = '#0d6efd';
-                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
-                              }}
-                              onBlur={(e) => {
-                                e.target.style.borderColor = '#e9ecef';
-                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                              }}
-                            >
-                              <option value="">{t("Select Status")}</option>
-                              <option value="rent">{t("Rent")}</option>
-                              <option value="sale">{t("Sale")}</option>
-                            </select>
-                            <label className="fw-medium">{t("Status")} *</label>
-                            {!selectValues.status && (
-                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <select
-                              className={`form-select ${!selectValues.type ? 'is-invalid' : ''}`}
-                              value={selectValues.type}
-                              onChange={handleTypeSelectChange}
-                              style={{
-                                border: '2px solid #e9ecef',
-                                borderRadius: '12px',
-                                fontSize: '16px',
-                                fontWeight: '500',
-                                color: '#495057',
-                                backgroundColor: '#fff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                height: '5vw', // Much taller height
-                                paddingTop: '28px', // Increased padding for floating label
-                                paddingBottom: '0px',
-                                lineHeight: '1' // Better line spacing
-                              }}
-                              onFocus={(e) => {
-                                e.target.style.borderColor = '#0d6efd';
-                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
-                              }}
-                              onBlur={(e) => {
-                                e.target.style.borderColor = '#e9ecef';
-                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                              }}
-                            >
-                              <option value="">{t("Select Type")}</option>
-                              <option value="apartment">{t("Apartment")}</option>
-                              <option value="office">{t("Office")}</option>
-                            </select>
-                            <label className="fw-medium">{t("Type")} *</label>
-                            {!selectValues.type && (
-                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <select
-                              className={`form-select ${!selectValues.immediate_delivery ? 'is-invalid' : ''}`}
-                              value={selectValues.immediate_delivery}
-                              onChange={handleImmediateDeliveryChange}
-                              style={{
-                                border: '2px solid #e9ecef',
-                                borderRadius: '12px',
-                                fontSize: '16px',
-                                fontWeight: '500',
-                                color: '#495057',
-                                backgroundColor: '#fff',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                height: '5vw', // Much taller height
-                                paddingTop: '28px', // Increased padding for floating label
-                                paddingBottom: '0px',
-                                lineHeight: '1' // Better line spacing
-                              }}
-                              onFocus={(e) => {
-                                e.target.style.borderColor = '#0d6efd';
-                                e.target.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
-                              }}
-                              onBlur={(e) => {
-                                e.target.style.borderColor = '#e9ecef';
-                                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                              }}
-                            >
-                              <option value="">{t("Select Option")}</option>
-                              <option value="yes">{t("Yes")}</option>
-                              <option value="no">{t("No")}</option>
-                            </select>
-                            <label className="fw-medium">{t("Immediate Delivery")} *</label>
-                            {!selectValues.immediate_delivery && (
-                              <div className="invalid-feedback d-block">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pricing Information */}
-                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
-                  <h2 className="accordion-header">
-                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#pricingInfo">
-                      Pricing Information
-                    </button>
-                  </h2>
-                  <div id="pricingInfo" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
-                    <div className="accordion-body">
-                      <div className="row g-4">
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("price", { required: true })}
-                              type="number"
-                              className={`form-control ${errors.price ? 'is-invalid' : ''}`}
-                              placeholder={t("Your Price")}
-                            />
-                            <label className="fw-medium">{t("Price")} *</label>
-                            {errors.price && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("down_price", { required: true })}
-                              type="number"
-                              className={`form-control ${errors.down_price ? 'is-invalid' : ''}`}
-                              placeholder={t("Down Price")}
-                            />
-                            <label className="fw-medium">{t("Down Price")} *</label>
-                            {errors.down_price && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("sqt", { required: true })}
-                              type="number"
-                              className={`form-control ${errors.sqt ? 'is-invalid' : ''}`}
-                              placeholder={t("Square Meters")}
-                            />
-                            <label className="fw-medium">{t("Square Meters")} *</label>
-                            {errors.sqt && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Room Configuration */}
-                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
-                  <h2 className="accordion-header">
-                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#roomConfig">
-                      Room Configuration
-                    </button>
-                  </h2>
-                  <div id="roomConfig" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
-                    <div className="accordion-body">
-                      <div className="row g-4">
-                        <div className="col-md-4">
-                          <div className="form-floating">
-                            <input
-                              {...register("bedroom", { required: true })}
-                              type="number"
-                              className={`form-control ${errors.bedroom ? 'is-invalid' : ''}`}
-                              placeholder={t("Number of Bedrooms")}
-                            />
-                            <label className="fw-medium">{t("Bedroom")} *</label>
-                            {errors.bedroom && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-4">
-                          <div className="form-floating">
-                            <input
-                              {...register("bathroom", { required: true })}
-                              type="number"
-                              className={`form-control ${errors.bathroom ? 'is-invalid' : ''}`}
-                              placeholder={t("Number of Bathrooms")}
-                            />
-                            <label className="fw-medium">{t("Bathroom")} *</label>
-                            {errors.bathroom && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-4">
-                          <div className="form-floating">
-                            <input
-                              {...register("kitichen", { required: true })}
-                              type="number"
-                              className={`form-control ${errors.kitichen ? 'is-invalid' : ''}`}
-                              placeholder={t("Number of kitichen s")}
-                            />
-                            <label className="fw-medium">{t("kitchen")} *</label>
-                            {errors.kitichen && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Arabic Content */}
-                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
-                  <h2 className="accordion-header">
-                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#arabicContent">
-                      Arabic Content
-                    </button>
-                  </h2>
-                  <div id="arabicContent" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
-                    <div className="accordion-body">
-                      <div className="row g-4">
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("title_ar", { required: true })}
-                              className={`form-control ${errors.title_ar ? 'is-invalid' : ''}`}
-                              placeholder={t("Property Title in Arabic")}
-                              dir="rtl"
-                            />
-                            <label className="fw-medium">{t("Title (AR)")} *</label>
-                            {errors.title_ar && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("slug_ar", { required: true })}
-                              className={`form-control ${errors.slug_ar ? 'is-invalid' : ''}`}
-                              placeholder={t("URL Slug in Arabic")}
-                              dir="rtl"
-                            />
-                            <label className="fw-medium">{t("Slug (AR)")} *</label>
-                            {errors.slug_ar && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-12">
-                          <div className="form-floating">
-                            <input
-                              {...register("keywords_ar", { required: true })}
-                              className={`form-control ${errors.keywords_ar ? 'is-invalid' : ''}`}
-                              placeholder={t("Keywords in Arabic")}
-                              dir="rtl"
-                            />
-                            <label className="fw-medium">{t("Keywords (AR)")} *</label>
-                            {errors.keywords_ar && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-12">
-                          <label className="form-label fw-medium">{t("Description (AR)")} *</label>
-                          <div className="border rounded-3 p-3 bg-light">
-                            <RichTextEditor
-                              value={descriptionAr}
-                              onChange={setDescriptionAr}
-                              label=""
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* English Content */}
-                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
-                  <h2 className="accordion-header">
-                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#englishContent">
-                      English Content
-                    </button>
-                  </h2>
-                  <div id="englishContent" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
-                    <div className="accordion-body">
-                      <div className="row g-4">
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("title_en", { required: true })}
-                              className={`form-control ${errors.title_en ? 'is-invalid' : ''}`}
-                              placeholder={t("Property Title in English")}
-                            />
-                            <label className="fw-medium">{t("Title (EN)")} *</label>
-                            {errors.title_en && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="form-floating">
-                            <input
-                              {...register("slug_en", { required: true })}
-                              className={`form-control ${errors.slug_en ? 'is-invalid' : ''}`}
-                              placeholder={t("URL Slug in English")}
-                            />
-                            <label className="fw-medium">{t("Slug (EN)")} *</label>
-                            {errors.slug_en && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-md-12">
-                          <div className="form-floating">
-                            <input
-                              {...register("keywords_en", { required: true })}
-                              className={`form-control ${errors.keywords_en ? 'is-invalid' : ''}`}
-                              placeholder={t("Keywords in English")}
-                            />
-                            <label className="fw-medium">{t("Keywords (EN)")} *</label>
-                            {errors.keywords_en && (
-                              <div className="invalid-feedback">{t("This field is required")}</div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="col-12">
-                          <label className="form-label fw-medium">{t("Description (EN)")} *</label>
-                          <div className="border rounded-3 p-3 bg-light">
-                            <RichTextEditor
-                              value={descriptionEn}
-                              onChange={setDescriptionEn}
-                              label=""
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Property Images - Moved to bottom */}
-                <div className="accordion-item border-0 shadow-sm mb-3 rounded-3">
-                  <h2 className="accordion-header">
-                    <button className="accordion-button collapsed fw-semibold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#propertyImages">
-                      Property Images
-                    </button>
-                  </h2>
-                  <div id="propertyImages" className="accordion-collapse collapse" data-bs-parent="#propertyAccordion">
-                    <div className="accordion-body">
-                      <div className="mb-4">
-                        <label className="form-label fw-medium">{t("Property Images")} *</label>
-                        <div className="d-flex align-items-center gap-3 mb-3">
-                          <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            className="form-control form-control-lg"
-                            onChange={handleImageChange}
-                            style={{
-                              border: '2px dashed #0d6efd',
-                              borderRadius: '12px',
-                              padding: '20px',
-                              backgroundColor: '#f8f9ff',
-                              fontSize: '16px',
-                              fontWeight: '500'
-                            }}
-                          />
-                          {/* <button
-                            type="button"
-                            className="btn btn-outline-primary btn-lg"
-                            // onClick={() => document.querySelector('input[type="file"]')?.click()}
-                            onClick={() => {
-                              const fileInput = document.querySelector('input[type="file"]') as HTMLElement;
-                              fileInput?.click();
-                            }}
-                            style={{
-                              borderRadius: '12px',
-                              fontWeight: '600',
-                              minWidth: '150px'
-                            }}
-                          >
-                            <i className="fas fa-plus me-2"></i>
-                            {t("Add More")}
-                          </button> */}
-                        </div>
-                        <div className="form-text mb-3">
-                          {t("Select multiple images for the property")}
-                        </div>
-
-                        {/* Image Previews */}
-                        {imagesPreviews.length > 0 && (
-                          <div className="row g-3">
-                            {imagesPreviews.map((preview) => (
-                              <div key={preview.id} className="col-lg-3 col-md-4 col-sm-6">
-                                <div
-                                  className="position-relative"
-                                  style={{
-                                    borderRadius: '12px',
-                                    overflow: 'hidden',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                    transition: 'transform 0.3s ease'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1.02)';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1)';
-                                  }}
-                                >
-                                  <Image
-                                    width={40}
-                                    height={40}
-                                    src={preview.url}
-                                    alt="Property preview"
-                                    className="w-100"
-                                    style={{
-                                      height: '200px',
-                                      objectFit: 'cover',
-                                      borderRadius: '12px'
-                                    }}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
-                                    onClick={() => removeImage(preview.id)}
-                                    style={{
-                                      width: '35px',
-                                      height: '35px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      fontSize: '16px',
-                                      fontWeight: 'bold',
-                                      boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)',
-                                      border: 'none',
-                                      transition: 'all 0.3s ease'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.transform = 'scale(1.1)';
-                                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(220, 53, 69, 0.5)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.transform = 'scale(1)';
-                                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(220, 53, 69, 0.3)';
-                                    }}
-                                    title={t("Remove image")}
-                                  >
-                                    ×
-                                  </button>
-                                  <div
-                                    className="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white p-2"
-                                    style={{
-                                      fontSize: '12px',
-                                      fontWeight: '500'
-                                    }}
-                                  >
-                                    {preview.file.name.length > 20
-                                      ? preview.file.name.substring(0, 17) + '...'
-                                      : preview.file.name}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Empty state */}
-                        {imagesPreviews.length === 0 && (
-                          <div
-                            className="text-center py-5"
-                            style={{
-                              border: '2px dashed #dee2e6',
-                              borderRadius: '12px',
-                              backgroundColor: '#f8f9fa'
-                            }}
-                          >
-                            <i
-                              className="fas fa-image mb-3"
-                              style={{
-                                fontSize: '48px',
-                                color: '#6c757d'
-                              }}
-                            ></i>
-                            <p className="text-muted mb-0">
-                              {t("No images selected yet")}
-                            </p>
-                            <small className="text-muted">
-                              {t("Click 'Add More' or use the file input above to select images")}
-                            </small>
-                          </div>
-                        )}
-
-                        {/* Images counter */}
-                        {imagesPreviews.length > 0 && (
-                          <div className="mt-3">
-                            <div
-                              className="badge bg-primary fs-6 px-3 py-2"
-                              style={{
-                                borderRadius: '8px'
-                              }}
-                            >
-                              {/* {imagesPreviews.length} {imagesPreviews.length === 1 ? t("image selected") : t("images selected")} */}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Action Buttons */}
-              <div className="d-flex justify-content-end gap-3 pt-4 border-top">
-                <button
-                  type="button"
-                  onClick={() => router.back()}
-                  className="btn btn-outline-secondary btn-lg px-4 py-2 rounded-3"
-                >
-                  {t("Cancel")}
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-lg px-4 py-2 rounded-3 shadow-sm"
-                >
-                  {t("Submit")}
-                </button>
-              </div>
-            </form>
-          </div>
+  const SectionHeader = ({
+    title,
+    icon,
+    sectionKey,
+    description
+  }: {
+    title: string;
+    icon: React.ReactNode;
+    sectionKey: keyof typeof expandedSections;
+    description?: string;
+  }) => (
+    <div
+      className="section-header d-flex justify-content-between align-items-center p-4 cursor-pointer border-0"
+      onClick={() => toggleSection(sectionKey)}
+      style={{
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        transition: 'all 0.3s ease',
+        borderRadius: '0.75rem 0.75rem 0 0'
+      }}
+    >
+      <div className="d-flex align-items-center gap-4">
+        <div
+          className="icon-container d-flex align-items-center justify-content-center me-3"
+          style={{
+            width: '48px',
+            height: '48px',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+            borderRadius: '12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            transition: 'transform 0.3s ease'
+          }}
+        >
+          {icon}
+        </div>
+        <div>
+          <h3 className="h5 mb-1 fw-semibold text-dark">{title}</h3>
+          {description && <p className="small text-muted mb-0 opacity-75">{description}</p>}
+        </div>
+      </div>
+      <div className="d-flex align-items-center">
+        <div
+          className="status-indicator me-3"
+          style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: expandedSections[sectionKey] ? '#198754' : '#6c757d',
+            transition: 'all 0.3s ease',
+            boxShadow: expandedSections[sectionKey] ? '0 0 8px rgba(25,135,84,0.3)' : 'none'
+          }}
+        ></div>
+        <div
+          className="chevron-icon"
+          style={{
+            transition: 'transform 0.3s ease',
+            transform: expandedSections[sectionKey] ? 'rotate(180deg)' : 'rotate(0deg)'
+          }}
+        >
+          <ChevronDown className="w-5 h-5 text-muted" />
         </div>
       </div>
     </div>
+  );
 
+  const InputField = ({
+    label,
+    name,
+    type = "text",
+    required = false,
+    options = [],
+    dir = "ltr",
+    placeholder = ""
+  }: {
+    label: string;
+    name: keyof FormInputs;
+    type?: string;
+    required?: boolean;
+    options?: { value: string; label: string }[];
+    dir?: string;
+    placeholder?: string;
+  }) => (
+    <div className="mb-4">
+      <label className="form-label fw-medium text-dark mb-2">
+        {label}
+        {required && <span className="text-danger ms-1">*</span>}
+      </label>
+      {type === "select" ? (
+        <select
+          {...register(name, { required })}
+          className="form-select premium-input"
+          dir={dir}
+          style={{
+            border: '2px solid #e9ecef',
+            borderRadius: '0.75rem',
+            padding: '0.75rem 1rem',
+            fontSize: '0.95rem',
+            transition: 'all 0.3s ease',
+            background: '#ffffff'
+          }}
+        >
+          <option value="">{placeholder || `${t("select")} ${label}`}</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          {...register(name, { required })}
+          type={type}
+          className="form-control premium-input"
+          dir={dir}
+          placeholder={placeholder}
+          style={{
+            border: '2px solid #e9ecef',
+            borderRadius: '0.75rem',
+            padding: '0.75rem 1rem',
+            fontSize: '0.95rem',
+            transition: 'all 0.3s ease',
+            background: '#ffffff'
+          }}
+        />
+      )}
+      {errors[name] && (
+        <div className="error-message text-danger small mt-2 d-flex align-items-center">
+          <div
+            className="error-dot me-2"
+            style={{
+              width: '4px',
+              height: '4px',
+              borderRadius: '50%',
+              backgroundColor: '#dc3545'
+            }}
+          ></div>
+          {t("field_required")}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <style jsx>{`
+        .premium-input:focus {
+          border-color: #0d6efd !important;
+          box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1) !important;
+          outline: none !important;
+        }
+        
+        .section-header:hover {
+          background: linear-gradient(135deg, #f1f3f4 0%, #e2e6ea 100%) !important;
+        }
+        
+        .section-header:hover .icon-container {
+          transform: translateY(-2px) !important;
+        }
+        
+        .section-content {
+          animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .form-section {
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          transition: all 0.3s ease;
+          border: 1px solid #e9ecef;
+        }
+        
+        .form-section:hover {
+          box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+          transform: translateY(-2px);
+        }
+        
+        .upload-area {
+          border: 2px dashed #dee2e6;
+          transition: all 0.3s ease;
+          background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+        }
+        
+        .upload-area:hover {
+          border-color: #0d6efd;
+          background: linear-gradient(135deg, #f0f7ff 0%, #e7f3ff 100%);
+        }
+        
+        .btn-premium {
+          background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+          border: none;
+          border-radius: 0.75rem;
+          padding: 0.75rem 2rem;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-premium:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
+        }
+        
+        .btn-outline-premium {
+          border: 2px solid #6c757d;
+          border-radius: 0.75rem;
+          padding: 0.75rem 2rem;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          background: transparent;
+        }
+        
+        .btn-outline-premium:hover {
+          background: #6c757d;
+          color: white;
+          transform: translateY(-2px);
+        }
+        
+        .hero-section {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 1.5rem;
+          padding: 3rem 2rem;
+          margin-bottom: 3rem;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .hero-section::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000" opacity="0.02"/><circle cx="75" cy="75" r="1" fill="%23000" opacity="0.02"/><circle cx="50" cy="10" r="1" fill="%23000" opacity="0.02"/><circle cx="10" cy="90" r="1" fill="%23000" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+          pointer-events: none;
+        }
+        
+        .hero-icon {
+          width: 80px;
+          height: 80px;
+          background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 1.5rem;
+          box-shadow: 0 8px 30px rgba(13, 110, 253, 0.3);
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
+
+      <div className="min-vh-100" >
+        <div className="container py-5">
+
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Basic Information */}
+            <div className="form-section bg-white rounded-4 mb-4 ">
+              <SectionHeader
+                title={t("basic_information")}
+                icon={<Home className="w-5 h-5 text-primary" />}
+                sectionKey="basic"
+                description={t("property_type_location_details")}
+              />
+              {expandedSections.basic && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="row g-4">
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("property_type")}
+                        name="type_id"
+                        type="select"
+                        required
+                        options={propertyTypes.map(type => ({ value: type.id, label: type.title || '' }))}
+                        placeholder={t("select_type")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("area")}
+                        name="area_id"
+                        type="select"
+                        required
+                        options={areas.map(area => ({
+                          value: area.id.toString(),
+                          label: `${area?.name} / ${area?.name}`
+                        }))}
+                        placeholder={t("select_area")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4 z-99999">
+                      <label className="form-label fw-medium text-dark mb-2">
+                        {t("location")}
+                      </label>
+                      <GoogleLocationInput
+                        onLocationChange={(data) => setLocationData(data)}
+                        defaultValue="Colorado, USA"
+                        placeholder={t("search_for_a_location")}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Pricing Information */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("pricing_financial_details")}
+                icon={<DollarSign className="w-5 h-5 text-success" />}
+                sectionKey="pricing"
+                description={t("property_pricing_payment_info")}
+              />
+              {expandedSections.pricing && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="row g-4">
+                    <div className="col-md-6">
+                      <InputField
+                        label={t("price")}
+                        name="price"
+                        type="number"
+                        required
+                        placeholder={t("enter_property_price")}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <InputField
+                        label={t("down_price")}
+                        name="down_price"
+                        type="number"
+                        required
+                        placeholder={t("enter_down_payment_amount")}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Room Configuration */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("room_configuration")}
+                icon={<Home className="w-5 h-5 text-warning" />}
+                sectionKey="rooms"
+                description={t("bedrooms_bathrooms_kitchen_details")}
+              />
+              {expandedSections.rooms && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="row g-4">
+                    <div className="col-md-6 col-lg-3">
+                      <InputField
+                        label={t("square_meters")}
+                        name="sqt"
+                        type="number"
+                        required
+                        placeholder={t("property_size")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-3">
+                      <InputField
+                        label={t("bedroom")}
+                        name="bedroom"
+                        type="number"
+                        required
+                        placeholder={t("number_of_bedrooms")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-3">
+                      <InputField
+                        label={t("bathroom")}
+                        name="bathroom"
+                        type="number"
+                        required
+                        placeholder={t("number_of_bathrooms")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-3">
+                      <InputField
+                        label={t("kitchen")}
+                        name="kitchen"
+                        type="number"
+                        required
+                        placeholder={t("number_of_kitchens")}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Property Details */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("property_details")}
+                icon={<FileText className="w-5 h-5 text-info" />}
+                sectionKey="details"
+                description={t("status_type_delivery_info")}
+              />
+              {expandedSections.details && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="row g-4">
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("status")}
+                        name="status"
+                        type="select"
+                        required
+                        options={[
+                          { value: "rent", label: t("rent") },
+                          { value: "sale", label: t("sale") }
+                        ]}
+                        placeholder={t("select_status")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("type")}
+                        name="type"
+                        type="select"
+                        required
+                        options={[
+                          { value: "apartment", label: t("apartment") },
+                          { value: "office", label: t("office") }
+                        ]}
+                        placeholder={t("select_type")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("immediate_delivery")}
+                        name="immediate_delivery"
+                        type="select"
+                        required
+                        options={[
+                          { value: "yes", label: t("yes") },
+                          { value: "no", label: t("no") }
+                        ]}
+                        placeholder={t("select_option")}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Arabic Content */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("arabic_content")}
+                icon={<Globe className="w-5 h-5 text-success" />}
+                sectionKey="arabic"
+                description={t("arabic_title_description_seo")}
+              />
+              {expandedSections.arabic && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="row g-4">
+                    <div className="col-md-6">
+                      <InputField
+                        label={t("title_ar")}
+                        name="title_ar"
+                        required
+                        dir="rtl"
+                        placeholder={t("title_arabic_placeholder")}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <InputField
+                        label={t("slug_ar")}
+                        name="slug_ar"
+                        required
+                        dir="rtl"
+                        placeholder={t("slug_arabic_placeholder")}
+                      />
+                    </div>
+                  </div>
+                  <InputField
+                    label={t("keywords_ar")}
+                    name="keywords_ar"
+                    required
+                    dir="rtl"
+                    placeholder={t("keywords_arabic_placeholder")}
+                  />
+                  <div>
+                    <label className="form-label fw-medium text-dark mb-2">
+                      {t("description_ar")} <span className="text-danger">*</span>
+                    </label>
+                    <div className="border rounded-3" style={{ borderWidth: '2px', borderColor: '#e9ecef' }}>
+                      <RichTextEditor
+                        value={descriptionAr}
+                        onChange={setDescriptionAr}
+                        label=""
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* English Content */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("english_content")}
+                icon={<Globe className="w-5 h-5 text-primary" />}
+                sectionKey="english"
+                description={t("english_title_description_seo")}
+              />
+              {expandedSections.english && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="row g-4">
+                    <div className="col-md-6">
+                      <InputField
+                        label={t("title_en")}
+                        name="title_en"
+                        required
+                        placeholder={t("title_english_placeholder")}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <InputField
+                        label={t("slug_en")}
+                        name="slug_en"
+                        required
+                        placeholder={t("slug_english_placeholder")}
+                      />
+                    </div>
+                  </div>
+                  <InputField
+                    label={t("keywords_en")}
+                    name="keywords_en"
+                    required
+                    placeholder={t("keywords_english_placeholder")}
+                  />
+                  <div>
+                    <label className="form-label fw-medium text-dark mb-2">
+                      {t("description_en")} <span className="text-danger">*</span>
+                    </label>
+                    <div className="border rounded-3" style={{ borderWidth: '2px', borderColor: '#e9ecef' }}>
+                      <RichTextEditor
+                        value={descriptionEn}
+                        onChange={setDescriptionEn}
+                        label=""
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Single Image Upload */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("property_image")}
+                icon={<Camera className="w-5 h-5 text-danger" />}
+                sectionKey="images"
+                description={t("upload_high_quality_photo")}
+              />
+              {expandedSections.images && (
+                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                  <div className="upload-area rounded-3 p-5">
+                    {!imagePreview ? (
+                      <div className="text-center">
+                        <label
+                          className="btn btn-outline-primary rounded-3 px-4 py-2"
+                          style={{
+                            border: '2px solid #0d6efd',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          {t("click_to_upload_image")}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageSelect(e.target.files)}
+                            className="d-none"
+                          />
+                        </label>
+                        <p className="small text-muted mt-3 mb-0">{t("select_high_quality_image")}</p>
+                      </div>
+                    ) : (
+                      <div className="position-relative">
+                        <div 
+                            className="image-container rounded-3 overflow-hidden"
+                            style={{
+                              maxHeight: '400px',
+                              boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
+                            }}
+                          >
+                            <Image
+                              width={800}
+                              height={400}
+                              src={imagePreview.url}
+                              alt={t("property_preview")}
+                              className="w-100 h-100 object-cover"
+                              style={{ objectFit: 'cover' }}
+                            />
+                          </div>
+                          <div className="position-absolute top-0 end-0 p-3">
+                            <button
+                              type="button"
+                              onClick={handleRemoveImage}
+                              className="btn btn-danger rounded-circle p-2"
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                boxShadow: '0 4px 15px rgba(220,53,69,0.3)',
+                                transition: 'all 0.3s ease'
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-center small text-muted mt-3 mb-0">
+                    {imagePreview ? t("hover_over_image_to_change_or_remove") : t("supported_formats_jpg_png_webp")}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="d-flex justify-content-center gap-4 pt-5">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="btn btn-outline-premium"
+              >
+                {t("cancel")}
+              </button>
+              <button
+                type="submit"
+                className="btn btn-premium text-white d-flex align-items-center gap-2"
+              >
+                <Check className="w-5 h-5" />
+                {t("create_property")}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
   );
 };
 
