@@ -1,5 +1,4 @@
 import NiceSelect from "@/ui/NiceSelect";
-// import Link from "next/link";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
 import { useState, useEffect, useRef } from "react";
 import { LocationData } from "@/libs/types/types";
@@ -55,23 +54,22 @@ interface DropdownSevenProps {
   handlePriceDropChange: (value: any) => void;
   handleAgentChange?: (value: any) => void;
   filters?: any;
+  // New props for mobile toggle
+  showMap?: boolean;
+  onToggleView?: (showMap: boolean) => void;
+  isMobile?: boolean;
 }
 
 const DropdownSeven: React.FC<DropdownSevenProps> = ({
   handleBathroomChange,
   handleBedroomChange,
-  handleSearchChange,
-  handlePriceChange,
-  maxPrice,
-  priceValue,
-  handleResetFilter,
-  selectedAmenities,
-  handleAmenityChange,
   handleLocationChange,
-  handleStatusChange,
   handlePriceDropChange,
   handleAgentChange,
-  filters
+  filters,
+  showMap = false,
+  onToggleView,
+  isMobile = false,
 }) => {
   const [locationQuery, setLocationQuery] = useState<string>("");
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
@@ -79,6 +77,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   const [priceRanges, setPriceRanges] = useState<any[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("endUser");
@@ -414,9 +413,9 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
     };
   }, []);
 
-  // feach price ranges from api
+  // fetch price ranges from api
   useEffect(() => {
-    const feachData = async () => {
+    const fetchData = async () => {
       try {
         const response = await getData("price-range", {}, { lang: locale });
         setPriceRanges(response.data.data.ranges);
@@ -426,268 +425,537 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
       }
     };
 
-    feachData();
+    fetchData();
   }, []);
 
   return (
     <>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div className="row gx-0 align-items-center">
-          {/* <div className="col-xxl-2 col-xl-3 col-sm-6">
-            <div className="input-box-one border-left">
-              <div className="label">Im looking to...</div>
-              <NiceSelect
-                className="nice-select fw-normal"
-                options={[
-                  { value: "apartments", text: "Buy Apartments" },
-                  { value: "condos", text: "Rent Condos" },
-                  { value: "houses", text: "Sell Houses" },
-                  { value: "industrial", text: "Rent Industrial" },
-                  { value: "villas", text: "Sell Villas" },
-                ]}
-                defaultCurrent={0}
-                onChange={handleStatusChange}
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div> */}
+      <style>{`
+        .dropdown-seven-container {
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+          border-radius: 16px;
+          padding: 16px;
+          margin-bottom: 20px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          border: 1px solid #e2e8f0;
+        }
 
-          {/* Updated Location Section with Google Autocomplete - Egypt Only */}
-          <div className="col-xl-3 col-sm-6">
-            <div className="input-box-one ">
-              <div className="label">{t("location")}</div>
-              <div
-                className="location-autocomplete-wrapper"
-                style={{ position: "relative" }}
+        .mobile-toggle-container {
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 8px;
+          margin-bottom: 16px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
+        }
+
+        .mobile-toggle-btn {
+          flex: 1;
+          padding: 12px 16px;
+          border: none;
+          background: transparent;
+          border-radius: 8px;
+          font-weight: 500;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .mobile-toggle-btn.active {
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+          color: white;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .mobile-toggle-btn:hover:not(.active) {
+          background: #f1f5f9;
+          color: #475569;
+        }
+
+        .mobile-filters-toggle {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 12px 16px;
+          margin-bottom: 16px;
+          width: 100%;
+          font-weight: 500;
+          color: #374151;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .mobile-filters-toggle:hover {
+          background: #f8fafc;
+          border-color: #3b82f6;
+        }
+
+        .mobile-filters-toggle .chevron {
+          transition: transform 0.3s ease;
+        }
+
+        .mobile-filters-toggle.active .chevron {
+          transform: rotate(180deg);
+        }
+
+        .filters-container {
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 0;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
+        }
+
+        .filters-container.mobile {
+          margin-bottom: 16px;
+        }
+
+        .filters-container.mobile.hidden {
+          display: none;
+        }
+
+        .desktop-filters-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          padding: 20px;
+        }
+
+        .mobile-filters-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
+          padding: 20px;
+        }
+
+        .input-box-one {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 16px;
+          transition: all 0.3s ease;
+          position: relative;
+          min-height: 80px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .input-box-one:hover {
+          border-color: #3b82f6;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-box-one:focus-within {
+          border-color: #3b82f6;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .input-box-one .label {
+          font-weight: 600;
+          font-size: 13px;
+          color: #374151;
+          margin-bottom: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .location-input {
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 12px 16px;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          background: #ffffff;
+          width: 100%;
+        }
+
+        .location-input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .location-input:disabled {
+          background: #f8fafc;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+
+        .location-suggestions {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          max-height: 200px;
+          overflow-y: auto;
+          z-index: 1000;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+          margin-top: 4px;
+        }
+
+        .suggestion-item {
+          padding: 12px 16px;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .suggestion-item:last-child {
+          border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+          background: #f8fafc;
+        }
+
+        .suggestion-item .main-text {
+          font-weight: 500;
+          color: #374151;
+          font-size: 14px;
+        }
+
+        .suggestion-item .secondary-text {
+          font-size: 12px;
+          color: #6b7280;
+          margin-top: 2px;
+        }
+
+        .nice-select {
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 8px !important;
+          padding: 12px 16px !important;
+          font-size: 14px !important;
+          background: #ffffff !important;
+          transition: all 0.3s ease !important;
+          min-height: 44px !important;
+          width: 100% !important;
+        }
+
+        .nice-select:focus,
+        .nice-select.open {
+          border-color: #3b82f6 !important;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+
+        .nice-select .list {
+          border-radius: 8px !important;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+          border: 1px solid #e2e8f0 !important;
+        }
+
+        .nice-select .option {
+          padding: 12px 16px !important;
+          transition: background-color 0.2s ease !important;
+        }
+
+        .nice-select .option:hover {
+          background: #f8fafc !important;
+        }
+
+        .loading-indicator {
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6b7280;
+          font-size: 12px;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+          .dropdown-seven-container {
+            padding: 12px;
+            margin-bottom: 16px;
+          }
+
+          .desktop-filters-row {
+            padding: 16px;
+            gap: 8px;
+          }
+
+          .mobile-filters-grid {
+            padding: 16px;
+            gap: 12px;
+          }
+
+          .input-box-one {
+            padding: 12px;
+            min-height: 70px;
+          }
+
+          .input-box-one .label {
+            font-size: 12px;
+            margin-bottom: 6px;
+          }
+
+          .location-input {
+            padding: 10px 12px;
+            font-size: 14px;
+          }
+
+          .nice-select {
+            padding: 10px 12px !important;
+            font-size: 14px !important;
+            min-height: 40px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .mobile-toggle-btn {
+            padding: 10px 12px;
+            font-size: 13px;
+          }
+
+          .mobile-filters-toggle {
+            padding: 10px 12px;
+            font-size: 14px;
+          }
+
+          .input-box-one {
+            padding: 10px;
+            min-height: 65px;
+          }
+        }
+      `}</style>
+
+      <div className="dropdown-seven-container">
+        {/* Mobile View Toggle (Map vs Properties) */}
+        {isMobile && onToggleView && (
+          <div className="mobile-toggle-container">
+            <div className="d-flex">
+              <button
+                type="button"
+                className={`mobile-toggle-btn ${!showMap ? "active" : ""}`}
+                onClick={() => onToggleView(false)}
               >
-                <input
-                  ref={locationInputRef}
-                  type="text"
-                  className="form-control location-input fw-normal"
-                  placeholder={
-                    isGoogleMapsLoaded
-                      ? t("search_location_placeholder")
-                      : t("loading_location_services")
-                  }
-                  value={locationQuery}
-                  onChange={handleLocationInputChange}
-                  onFocus={() =>
-                    suggestions.length > 0 && setShowSuggestions(true)
-                  }
-                  disabled={!isGoogleMapsLoaded}
-                  style={{
-                    width: "100%",
-                    padding: "12px 15px",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "4px",
-                    fontSize: "14px",
-                    backgroundColor: isGoogleMapsLoaded ? "#fff" : "#f8f9fa",
-                    cursor: isGoogleMapsLoaded ? "text" : "not-allowed",
-                  }}
-                />
+                <i className="fa-solid fa-list"></i>
+                <span>{t("properties")}</span>
+              </button>
+              <button
+                type="button"
+                className={`mobile-toggle-btn ${showMap ? "active" : ""}`}
+                onClick={() => onToggleView(true)}
+              >
+                <i className="fa-solid fa-map"></i>
+                <span>{t("map")}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
-                {/* Loading indicator */}
-                {!isGoogleMapsLoaded && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: "15px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      fontSize: "12px",
-                      color: "#666",
-                    }}
-                  >
-                    {t("loading")}
-                  </div>
-                )}
+        {/* Mobile Filters Toggle */}
+        {isMobile && (
+          <button
+            type="button"
+            className={`mobile-filters-toggle ${showFilters ? "active" : ""}`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <div className="d-flex align-items-center">
+              <i className="fa-solid fa-filter me-2"></i>
+              <span>{t("filters")}</span>
+            </div>
+            <i className={`fa-solid fa-chevron-down chevron`}></i>
+          </button>
+        )}
 
-                {/* Suggestions Dropdown */}
-                {showSuggestions &&
-                  suggestions.length > 0 &&
-                  isGoogleMapsLoaded && (
-                    <div
-                      ref={suggestionsRef}
-                      className="location-suggestions"
-                      style={{
-                        position: "absolute",
-                        top: "100%",
-                        left: 0,
-                        right: 0,
-                        backgroundColor: "#fff",
-                        border: "1px solid #e0e0e0",
-                        borderTop: "none",
-                        borderRadius: "0 0 4px 4px",
-                        maxHeight: "200px",
-                        overflowY: "auto",
-                        zIndex: 1000,
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                      }}
-                    >
-                      {suggestions.map((suggestion, index) => (
+        {/* Filters Container */}
+        <div
+          className={`filters-container ${isMobile ? "mobile" : ""} ${
+            isMobile && !showFilters ? "hidden" : ""
+          }`}
+        >
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div
+              className={
+                isMobile ? "mobile-filters-grid" : "desktop-filters-row"
+              }
+            >
+              {/* Location Input */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "250px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("location")}</div>
+                  <div className="position-relative">
+                    <input
+                      ref={locationInputRef}
+                      type="text"
+                      className="location-input"
+                      placeholder={
+                        isGoogleMapsLoaded
+                          ? t("search_location_placeholder")
+                          : t("loading_location_services")
+                      }
+                      value={locationQuery}
+                      onChange={handleLocationInputChange}
+                      onFocus={() =>
+                        suggestions.length > 0 && setShowSuggestions(true)
+                      }
+                      disabled={!isGoogleMapsLoaded}
+                    />
+
+                    {/* Loading indicator */}
+                    {!isGoogleMapsLoaded && (
+                      <div className="loading-indicator">{t("loading")}</div>
+                    )}
+
+                    {/* Suggestions Dropdown */}
+                    {showSuggestions &&
+                      suggestions.length > 0 &&
+                      isGoogleMapsLoaded && (
                         <div
-                          key={suggestion.place_id || index}
-                          className="suggestion-item"
-                          onClick={() => handleSuggestionSelect(suggestion)}
-                          style={{
-                            padding: "12px 15px",
-                            cursor: "pointer",
-                            borderBottom:
-                              index < suggestions.length - 1
-                                ? "1px solid #f0f0f0"
-                                : "none",
-                            fontSize: "14px",
-                            transition: "background-color 0.2s",
-                          }}
-                          onMouseEnter={(e) => {
-                            (e.target as HTMLElement).style.backgroundColor =
-                              "#f8f9fa";
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.target as HTMLElement).style.backgroundColor =
-                              "#fff";
-                          }}
+                          ref={suggestionsRef}
+                          className="location-suggestions"
                         >
-                          <div
-                            style={{ fontWeight: "500", marginBottom: "2px" }}
-                          >
-                            {suggestion.structured_formatting?.main_text ||
-                              suggestion.description}
-                          </div>
-                          {suggestion.structured_formatting?.secondary_text && (
-                            <div style={{ fontSize: "12px", color: "#666" }}>
-                              {suggestion.structured_formatting.secondary_text}
+                          {suggestions.map((suggestion, index) => (
+                            <div
+                              key={suggestion.place_id || index}
+                              className="suggestion-item"
+                              onClick={() => handleSuggestionSelect(suggestion)}
+                            >
+                              <div className="main-text">
+                                {suggestion.structured_formatting?.main_text ||
+                                  suggestion.description}
+                              </div>
+                              {suggestion.structured_formatting
+                                ?.secondary_text && (
+                                <div className="secondary-text">
+                                  {
+                                    suggestion.structured_formatting
+                                      .secondary_text
+                                  }
+                                </div>
+                              )}
                             </div>
-                          )}
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Agent Selection */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "180px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("by_agent")}</div>
+                  <NiceSelect
+                    className="nice-select"
+                    options={[
+                      {
+                        text: t("all_agents"),
+                        value: "all",
+                      },
+                      ...agents?.map((agent: any) => ({
+                        value: agent.id,
+                        text: agent.name,
+                      })),
+                    ]}
+                    defaultCurrent={filters.user_id ? filters.user_id : "all"}
+                    onChange={(event) =>
+                      handleAgentChange && handleAgentChange(event.target.value)
+                    }
+                    name=""
+                    placeholder=""
+                  />
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "180px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("price_range")}</div>
+                  <NiceSelect
+                    className="nice-select"
+                    options={[
+                      { value: "all", text: t("any") },
+                      ...priceRanges.map((range) => ({
+                        value: `${range.from}-${range.to}`,
+                        text: range.label,
+                      })),
+                    ]}
+                    defaultCurrent={0}
+                    onChange={(event) => {
+                      handlePriceDropChange(event.target.value);
+                    }}
+                    name=""
+                    placeholder=""
+                  />
+                </div>
+              </div>
+
+              {/* Bedrooms */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "120px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("bed")}</div>
+                  <NiceSelect
+                    className="nice-select"
+                    options={[
+                      { value: "all", text: t("any") },
+                      { value: "1", text: "1+" },
+                      { value: "2", text: "2+" },
+                      { value: "3", text: "3+" },
+                      { value: "4", text: "4+" },
+                    ]}
+                    defaultCurrent={0}
+                    onChange={(event) =>
+                      handleBedroomChange(event.target.value)
+                    }
+                    name=""
+                    placeholder=""
+                  />
+                </div>
+              </div>
+
+              {/* Bathrooms */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "120px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("bath")}</div>
+                  <NiceSelect
+                    className="nice-select"
+                    options={[
+                      { value: "all", text: t("any") },
+                      { value: "1", text: "1+" },
+                      { value: "2", text: "2+" },
+                      { value: "3", text: "3+" },
+                      { value: "4", text: "4+" },
+                    ]}
+                    defaultCurrent={0}
+                    onChange={(event) =>
+                      handleBathroomChange(event.target.value)
+                    }
+                    name=""
+                    placeholder=""
+                  />
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-left">
-              <div className="label">{t("price_range")}</div>
-              <NiceSelect
-                className="nice-select border border-[#e0e0e0] fw-normal"
-                options={[
-                  { value: "all", text: t("any") },
-                  ...priceRanges.map((range) => ({
-                    value: `${range.from}-${range.to}`,
-                    text: range.label,
-                  })),
-                ]}
-                defaultCurrent={0}
-                onChange={(event) => {
-                  handlePriceDropChange(event.target.value);
-                }}
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div>
-
-          <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-left">
-              <div className="label">{t("bed")}</div>
-              <NiceSelect
-                className="nice-select border border-[#e0e0e0]  fw-normal"
-                options={[
-                  { value: "0", text: t("any") },
-                  { value: "1", text: "1+" },
-                  { value: "2", text: "2+" },
-                  { value: "3", text: "3+" },
-                  { value: "4", text: "4+" },
-                ]}
-                defaultCurrent={0}
-                onChange={(event) => handleBedroomChange(event.target.value)}
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div>
-
-          <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-left">
-              <div className="label">{t("bath")}</div>
-              <NiceSelect
-                className="nice-select border border-[#e0e0e0]  fw-normal"
-                options={[
-                  { value: "0", text: t("any") },
-                  { value: "1", text: "1+" },
-                  { value: "2", text: "2+" },
-                  { value: "3", text: "3+" },
-                  { value: "4", text: "4+" },
-                ]}
-                defaultCurrent={0}
-                onChange={(event) => handleBathroomChange(event.target.value)}
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div>
-
-          {/* agents  */}
-          <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-left">
-              <div className="label">{t("by_agent")}</div>
-              <NiceSelect
-                className="nice-select border border-[#e0e0e0]  w-full"
-                options={[
-                  {
-                    text: t("all agents"),
-                    value: "all",
-                  },
-                  ...agents?.map((agent: any) => ({
-                    value: agent.id,
-                    text: agent.name,
-                  })),
-                ]}
-                defaultCurrent={filters.user_id ? filters.user_id : "all"}
-                onChange={(event) =>
-                  handleAgentChange && handleAgentChange(event.target.value)
-                }
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div>
-
-          {/* advanced search button */}
-          {/* <div className="col-xxl-2 col-xl-1 !ms-auto ">
-            <div className="input-box-one lg-mt-20">
-              <div className="d-flex align-items-center justify-content-center justify-content-xl-end">
-                <Link
-                  href="#"
-                  data-bs-toggle="modal"
-                  data-bs-target="#advanceFilterModal"
-                  className="search-modal-btn tran3s text-uppercase fw-500 d-inline-flex align-items-center"
-                >
-                  <span className="me-3 d-xl-none d-xxl-block">
-                    {t("advance_search")}
-                  </span>
-                  <i className="fa-light fa-sliders-up"></i>
-                </Link>
-              </div>
-            </div>
-          </div> */}
+          </form>
         </div>
-      </form>
-      {/* <ListingDropdownModal
-        handleSearchChange={handleSearchChange}
-        handleBedroomChange={handleBedroomChange}
-        handleBathroomChange={handleBathroomChange}
-        handlePriceChange={handlePriceChange}
-        maxPrice={maxPrice}
-        priceValue={priceValue}
-        handleResetFilter={handleResetFilter}
-        selectedAmenities={selectedAmenities}
-        handleAmenityChange={handleAmenityChange}
-        handleStatusChange={handleStatusChange}
-      /> */}
+      </div>
     </>
   );
 };

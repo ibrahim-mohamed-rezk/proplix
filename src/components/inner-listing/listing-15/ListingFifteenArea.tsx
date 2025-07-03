@@ -31,6 +31,9 @@ const ListingFifteenArea = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
 
+  // Mobile view state
+  const [mobileView, setMobileView] = useState<"list" | "map">("list");
+
   useEffect(() => {
     const fetchProperties = async () => {
       setIsLoading(true);
@@ -104,7 +107,7 @@ const ListingFifteenArea = () => {
         map.current = null;
       }
     };
-  }, []);
+  }, [mobileView]); // Re-initialize map when view changes
 
   useEffect(() => {
     if (!map.current) return;
@@ -125,16 +128,22 @@ const ListingFifteenArea = () => {
   }, [locationData]);
 
   return (
-    <div className="property-listing-eight pt-150  xl-pt-120">
+    <div className="property-listing-eight pt-150 xl-pt-120">
       {/* dropdown filters */}
       <div className="search-wrapper-three layout-two position-relative">
         <div className="bg-wrapper rounded-0 border-0">
           <DropdownSeven
             handleBathroomChange={(value) => {
-              setFilters({ ...filters, bathrooms: value });
+              setFilters({
+                ...filters,
+                bathrooms: value === "all" ? null : value,
+              });
             }}
             handleBedroomChange={(value) => {
-              setFilters({ ...filters, bedrooms: value });
+              setFilters({
+                ...filters,
+                bedrooms: value === "all" ? null : value,
+              });
             }}
             handleSearchChange={() => {}}
             handleAgentChange={(value) => {
@@ -200,12 +209,51 @@ const ListingFifteenArea = () => {
         </div>
       </div>
 
-      {/* map */}
+      {/* Mobile View Toggle - Only visible on mobile */}
+      <div className="d-block d-lg-none mb-3">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <div className="mobile-view-toggle d-flex align-items-center justify-content-center bg-light rounded p-2">
+                <button
+                  className={`border text-black btn border-[#FF6625] flex-1 me-2 ${
+                    mobileView === "list"
+                      ? "!bg-[#FF6625] text-white"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => setMobileView("list")}
+                >
+                  <i className="fa-regular fa-list me-2"></i>
+                  {t("List View")}
+                </button>
+                <button
+                  className={`border text-black btn border-[#FF6625] flex-1 ${
+                    mobileView === "map"
+                      ? "!bg-[#FF6625] text-white"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => setMobileView("map")}
+                >
+                  <i className="fa-regular fa-map me-2"></i>
+                  {t("Map View")}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <div
         className="row gx-0 max-w-[1920px] mx-auto"
         style={{ height: "100%" }}
       >
-        <div className="col-xxl-6 col-lg-5">
+        {/* Map Section - Hidden on mobile, or shown based on mobile view */}
+        <div
+          className={`col-xxl-6 col-lg-5 ${
+            mobileView === "list" ? "d-none d-lg-block" : "d-block d-lg-block"
+          }`}
+        >
           <div
             id="google-map-area"
             className="h-[100%] w-full prop-map-container"
@@ -224,7 +272,12 @@ const ListingFifteenArea = () => {
           </div>
         </div>
 
-        <div className="col-xxl-6 col-lg-7">
+        {/* Properties List Section - Hidden on mobile when map is shown */}
+        <div
+          className={`col-xxl-6 col-lg-7 ${
+            mobileView === "map" ? "d-none d-lg-block" : "d-block"
+          }`}
+        >
           <div className="bg-light pl-40 pr-40 pt-35 pb-60">
             <div className="listing-header-filter d-sm-flex justify-content-between align-items-center mb-40 lg-mb-30">
               <div>
@@ -256,7 +309,7 @@ const ListingFifteenArea = () => {
                 </div>
                 <Link
                   href="/listing_15"
-                  className="tran3s layout-change rounded-circle ms-auto ms-sm-3"
+                  className="tran3s layout-change rounded-circle ms-auto ms-sm-3 d-none d-lg-block"
                   data-bs-toggle="tooltip"
                   title={t("Switch To List View")}
                 >
@@ -273,7 +326,7 @@ const ListingFifteenArea = () => {
               >
                 <div className="d-flex flex-wrap items-stretch justify-stretch layout-one h-full">
                   <div
-                    className="img-gallery position-relative z-1 rounded-[20px] flex-shrink-0 overflow-hidden"
+                    className="img-gallery mx-auto position-relative z-1 rounded-[20px] flex-shrink-0 overflow-hidden"
                     style={{
                       backgroundImage: "none",
                       width: "294px",

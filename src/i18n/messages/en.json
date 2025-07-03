@@ -597,6 +597,12 @@
   "endUser": {
     "Property Overview": "Property Overview",
     "overview": "overview",
+    "sale": "Sale",
+    "Residentialsale": "Residential Sale",
+    "Commercialsale": "Commercial Sale",
+    "rent": "Rent",
+    "Residentialrent": "Residential Rent",
+    "Commercialrent": "Commercial Rent",
     "Property Features": "Property Features",
     "amenities": "Amenities",
     "sqft": "Sqft",
@@ -718,10 +724,29 @@
     "Rent Industrial": "Rent Industrial",
     "Buy Villas": "Buy Villas",
     "Rent Office": "Rent Office",
-    "Faq's": "Faq's",
     "​Buy Apartments": "Buy Apartments",
-    "Faq’s": "Faq’s",
-    "Properties": "Properties"
+    "Faq's": "Faq's",
+    "Properties": "Properties",
+    "contact": {
+      "mainTitle": "Questions? Feel Free to Reach Out Via Message.",
+      "helpTitle": "We're always happy to help.",
+      "helpEmail": "ask@Proplix.com",
+      "hotlineTitle": "Our hotline number",
+      "hotline1": "+757 699 4478,",
+      "hotline2": "+991 377 9731",
+      "livechatTitle": "Live chat",
+      "livechatUrl": "www.Problixlivechat.com",
+      "sendMessageTitle": "Send Message",
+      "nameLabel": "Name*",
+      "namePlaceholder": "Your Name*",
+      "nameError": "Name is required",
+      "emailLabel": "Email*",
+      "emailPlaceholder": "Email Address*",
+      "emailError": "A valid email is required",
+      "messagePlaceholder": "Your message*",
+      "messageError": "Message is required",
+      "sendButton": "Send Message"
+    }
   },
   "SignupPage": {
     "Create Agent Account": "Create Agent Account",
@@ -809,5 +834,271 @@
     "rent_industrial": "Rent Industrial",
     "buy_villas": "Buy Villas",
     "rent_office": "Rent Office"
+  },
+  "terms": {
+    "breadcrumb": {
+      "title": "Terms & Conditions",
+      "linkTitle": "Pages",
+      "subTitle": "Terms & Conditions"
+    },
+    "sidebar": {
+      "generalTerms": "General Terms",
+      "useLicense": "Use License",
+      "userResponsibilities": "User Responsibilities",
+      "liability": "Liability",
+      "intellectualProperty": "Intellectual Property",
+      "additional": "Additional Terms",
+      "needHelp": {
+        "title": "Need Legal Help?",
+        "button": "Contact us"
+      }
+    },
+    "sections": {
+      "generalTerms": {
+        "title": "General Terms",
+        "items": {
+          "definitions": {
+            "title": "Definitions",
+            "content": "In these terms and conditions for users (\"Terms of Use\"), the terms \"we,\" \"our,\" \"us\" refer to Proplix Technologies LLC, including its employees, officers, agents, affiliates, and assigned parties. \"Website\" refers to Proplix.com."
+          },
+          "agreement": {
+            "title": "Agreement to Terms",
+            "content": "By accessing or using this Website, you agree to be bound by these Terms of Use and our Privacy Policy (together, the \"Terms\"), as well as all applicable laws and regulations. If you do not agree to these Terms, your only option is to stop using the Website immediately."
+          },
+          "eligibility": {
+            "title": "Eligibility Requirements",
+            "content": "You may not use the Website and may not accept these Terms if: (a) You are under 18 years of age, or (b) You are legally prohibited from accessing or using the Website under the laws of your country."
+          },
+          "effective": {
+            "title": "Effective Date",
+            "content": "These Terms take effect the moment you start using the Website."
+          }
+        }
+      },
+      "useLicense": {
+        "title": "Use License & Restrictions",
+        "items": {
+          "license": {
+            "title": "License Grant",
+            "content": "You are granted a limited, non-exclusive, non-transferable license to access and use the Website for personal, non-commercial use only. This license does not include any rights to:<br>• Modify, copy, or reproduce the content<br>• Use the content for any commercial or public purpose<br>• Attempt to reverse engineer any software on the Website<br>• Remove copyright or proprietary notices<br>• Mirror or transfer the Website content to another server"
+          },
+          "restrictions": {
+            "title": "Prohibited Activities",
+            "content": "You agree not to:<br>• Use bots or scraping tools to access or index content<br>• Disrupt the normal functioning of the Website<br>• Create competing platforms using content from Proplix.com<br>• Send spam or mass unsolicited communications<br>• Violate any applicable laws or third-party rights<br>• Upload malicious content or viruses<br>• Reproduce or republish content without written permission"
+          },
+          "termination": {
+            "title": "License Termination",
+            "content": "We reserve the right to restrict or revoke your access at any time. If you breach these Terms, your license is automatically terminated and you must delete any materials you downloaded."
+          }
+        }
+      },
+      "userResponsibilities": {
+        "title": "Your Responsibilities",
+        "items": {
+          "platform": {
+            "title": "Platform Nature",
+            "content": "Proplix is a real estate marketplace, not a brokerage. We provide a platform for property listings and do not participate in property transactions."
+          },
+          "verification": {
+            "title": "Information Verification",
+            "content": "Listings are created by third-party agents and are not verified by us. We do not guarantee their accuracy. You are responsible for verifying all property information, conducting inspections, and seeking legal advice before making any transaction."
+          },
+          "compliance": {
+            "title": "Legal Compliance",
+            "content": "You must use the Website in good faith and in compliance with all applicable laws."
+          }
+        }
+      },
+      "liability": {
+        "title": "Limitations of Liability",
+        "items": {
+          "limitations": {
+            "title": "Liability Limitations",
+            "content": "We are not liable for any loss or damages, including:<br>• Data loss<br>• Business interruption<br>• Profits loss<br>• Computer viruses or malware"
+          },
+          "communications": {
+            "title": "Third-Party Communications",
+            "content": "We are not liable for communication between users and agents, or inaccuracies in property listings. You may not use the Website for business or commercial purposes without express consent."
+          },
+          "disclaimer": {
+            "title": "General Disclaimer",
+            "content": "The Website is provided \"as is.\" We make no warranties regarding the accuracy, reliability, or availability of the Website or its content."
+          }
+        }
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property",
+        "items": {
+          "ownership": {
+            "title": "Content Ownership",
+            "content": "All content on Proplix.com is the property of Proplix Technologies LLC or its licensors and is protected by intellectual property laws."
+          },
+          "usage": {
+            "title": "Usage Rights",
+            "content": "No content from the Website may be copied, reused, or republished without our prior written consent."
+          },
+          "trademarks": {
+            "title": "Trademarks",
+            "content": "All trademarks, service marks, and logos are owned by us or our partners and may not be used without permission."
+          }
+        }
+      },
+      "additional": {
+        "title": "Additional Terms",
+        "items": {
+          "governing": {
+            "title": "Governing Law",
+            "content": "These Terms are governed by the laws of the Arab Republic of Egypt. Any legal disputes will be resolved in the courts of Egypt."
+          },
+          "privacy": {
+            "title": "Privacy & Data Protection",
+            "content": "We are committed to protecting your personal information. Please refer to our Privacy Policy for details on how we collect, use, store, and protect your data. By using our Website, you consent to the collection and use of your personal information in accordance with our Privacy Policy."
+          },
+          "contact": {
+            "title": "Contact Information",
+            "content": "If you have questions, concerns, or wish to report a listing, please contact us at: support@proplix.com"
+          }
+        }
+      }
+    }
+  },
+  "privacy": {
+    "breadcrumb": {
+      "title": "Privacy Policy",
+      "linkTitle": "Pages",
+      "subTitle": "Privacy Policy"
+    },
+    "sidebar": {
+      "dataCollection": "Data Collection",
+      "dataUsage": "Data Usage",
+      "dataSharing": "Data Sharing",
+      "dataProtection": "Data Protection",
+      "userRights": "Your Rights",
+      "additional": "Additional Info",
+      "needHelp": {
+        "title": "Privacy Questions?",
+        "button": "Contact us"
+      }
+    },
+    "sections": {
+      "dataCollection": {
+        "title": "Information We Collect",
+        "items": {
+          "personal": {
+            "title": "Personal Information You Provide",
+            "content": "We collect personal information that you voluntarily provide to us including:<br>• Name, email address, phone number, nationality, address, date of birth<br>• ID/passport documents for verification purposes<br>• Your interests, budget preferences, and communication records<br>• Any messages you send through contact forms, WhatsApp, email, or phone calls"
+          },
+          "property": {
+            "title": "Property-Related Data",
+            "content": "We collect information related to your property activities on our platform:<br>• Property search history and saved listings<br>• Property inquiries and viewing requests<br>• Preferences for property types, locations, and budget ranges<br>• Interaction history with property agents and developers"
+          },
+          "technical": {
+            "title": "Technical & Usage Data",
+            "content": "We automatically collect technical information when you use our platform:<br>• IP address, device identifiers, and browser type<br>• Referral URLs and platform usage logs<br>• Cookies and similar tracking technologies<br>• Performance data and error reports"
+          },
+          "thirdParty": {
+            "title": "Third-Party Sources",
+            "content": "We may receive information about you from external sources including:<br>• Property brokers, agents, and developers<br>• Business partners and service providers<br>• Analytics providers and advertising platforms<br>• Banks and financial institutions (for mortgage services)"
+          }
+        }
+      },
+      "dataUsage": {
+        "title": "How We Use Your Information",
+        "items": {
+          "services": {
+            "title": "Service Provision",
+            "content": "We use your information to provide and maintain our core services:<br>• Creating and managing your account<br>• Processing property inquiries and search requests<br>• Connecting you with relevant property agents and developers<br>• Facilitating property viewings and transactions"
+          },
+          "communication": {
+            "title": "Communications & Marketing",
+            "content": "We use your data for communication purposes including:<br>• Sending service notifications and property alerts<br>• Providing customer support and responding to inquiries<br>• Marketing communications about new properties and services<br>• Mortgage service offers through our partners (if applicable)"
+          },
+          "improvement": {
+            "title": "Platform Improvement",
+            "content": "We analyze your usage data to enhance our platform:<br>• Improving website performance, content, and usability<br>• Personalizing your experience and property recommendations<br>• Developing new features and services<br>• Conducting market research and analytics"
+          },
+          "legal": {
+            "title": "Legal & Security",
+            "content": "We process your data for legal and security purposes:<br>• Detecting and preventing fraud and security threats<br>• Enforcing our terms of service and policies<br>• Complying with legal, tax, and regulatory obligations<br>• Protecting our rights and the rights of our users"
+          }
+        }
+      },
+      "dataSharing": {
+        "title": "Who We Share Your Data With",
+        "items": {
+          "agents": {
+            "title": "Property Professionals",
+            "content": "We share your information with property professionals when you express interest in their listings:<br>• Real estate agents and brokers<br>• Property developers and landlords<br>• Property management companies<br>• Licensed real estate professionals on our platform"
+          },
+          "partners": {
+            "title": "Service Partners",
+            "content": "We may share your data with trusted service providers:<br>• Mortgage providers and financial institutions<br>• IT service providers and cloud hosting companies<br>• Marketing and analytics partners<br>• Customer support and communication platforms"
+          },
+          "legal": {
+            "title": "Legal Requirements",
+            "content": "We may disclose your information when required by law:<br>• Legal or regulatory authorities<br>• Government agencies and law enforcement<br>• Courts and legal proceedings<br>• Tax authorities and financial regulators"
+          },
+          "business": {
+            "title": "Business Transfers",
+            "content": "Your data may be transferred in business transactions:<br>• Mergers, acquisitions, or asset sales<br>• Business restructuring or reorganization<br>• Assignment of rights or obligations<br>• Due diligence processes (with appropriate safeguards)"
+          }
+        }
+      },
+      "dataProtection": {
+        "title": "Data Protection & Security",
+        "items": {
+          "security": {
+            "title": "Security Measures",
+            "content": "We implement comprehensive security measures to protect your data:<br>• Data encryption in transit and at rest<br>• Secure servers and protected databases<br>• Access controls limited to authorized personnel only<br>• Regular security audits and monitoring<br>• Incident response procedures for potential breaches"
+          },
+          "retention": {
+            "title": "Data Retention",
+            "content": "We retain your personal data only as long as necessary for:<br>• Providing our services to you<br>• Meeting legal, tax, and accounting requirements<br>• Resolving disputes and enforcing agreements<br>• Responding to complaints and customer inquiries<br>The retention period varies based on data type and legal obligations."
+          },
+          "transfers": {
+            "title": "International Transfers",
+            "content": "Your data may be processed in countries outside your residence:<br>• We implement appropriate safeguards for cross-border transfers<br>• Standard contractual clauses and adequacy decisions<br>• Binding corporate rules and certification mechanisms<br>• Regular monitoring of transfer security and compliance"
+          }
+        }
+      },
+      "userRights": {
+        "title": "Your Privacy Rights",
+        "items": {
+          "access": {
+            "title": "Access & Information Rights",
+            "content": "You have the right to access and receive information about your data:<br>• Request a copy of your personal data<br>• Obtain information about how we process your data<br>• Receive data in a structured, machine-readable format<br>• Request details about data sharing and transfers"
+          },
+          "control": {
+            "title": "Control & Correction Rights",
+            "content": "You can control and correct your personal information:<br>• Update or correct inaccurate data<br>• Request deletion of your personal data<br>• Restrict or object to certain types of processing<br>• Withdraw consent for consent-based processing<br>• Opt-out of marketing communications"
+          },
+          "exercise": {
+            "title": "How to Exercise Your Rights",
+            "content": "To exercise your privacy rights, you can:<br>• Email us at privacy@proplix.com<br>• Use the privacy settings in your account<br>• Contact our customer support team<br>• Submit requests through our privacy portal<br>We will respond to your requests within applicable legal timeframes."
+          }
+        }
+      },
+      "additional": {
+        "title": "Additional Information",
+        "items": {
+          "cookies": {
+            "title": "Cookies & Tracking",
+            "content": "We use cookies and similar tracking technologies to:<br>• Remember your preferences and settings<br>• Analyze website traffic and usage patterns<br>• Personalize your experience and advertisements<br>• Improve our platform performance<br>You can manage cookie preferences through your browser settings or our Cookie Policy."
+          },
+          "children": {
+            "title": "Children's Privacy",
+            "content": "Proplix does not knowingly collect personal information from children under 18 years of age. If you believe we have inadvertently collected information from a child, please contact us immediately at privacy@proplix.com and we will take steps to delete such information."
+          },
+          "updates": {
+            "title": "Policy Updates",
+            "content": "We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. We will post any updated policy on this page with a revised \"Last Updated\" date. Your continued use of our platform after changes become effective constitutes acceptance of the updated policy."
+          },
+          "contact": {
+            "title": "Contact Information",
+            "content": "If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at:<br>📧 Email: privacy@proplix.com<br>📞 Phone: [Phone Number]<br>📬 Mail: [Physical Address]<br>We will respond to your inquiries promptly and in accordance with applicable laws."
+          }
+        }
+      }
+    }
   }
 }

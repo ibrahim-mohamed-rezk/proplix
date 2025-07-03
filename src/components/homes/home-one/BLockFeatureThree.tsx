@@ -128,7 +128,7 @@ export default function BLockFeatureThree() {
   const settings = {
     infinite: areas.length > 1,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: 4 ,
     slidesToScroll: 1,
     centerMode: true,
     centerPadding: "0",
@@ -136,6 +136,9 @@ export default function BLockFeatureThree() {
     arrows: false,
     autoplay: true,
     autoplaySpeed: 3000,
+    pauseOnHover: false,
+    pauseOnFocus: false,
+    
     responsive: [
       {
         breakpoint: 1200,

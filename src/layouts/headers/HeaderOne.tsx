@@ -73,7 +73,7 @@ const HeaderOne = ({
           sticky ? "fixed" : ""
         }`}
       >
-        {!style && (
+        {/* {!style && (
           <div className="alert-wrapper text-center">
             <p className="fs-16 m0 text-white">
               <Link href="/listing_01" className="fw-500">
@@ -83,7 +83,7 @@ const HeaderOne = ({
               <span> {t("This Sunday")}</span>
             </p>
           </div>
-        )}
+        )} */}
         <div className="inner-content gap-one">
           <div className="top-header position-relative">
             <div className="d-flex align-items-center justify-content-between">

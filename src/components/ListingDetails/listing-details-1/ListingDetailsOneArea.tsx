@@ -16,6 +16,7 @@ import CommonLocation from "../listing-details-common/CommonLocation";
 // import CommonReviewForm from "../listing-details-common/CommonReviewForm";
 import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
+import CommonBanner from "../listing-details-common/CommonBanner";
 
 const ListingDetailsOneArea = ({
   property,
@@ -30,7 +31,8 @@ const ListingDetailsOneArea = ({
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
       <div className="container">
-        {/* <CommonBanner property={property} /> */}
+        
+        <CommonBanner property={property} />
         <MediaGallery property={property} />
         <div className="property-feature-list bg-white shadow4 p-40 mt-50 mb-60">
           <h4 className="sub-title-one mb-40 lg-mb-20">

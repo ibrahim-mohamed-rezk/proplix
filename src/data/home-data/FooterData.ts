@@ -29,10 +29,8 @@ const footer_data: DataType[] = [
     page: "home_1",
     widget_title: "Legal",
     footer_link: [
-      { link: "/faq", link_title: "Terms & conditions" },
-      { link: "/faq", link_title: "Cookie" },
-      { link: "/faq", link_title: "Privacy policy" },
-      { link: "/faq", link_title: "Faq’s" },
+      { link: "/terms-and-conditions", link_title: "Terms & conditions" },
+      { link: "/privacy-policy", link_title: "Privacy policy" },
     ],
   },
   {
@@ -41,10 +39,12 @@ const footer_data: DataType[] = [
     page: "home_1",
     widget_title: "New Listing",
     footer_link: [
-      { link: "/properties", link_title: "​Buy Apartments" },
-      { link: "/properties", link_title: "Rent Houses" },
-      { link: "/properties", link_title: "Buy Villas" },
-      { link: "/properties", link_title: "Rent Office" },
+      { link: "/properties", link_title: "rent" },
+      { link: "/properties", link_title: "sale" },
+      { link: "/properties", link_title: "Residentialrent" },
+      { link: "/properties", link_title: "Commercialrent" },
+      { link: "/properties", link_title: "Residentialsale" },
+      { link: "/properties", link_title: "Commercialsale" },
     ],
   },
 

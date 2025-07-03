@@ -50,3 +50,7 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   }
 }
 
+.accordion-button::after{
+  margin-inline-start: auto ! important;
+  margin-inline-end: 0 ! important;
+}
