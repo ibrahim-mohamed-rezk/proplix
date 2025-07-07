@@ -16,7 +16,7 @@ const CommonBanner = ({
         <h3 className="property-titlee">{property?.title}</h3>
         <div className="d-flex flex-wrap flex-col mt-10">
           <div
-            className={`list-type !border-none rounded-[23px] text-uppercase mt-15 me-3 ${
+            className={`list-type !border-none rounded-[23px] text-uppercase me-3 ${
               property?.status.toLowerCase() === "sale"
                 ? "!bg-[#00B579]"
                 : property?.status.toLowerCase() === "rent"
@@ -35,15 +35,17 @@ const CommonBanner = ({
         <div className="d-inline-flex flex-column justify-content-start  md-mt-40">
           <div className="price color-dark fw-500">{property?.price}EGP</div>
           {property?.status.toLowerCase() === "rent" && (
-            <div className="est-price fs-20 mt-25 mb-35 md-mb-30">
-              Down Payment:
+            <div className="est-price fs-20 md-mb-30">
+              {t("down_price")}
               <span className="fw-500 color-dark"> {property?.down_price}</span>
             </div>
           )}
 
-          <div className="w-96 flex justify-start items-start gap-4 mt-4">
-            <button
-              className="flex-1 flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-500 to-yellow-400 hover:from-orange-600 hover:to-yellow-500 transition-all duration-200 rounded-xl shadow-lg group focus:outline-none focus:ring-2 focus:ring-orange-400"
+          <div className="w-96 flex justify-start items-start gap-[12px] mt-4">
+            <a
+              href={`tel:${property?.user.phone}`}
+              target="_blank"
+              className="flex-1 bg-[#FF6625] rounded-[8px] flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-xl shadow-lg"
               type="button"
             >
               <svg
@@ -62,9 +64,11 @@ const CommonBanner = ({
               <span className="text-white text-lg font-semibold font-['Gordita'] leading-normal tracking-wide">
                 Call
               </span>
-            </button>
-            <button
-              className="flex-1 flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-emerald-600 to-green-400 hover:from-emerald-700 hover:to-green-500 transition-all duration-200 rounded-xl shadow-lg group focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            </a>
+            <a
+              href={`https://wa.me/${property?.user.phone}`}
+              target="_blank" 
+              className="bg-[#00B266] rounded-[8px] flex-1 flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-xl shadow-lg"
               type="button"
             >
               <svg
@@ -100,10 +104,10 @@ const CommonBanner = ({
                   </clipPath>
                 </defs>
               </svg>
-              <span className="text-white text-lg font-semibold font-['Gordita'] leading-normal tracking-wide">
+              <span className="text-white text-lg font-semibold leading-normal tracking-wide">
                 WhatsApp
               </span>
-            </button>
+            </a>
           </div>
         </div>
       </div>

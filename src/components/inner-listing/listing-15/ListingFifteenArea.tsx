@@ -22,8 +22,15 @@ const ListingFifteenArea = () => {
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [filters, setFilters] = useState<{
     [key: string]: string | number | null;
-  }>({
-    type_id: null,
+  }>(() => {
+    const storedFilters = localStorage.getItem("filters");
+    return storedFilters
+      ? JSON.parse(storedFilters)
+      : {
+          status: "sale",
+          price: null,
+          down_price: null,
+        };
   });
   const locale = useLocale();
   const [types, setTypes] = useState([]);
@@ -33,6 +40,13 @@ const ListingFifteenArea = () => {
 
   // Mobile view state
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
+
+  // 
+
+  // Update localStorage when filters change
+  useEffect(() => {
+    localStorage.setItem("filters", JSON.stringify(filters));
+  }, [filters]);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -127,6 +141,14 @@ const ListingFifteenArea = () => {
     }
   }, [locationData]);
 
+  // Add handler for status change
+  const handleStatusChange = (value: string) => {
+    setFilters({
+      ...filters,
+      status: value === "all" ? null : value,
+    });
+  };
+
   return (
     <div className="property-listing-eight pt-150 xl-pt-120">
       {/* dropdown filters */}
@@ -137,6 +159,13 @@ const ListingFifteenArea = () => {
               setFilters({
                 ...filters,
                 bathrooms: value === "all" ? null : value,
+              });
+            }}
+            handleAreaChange={(value) => {
+              setFilters({
+                ...filters,
+                area_id: value === "all" ? null : value,
+
               });
             }}
             handleBedroomChange={(value) => {
@@ -164,7 +193,7 @@ const ListingFifteenArea = () => {
               setFilters({ ...filters, location: location.description });
               setLocationData(location);
             }}
-            handleStatusChange={() => {}}
+            handleStatusChange={handleStatusChange}
             handlePriceDropChange={(value) => {
               if (value === "all") {
                 setFilters({ ...filters, price: null, down_price: null });
@@ -363,8 +392,8 @@ const ListingFifteenArea = () => {
                       {property.area?.name}
                     </div>
                     <div className="feature2 fs-16 color-dark mt-[5px] pb-5">
-                      <ul className="style-none border-t border-b pb-[10px] !my-0 !py-0 d-flex flex-wrap align-items-center justify-content-between">
-                        <li className="d-flex align-items-center mt-15">
+                      <ul className="style-none pb-[10px] !my-0 !py-0 d-flex flex-wrap align-items-center justify-content-between">
+                        <li className="d-flex align-items-center  mt-15">
                           <Image
                             src={featureIcon_1}
                             alt=""
@@ -372,11 +401,11 @@ const ListingFifteenArea = () => {
                           />
                           <div>
                             <span className="fs-16 text-center">
-                              {property.sqt} <br /> {t(`sqft`)}
+                              {property.sqt} {t(`sqft`)}
                             </span>
                           </div>
                         </li>
-                        <li>
+                        {/* <li>
                           <svg
                             width="11"
                             height="38"
@@ -389,8 +418,8 @@ const ListingFifteenArea = () => {
                               stroke="black"
                             />
                           </svg>
-                        </li>
-                        <li className="d-flex align-items-center mt-15">
+                        </li> */}
+                        <li className="d-flex align-items-center  mt-15">
                           <Image
                             src={featureIcon_2}
                             alt=""
@@ -398,11 +427,11 @@ const ListingFifteenArea = () => {
                           />
                           <div>
                             <span className="fs-16 text-center">
-                              {property.bedroom} <br /> {t(`bed`)}
+                              {property.bedroom} {t(`bed`)}
                             </span>
                           </div>
                         </li>
-                        <li>
+                        {/* <li>
                           <svg
                             width="11"
                             height="38"
@@ -415,8 +444,8 @@ const ListingFifteenArea = () => {
                               stroke="black"
                             />
                           </svg>
-                        </li>
-                        <li className="d-flex align-items-center mt-15">
+                        </li> */}
+                        <li className="d-flex align-items-center  mt-15">
                           <Image
                             src={featureIcon_3}
                             alt=""
@@ -424,7 +453,7 @@ const ListingFifteenArea = () => {
                           />
                           <div>
                             <span className="fs-16 text-center">
-                              {property.bathroom} <br /> {t(`bath`)}
+                              {property.bathroom} {t(`bath`)}
                             </span>
                           </div>
                         </li>

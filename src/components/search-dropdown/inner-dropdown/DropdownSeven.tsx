@@ -53,6 +53,7 @@ interface DropdownSevenProps {
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: any) => void;
   handleAgentChange?: (value: any) => void;
+  handleAreaChange?: (value: any) => void;
   filters?: any;
   // New props for mobile toggle
   showMap?: boolean;
@@ -65,6 +66,8 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   handleBedroomChange,
   handleLocationChange,
   handlePriceDropChange,
+  handleAreaChange,
+  handleStatusChange,
   handleAgentChange,
   filters,
   showMap = false,
@@ -83,6 +86,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   const t = useTranslations("endUser");
   const locale = useLocale();
   const [agents, setAgents] = useState<any[]>([]);
+  const [areas, setAreas] = useState<any[]>([]);
 
   // Initialize Google Places services (supporting both old and new APIs)
   const autocompleteService =
@@ -99,12 +103,18 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
     },
   };
 
+  const fetchAreas = async () => {
+    const response = await getData("areas", {}, { lang: locale });
+    setAreas(response.data.data);
+  };
+
   useEffect(() => {
     const fetchAgents = async () => {
       const response = await getData("agents", {}, { lang: locale });
       setAgents(response.data.data);
     };
     fetchAgents();
+    fetchAreas();
   }, []);
 
   // Function to check if Google Maps is fully loaded
@@ -427,6 +437,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
 
     fetchData();
   }, []);
+  
 
   return (
     <>
@@ -846,6 +857,28 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                 </div>
               </div>
 
+              {/* Status Filter */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "120px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("status")}</div>
+                  <NiceSelect
+                    className="nice-select"
+                    options={[
+                      { value: "all", text: t("any") },
+                      { value: "sale", text: t("sale") },
+                      { value: "rent", text: t("rent") },
+                    ]}
+                    defaultCurrent={filters?.status || "all"}
+                    onChange={(event) => handleStatusChange(event.target.value)}
+                    name="status"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+
               {/* Agent Selection */}
               <div
                 className={isMobile ? "w-100" : "flex-1"}
@@ -901,6 +934,32 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                 </div>
               </div>
 
+              {/* Bedrooms */}
+              <div
+                className={isMobile ? "w-100" : "flex-1"}
+                style={{ minWidth: isMobile ? "100%" : "120px" }}
+              >
+                <div className="input-box-one">
+                  <div className="label">{t("area")}</div>
+                  <NiceSelect
+                    className="nice-select"
+                    options={[
+                      { value: "all", text: t("any") },
+                      ...areas?.map((area: any) => ({
+                        value: area.id,
+                        text: area.name,
+                      })),
+                    ]}
+                    defaultCurrent={0}
+                    onChange={(event) =>
+                      handleAreaChange && handleAreaChange(event.target.value)
+                    }
+                    name="area"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              
               {/* Bedrooms */}
               <div
                 className={isMobile ? "w-100" : "flex-1"}

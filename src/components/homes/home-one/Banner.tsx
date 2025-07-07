@@ -81,16 +81,15 @@ const Banner = () => {
       setFilters({ ...filters, area_id: e.target.value });
     }
   };
+  
   return (
     <div className="hero-banner-one bg-pink z-1 pt-225 xl-pt-200 pb-250 xl-pb-150 lg-pb-100 position-relative">
       <div className="container position-relative">
         <div className="row">
           <div className="col-xxl-10 col-xl-9 col-lg-10 col-md-10 m-auto">
             <h1 className="hero-heading text-center wow fadeInUp">
-              {" "}
-              {t("banner.title")}{" "}
+              {t("banner.title")}
               <span className="d-inline-block position-relative">
-                {" "}
                 <Image src={titleShape} alt="" className="lazy-img" />
               </span>
             </h1>
@@ -98,7 +97,6 @@ const Banner = () => {
               className="fs-24 color-dark text-center pt-35 pb-35 wow fadeInUp"
               data-wow-delay="0.1s"
             >
-              {" "}
               {t("banner.description")}
             </p>
           </div>

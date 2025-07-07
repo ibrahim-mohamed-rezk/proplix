@@ -54,7 +54,7 @@ const HomeOne = async ({ locale }: { locale: string }) => {
       {/* <BLockFeatureFive style={false} /> */}
       <FancyBanner style={false} />
       {/* <FancyBannerThree /> */}
-      <Feedback />
+      <Feedback parteners={homeData?.data?.parteners} />
 
       <FooterOne style={false} />
     </>

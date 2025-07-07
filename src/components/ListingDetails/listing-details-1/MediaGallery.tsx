@@ -1,9 +1,7 @@
-import Image from "next/image";
 import Fancybox from "@/components/common/Fancybox";
 
 import { PropertyTypes } from "@/libs/types/types";
-
-const largeThumb: string[] = ["1", "2", "3"];
+import { useTranslations } from "next-intl";
 
 interface DataType {
   big_carousel: string[];
@@ -17,6 +15,11 @@ const MediaGallery = ({
   style?: boolean;
   property?: PropertyTypes;
 }) => {
+  const t = useTranslations("endUser");
+  const largeThumb: string[] = Array.from(
+    { length: property?.property_listing_images.length || 0 },
+    (_, i) => `${i + 1}`
+  );
   const gallery_data: DataType = {
     big_carousel: property?.property_listing_images.map(
       (image) => image.image
@@ -29,13 +32,15 @@ const MediaGallery = ({
   const { big_carousel, small_carousel } = gallery_data;
 
   return (
-    <div className="media-gallery mt-100 xl-mt-80 lg-mt-60">
+    <div className="media-gallery mt-[50px]">
       <div id="media_slider" className="carousel slide row">
         <div className="col-lg-10">
           <div className={` bg-white  md-mb-20 ${style ? "" : "shadow4 p-30"}`}>
             <div className="position-relative z-1 overflow-hidden ">
-              <div className="img-fancy-btn  fw-500 fs-16 color-dark">
-                Sell all 37 Photos
+              <div className="img-fancy-btn  !right-auto !left-auto fw-500 fs-16 color-dark">
+                {`${t("see_all")} ${
+                  property?.property_listing_images.length || 0
+                } ${t("photos")}`}
                 <Fancybox
                   options={{
                     Carousel: {
@@ -43,12 +48,12 @@ const MediaGallery = ({
                     },
                   }}
                 >
-                  {largeThumb?.map((thumb: any, index: any) => (
+                  {property?.property_listing_images?.map((thumb: any, index: any) => (
                     <a
                       key={index}
                       className="d-block"
                       data-fancybox="img2"
-                      href={`/assets/images/listing/img_large_0${thumb}.jpg`}
+                      href={thumb.image}
                     ></a>
                   ))}
                 </Fancybox>
