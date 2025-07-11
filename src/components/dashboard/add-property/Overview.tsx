@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import React, { useState, useEffect } from "react";
 import GoogleLocationInput from "@/components/common/GoogleLocationInput";
@@ -9,8 +9,19 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 import RichTextEditor from "@/components/RichTextEditor";
-import { ChevronDown, ChevronUp, DollarSign, Home, FileText, Globe, Camera, Check, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  DollarSign,
+  Home,
+  FileText,
+  Globe,
+  Camera,
+  Check,
+  X,
+} from "lucide-react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 
 type FormInputs = {
   // General Information
@@ -26,13 +37,13 @@ type FormInputs = {
   status: string;
   type: string;
   immediate_delivery: string;
-  
+
   // English fields
   title_en: string;
   description_en: string;
   keywords_en: string;
   slug_en: string;
-  
+
   // Arabic fields
   title_ar: string;
   description_ar: string;
@@ -87,7 +98,7 @@ type ImagePreview = {
 const CreatePropertyPage = ({ token }: { token: string }) => {
   const t = useTranslations("properties");
   const router = useRouter();
-
+  const locale = useLocale();
   const {
     register,
     handleSubmit,
@@ -106,7 +117,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     details: true,
     arabic: true,
     english: true,
-    images: true
+    images: true,
   });
 
   // State for dropdown options
@@ -115,7 +126,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   // const [agents, setAgents] = useState<AgentOption[]>([]);
   const [locationData, setLocationData] = useState<LocationData | null>(null);
 
-  const showToast = (message: string, type: "success" | "error" | "info" = "info") => {
+  const showToast = (
+    message: string,
+    type: "success" | "error" | "info" = "info"
+  ) => {
     if (type === "success") {
       toast.success(message);
     } else if (type === "error") {
@@ -126,9 +140,9 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   };
 
   const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -171,15 +185,22 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
       try {
         const [typesResponse, areasResponse] = await Promise.all([
-          getData("types", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` })),
-          getData("areas", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` })),
+          getData(
+            "types",
+            {},
+            new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
+          ),
+          getData(
+            "areas",
+            {},
+            new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
+          ),
           // getData("owner/agents", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` }))
         ]);
 
         if (typesResponse.status) setPropertyTypes(typesResponse.data.data);
         if (areasResponse.status) setAreas(areasResponse.data.data);
         // setAgents(agentsResponse);
-
       } catch (error) {
         console.error("Error fetching dropdown data:", error);
         showToast(t("error_fetching_dropdown_data"), "error");
@@ -190,70 +211,80 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   }, []);
 
   const onSubmit = async (data: FormInputs) => {
-  // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
-  if (!token) {
-    showToast(t("auth_token_not_found"), "error");
-    return;
-  }
-
-  if (!imagePreview) {
-    showToast(t("please_select_an_image"), "error");
-    return;
-  }
-
-  const formData = new FormData();
-  
-  formData.append("type_id", data.type_id);
-  formData.append("area_id", data.area_id);
-  // formData.append("user_id", data.userId);
-  formData.append("price", data.price);
-  formData.append("down_price", data.down_price);
-  formData.append("sqt", data.sqt);
-  formData.append("bedroom", data.bedroom);
-  formData.append("bathroom", data.bathroom);
-  formData.append("kitichen", data.kitchen);
-  formData.append("status", data.status);
-  formData.append("type", data.type);
-  formData.append("immediate_delivery", data.immediate_delivery);
-
-  // Send location data as separate fields instead of JSON string
-  if (locationData) {
-    formData.append("location", locationData.description);
-    formData.append("location_place_id", locationData.placeId);
-    
-    if (locationData.coordinates) {
-      formData.append("location_lat", locationData.coordinates.lat.toString());
-      formData.append("location_lng", locationData.coordinates.lng.toString());
+    // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+    if (!token) {
+      showToast(t("auth_token_not_found"), "error");
+      return;
     }
-  }
 
-  formData.append("title[en]", data.title_en);
-  formData.append("description[en]", descriptionEn);
-  formData.append("keywords[en]", data.keywords_en);
-  formData.append("slug[en]", data.slug_en);
+    if (!imagePreview) {
+      showToast(t("please_select_an_image"), "error");
+      return;
+    }
 
-  formData.append("title[ar]", data.title_ar);
-  formData.append("description[ar]", descriptionAr);
-  formData.append("keywords[ar]", data.keywords_ar);
-  formData.append("slug[ar]", data.slug_ar);
+    const formData = new FormData();
 
-  formData.append("cover", imagePreview.file);
+    formData.append("type_id", data.type_id);
+    formData.append("area_id", data.area_id);
+    // formData.append("user_id", data.userId);
+    formData.append("price", data.price);
+    formData.append("down_price", data.down_price);
+    formData.append("sqt", data.sqt);
+    formData.append("bedroom", data.bedroom);
+    formData.append("bathroom", data.bathroom);
+    formData.append("kitichen", data.kitchen);
+    formData.append("status", data.status);
+    formData.append("type", data.type);
+    formData.append("immediate_delivery", data.immediate_delivery);
 
-  try {
-    const response = await postData("agnet/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
-    showToast(t("property_added_successfully"), "success");
-    router.push(`/properties/view/${response?.data?.id}`);
-  } catch (error) {
-    console.error("Failed to create property:", error);
-    showToast(t("failed_to_add_property"), "error");
-  }
-};
+    // Send location data as separate fields instead of JSON string
+    if (locationData) {
+      formData.append("location", locationData.description);
+      formData.append("location_place_id", locationData.placeId);
+
+      if (locationData.coordinates) {
+        formData.append(
+          "location_lat",
+          locationData.coordinates.lat.toString()
+        );
+        formData.append(
+          "location_lng",
+          locationData.coordinates.lng.toString()
+        );
+      }
+    }
+
+    formData.append("title[en]", data.title_en);
+    formData.append("description[en]", descriptionEn);
+    formData.append("keywords[en]", data.keywords_en);
+    formData.append("slug[en]", data.slug_en);
+
+    formData.append("title[ar]", data.title_ar);
+    formData.append("description[ar]", descriptionAr);
+    formData.append("keywords[ar]", data.keywords_ar);
+    formData.append("slug[ar]", data.slug_ar);
+
+    formData.append("cover", imagePreview.file);
+
+    try {
+      const response = await postData(
+        "agnet/property_listings",
+        formData,
+        new AxiosHeaders({ Authorization: `Bearer ${token}` })
+      );
+      showToast(t("property_added_successfully"), "success");
+      router.push(`/properties/view/${response?.data?.id}`);
+    } catch (error) {
+      console.error("Failed to create property:", error);
+      showToast(t("failed_to_add_property"), "error");
+    }
+  };
 
   const SectionHeader = ({
     title,
     icon,
     sectionKey,
-    description
+    description,
   }: {
     title: string;
     icon: React.ReactNode;
@@ -261,50 +292,58 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     description?: string;
   }) => (
     <div
-      className="section-header d-flex justify-content-between align-items-center p-4 cursor-pointer border-0"
+      className="section-header d-flex justify-content-between align-items-center p-4   cursor-pointer border-0"
       onClick={() => toggleSection(sectionKey)}
       style={{
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        transition: 'all 0.3s ease',
-        borderRadius: '0.75rem 0.75rem 0 0'
+        background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+        transition: "all 0.3s ease",
+        borderRadius: "0.75rem 0.75rem 0 0",
       }}
     >
       <div className="d-flex align-items-center gap-4">
         <div
           className="icon-container d-flex align-items-center justify-content-center me-3"
           style={{
-            width: '48px',
-            height: '48px',
-            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            transition: 'transform 0.3s ease'
+            width: "48px",
+            height: "48px",
+            background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            transition: "transform 0.3s ease",
           }}
         >
           {icon}
         </div>
         <div>
           <h3 className="h5 mb-1 fw-semibold text-dark">{title}</h3>
-          {description && <p className="small text-muted mb-0 opacity-75">{description}</p>}
+          {description && (
+            <p className="small text-muted mb-0 opacity-75">{description}</p>
+          )}
         </div>
       </div>
       <div className="d-flex align-items-center">
         <div
           className="status-indicator me-3"
           style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: expandedSections[sectionKey] ? '#198754' : '#6c757d',
-            transition: 'all 0.3s ease',
-            boxShadow: expandedSections[sectionKey] ? '0 0 8px rgba(25,135,84,0.3)' : 'none'
+            width: "8px",
+            height: "8px",
+            borderRadius: "50%",
+            backgroundColor: expandedSections[sectionKey]
+              ? "#198754"
+              : "#6c757d",
+            transition: "all 0.3s ease",
+            boxShadow: expandedSections[sectionKey]
+              ? "0 0 8px rgba(25,135,84,0.3)"
+              : "none",
           }}
         ></div>
         <div
           className="chevron-icon"
           style={{
-            transition: 'transform 0.3s ease',
-            transform: expandedSections[sectionKey] ? 'rotate(180deg)' : 'rotate(0deg)'
+            transition: "transform 0.3s ease",
+            transform: expandedSections[sectionKey]
+              ? "rotate(180deg)"
+              : "rotate(0deg)",
           }}
         >
           <ChevronDown className="w-5 h-5 text-muted" />
@@ -320,7 +359,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     required = false,
     options = [],
     dir = "ltr",
-    placeholder = ""
+    placeholder = "",
   }: {
     label: string;
     name: keyof FormInputs;
@@ -341,12 +380,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           className="form-select premium-input"
           dir={dir}
           style={{
-            border: '2px solid #e9ecef',
-            borderRadius: '0.75rem',
-            padding: '0.75rem 1rem',
-            fontSize: '0.95rem',
-            transition: 'all 0.3s ease',
-            background: '#ffffff'
+            border: "2px solid #e9ecef",
+            borderRadius: "0.75rem",
+            padding: "0.75rem 1rem",
+            fontSize: "0.95rem",
+            transition: "all 0.3s ease",
+            background: "#ffffff",
           }}
         >
           <option value="">{placeholder || `${t("select")} ${label}`}</option>
@@ -364,12 +403,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           dir={dir}
           placeholder={placeholder}
           style={{
-            border: '2px solid #e9ecef',
-            borderRadius: '0.75rem',
-            padding: '0.75rem 1rem',
-            fontSize: '0.95rem',
-            transition: 'all 0.3s ease',
-            background: '#ffffff'
+            border: "2px solid #e9ecef",
+            borderRadius: "0.75rem",
+            padding: "0.75rem 1rem",
+            fontSize: "0.95rem",
+            transition: "all 0.3s ease",
+            background: "#ffffff",
           }}
         />
       )}
@@ -378,10 +417,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           <div
             className="error-dot me-2"
             style={{
-              width: '4px',
-              height: '4px',
-              borderRadius: '50%',
-              backgroundColor: '#dc3545'
+              width: "4px",
+              height: "4px",
+              borderRadius: "50%",
+              backgroundColor: "#dc3545",
             }}
           ></div>
           {t("field_required")}
@@ -398,19 +437,23 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1) !important;
           outline: none !important;
         }
-        
+
         .section-header:hover {
-          background: linear-gradient(135deg, #f1f3f4 0%, #e2e6ea 100%) !important;
+          background: linear-gradient(
+            135deg,
+            #f1f3f4 0%,
+            #e2e6ea 100%
+          ) !important;
         }
-        
+
         .section-header:hover .icon-container {
           transform: translateY(-2px) !important;
         }
-        
+
         .section-content {
           animation: slideDown 0.3s ease-out;
         }
-        
+
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -421,29 +464,29 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             transform: translateY(0);
           }
         }
-        
+
         .form-section {
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
           transition: all 0.3s ease;
           border: 1px solid #e9ecef;
         }
-        
+
         .form-section:hover {
-          box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
           transform: translateY(-2px);
         }
-        
+
         .upload-area {
           border: 2px dashed #dee2e6;
           transition: all 0.3s ease;
           background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
         }
-        
+
         .upload-area:hover {
           border-color: #0d6efd;
           background: linear-gradient(135deg, #f0f7ff 0%, #e7f3ff 100%);
         }
-        
+
         .btn-premium {
           background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
           border: none;
@@ -453,12 +496,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           transition: all 0.3s ease;
           box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
         }
-        
+
         .btn-premium:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
         }
-        
+
         .btn-outline-premium {
           border: 2px solid #6c757d;
           border-radius: 0.75rem;
@@ -467,13 +510,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           transition: all 0.3s ease;
           background: transparent;
         }
-        
+
         .btn-outline-premium:hover {
           background: #6c757d;
           color: white;
           transform: translateY(-2px);
         }
-        
+
         .hero-section {
           background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
           border-radius: 1.5rem;
@@ -482,9 +525,9 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           position: relative;
           overflow: hidden;
         }
-        
+
         .hero-section::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
@@ -493,7 +536,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000" opacity="0.02"/><circle cx="75" cy="75" r="1" fill="%23000" opacity="0.02"/><circle cx="50" cy="10" r="1" fill="%23000" opacity="0.02"/><circle cx="10" cy="90" r="1" fill="%23000" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
           pointer-events: none;
         }
-        
+
         .hero-icon {
           width: 80px;
           height: 80px;
@@ -506,17 +549,20 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           box-shadow: 0 8px 30px rgba(13, 110, 253, 0.3);
           animation: float 3s ease-in-out infinite;
         }
-        
+
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
         }
       `}</style>
 
-      <div className="min-vh-100" >
+      <div className="min-vh-100">
         <div className="container py-5">
-
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Basic Information */}
             <div className="form-section bg-white rounded-4 mb-4 ">
@@ -527,7 +573,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("property_type_location_details")}
               />
               {expandedSections.basic && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="row g-4">
                     <div className="col-md-6 col-lg-4">
                       <InputField
@@ -535,7 +584,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         name="type_id"
                         type="select"
                         required
-                        options={propertyTypes.map(type => ({ value: type.id, label: type.title || '' }))}
+                        options={propertyTypes.map((type) => ({
+                          value: type.id,
+                          label: type.title || "",
+                        }))}
                         placeholder={t("select_type")}
                       />
                     </div>
@@ -545,14 +597,14 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         name="area_id"
                         type="select"
                         required
-                        options={areas.map(area => ({
+                        options={areas.map((area) => ({
                           value: area.id.toString(),
-                          label: `${area?.name} / ${area?.name}`
+                          label: `${area?.name}`,
                         }))}
                         placeholder={t("select_area")}
                       />
                     </div>
-                    <div className="col-md-6 col-lg-4 z-99999">
+                    <div className="col-md-6 col-lg-4 ">
                       <label className="form-label fw-medium text-dark mb-2">
                         {t("location")}
                       </label>
@@ -576,7 +628,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("property_pricing_payment_info")}
               />
               {expandedSections.pricing && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="row g-4">
                     <div className="col-md-6">
                       <InputField
@@ -610,7 +665,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("bedrooms_bathrooms_kitchen_details")}
               />
               {expandedSections.rooms && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="row g-4">
                     <div className="col-md-6 col-lg-3">
                       <InputField
@@ -662,7 +720,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("status_type_delivery_info")}
               />
               {expandedSections.details && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="row g-4">
                     <div className="col-md-6 col-lg-4">
                       <InputField
@@ -672,7 +733,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         required
                         options={[
                           { value: "rent", label: t("rent") },
-                          { value: "sale", label: t("sale") }
+                          { value: "sale", label: t("sale") },
                         ]}
                         placeholder={t("select_status")}
                       />
@@ -685,7 +746,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         required
                         options={[
                           { value: "apartment", label: t("apartment") },
-                          { value: "office", label: t("office") }
+                          { value: "office", label: t("office") },
                         ]}
                         placeholder={t("select_type")}
                       />
@@ -698,7 +759,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         required
                         options={[
                           { value: "yes", label: t("yes") },
-                          { value: "no", label: t("no") }
+                          { value: "no", label: t("no") },
                         ]}
                         placeholder={t("select_option")}
                       />
@@ -717,7 +778,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("arabic_title_description_seo")}
               />
               {expandedSections.arabic && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="row g-4">
                     <div className="col-md-6">
                       <InputField
@@ -747,9 +811,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                   />
                   <div>
                     <label className="form-label fw-medium text-dark mb-2">
-                      {t("description_ar")} <span className="text-danger">*</span>
+                      {t("description_ar")}{" "}
+                      <span className="text-danger">*</span>
                     </label>
-                    <div className="border rounded-3" style={{ borderWidth: '2px', borderColor: '#e9ecef' }}>
+                    <div
+                      className="border rounded-3"
+                      style={{ borderWidth: "2px", borderColor: "#e9ecef" }}
+                    >
                       <RichTextEditor
                         value={descriptionAr}
                         onChange={setDescriptionAr}
@@ -770,7 +838,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("english_title_description_seo")}
               />
               {expandedSections.english && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="row g-4">
                     <div className="col-md-6">
                       <InputField
@@ -797,9 +868,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                   />
                   <div>
                     <label className="form-label fw-medium text-dark mb-2">
-                      {t("description_en")} <span className="text-danger">*</span>
+                      {t("description_en")}{" "}
+                      <span className="text-danger">*</span>
                     </label>
-                    <div className="border rounded-3" style={{ borderWidth: '2px', borderColor: '#e9ecef' }}>
+                    <div
+                      className="border rounded-3"
+                      style={{ borderWidth: "2px", borderColor: "#e9ecef" }}
+                    >
                       <RichTextEditor
                         value={descriptionEn}
                         onChange={setDescriptionEn}
@@ -820,16 +895,19 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("upload_high_quality_photo")}
               />
               {expandedSections.images && (
-                <div className="section-content p-4" style={{ borderTop: '1px solid #f8f9fa' }}>
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
                   <div className="upload-area rounded-3 p-5">
                     {!imagePreview ? (
                       <div className="text-center">
                         <label
                           className="btn btn-outline-primary rounded-3 px-4 py-2"
                           style={{
-                            border: '2px solid #0d6efd',
-                            fontWeight: '600',
-                            transition: 'all 0.3s ease'
+                            border: "2px solid #0d6efd",
+                            fontWeight: "600",
+                            transition: "all 0.3s ease",
                           }}
                         >
                           {t("click_to_upload_image")}
@@ -840,46 +918,50 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                             className="d-none"
                           />
                         </label>
-                        <p className="small text-muted mt-3 mb-0">{t("select_high_quality_image")}</p>
+                        <p className="small text-muted mt-3 mb-0">
+                          {t("select_high_quality_image")}
+                        </p>
                       </div>
                     ) : (
                       <div className="position-relative">
-                        <div 
-                            className="image-container rounded-3 overflow-hidden"
+                        <div
+                          className="image-container rounded-3 overflow-hidden"
+                          style={{
+                            maxHeight: "400px",
+                            boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                          }}
+                        >
+                          <Image
+                            width={800}
+                            height={400}
+                            src={imagePreview.url}
+                            alt={t("property_preview")}
+                            className="w-100 h-100 object-cover"
+                            style={{ objectFit: "cover" }}
+                          />
+                        </div>
+                        <div className="position-absolute top-0 end-0 p-3">
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="btn btn-danger rounded-circle p-2"
                             style={{
-                              maxHeight: '400px',
-                              boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
+                              width: "40px",
+                              height: "40px",
+                              boxShadow: "0 4px 15px rgba(220,53,69,0.3)",
+                              transition: "all 0.3s ease",
                             }}
                           >
-                            <Image
-                              width={800}
-                              height={400}
-                              src={imagePreview.url}
-                              alt={t("property_preview")}
-                              className="w-100 h-100 object-cover"
-                              style={{ objectFit: 'cover' }}
-                            />
-                          </div>
-                          <div className="position-absolute top-0 end-0 p-3">
-                            <button
-                              type="button"
-                              onClick={handleRemoveImage}
-                              className="btn btn-danger rounded-circle p-2"
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                boxShadow: '0 4px 15px rgba(220,53,69,0.3)',
-                                transition: 'all 0.3s ease'
-                              }}
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
                   <p className="text-center small text-muted mt-3 mb-0">
-                    {imagePreview ? t("hover_over_image_to_change_or_remove") : t("supported_formats_jpg_png_webp")}
+                    {imagePreview
+                      ? t("hover_over_image_to_change_or_remove")
+                      : t("supported_formats_jpg_png_webp")}
                   </p>
                 </div>
               )}

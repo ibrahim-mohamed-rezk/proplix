@@ -8,8 +8,8 @@ import AddressAndLocation from "../profile/AddressAndLocation";
 
 const AddPropertyBody = ({ token }: { token: string }) => {
   return (
-    <div className="dashboard-body">
-      <div className="position-relative">
+    <div className="dashboard-body " style={{ marginTop: -80 }}>
+      <div className="">
         <DashboardHeaderTwo title="Create Property" />
         <Overview token={token} />
       </div>

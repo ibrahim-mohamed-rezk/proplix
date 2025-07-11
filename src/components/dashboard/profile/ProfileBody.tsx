@@ -5,7 +5,7 @@ import UserAvatarSetting from "./UserAvatarSetting"
 import AddressAndLocation from "./AddressAndLocation"
 import Link from "next/link"
 import SocialMediaLink from "./SocialMediaLink"
-import avatar_1 from "@/assets/images/dashboard/avatar_02.jpg"
+import avatar_1 from "@/assets/images/loader.gif"
 import { deleteData, getData, postData } from "@/libs/server/backendServer";
 import { useEffect, useState, useCallback } from "react"; // Added useCallback import
 import { useTranslations } from "next-intl";

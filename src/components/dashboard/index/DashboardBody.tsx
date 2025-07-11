@@ -246,7 +246,7 @@ const DashboardBody = ({token}:{token:string}) => {
                    </div>
                    <div className="order-sm-0 flex-grow-1">
                      <span className="text-muted small d-block mb-1">{t('average_price')}</span>
-                     <div className="value fw-bold text-dark" style={{ fontSize: '42px' }}>{statistics.average_price.toLocaleString()} {t('egp')}</div>
+                     <div className="value fw-bold text-dark" style={{ fontSize: '42px' }}>{statistics?.average_price?.toLocaleString()} {t('egp')}</div>
                    </div>
                  </div>
                </div>
