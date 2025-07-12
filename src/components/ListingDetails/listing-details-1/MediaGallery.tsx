@@ -1,12 +1,13 @@
 import Fancybox from "@/components/common/Fancybox";
-
 import { PropertyTypes } from "@/libs/types/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface DataType {
   big_carousel: string[];
   small_carousel: string[];
 }
+
+const DEFAULT_IMAGE = "/images/proprity.jpg";
 
 const MediaGallery = ({
   style,
@@ -16,17 +17,17 @@ const MediaGallery = ({
   property?: PropertyTypes;
 }) => {
   const t = useTranslations("endUser");
-  const largeThumb: string[] = Array.from(
-    { length: property?.property_listing_images.length || 0 },
-    (_, i) => `${i + 1}`
-  );
+  const locale = useLocale();
+
+  // Get images or fallback to default image
+  const images =
+    property?.property_listing_images && property.property_listing_images.length > 0
+      ? property.property_listing_images.map((img: any) => img.image)
+      : [DEFAULT_IMAGE];
+
   const gallery_data: DataType = {
-    big_carousel: property?.property_listing_images.map(
-      (image) => image.image
-    ) as string[],
-    small_carousel: property?.property_listing_images.map(
-      (image) => image.image
-    ) as string[],
+    big_carousel: images,
+    small_carousel: images,
   };
 
   const { big_carousel, small_carousel } = gallery_data;
@@ -37,9 +38,9 @@ const MediaGallery = ({
         <div className="col-lg-10">
           <div className={` bg-white  md-mb-20 ${style ? "" : "shadow4 p-30"}`}>
             <div className="position-relative z-1 overflow-hidden ">
-              <div className="img-fancy-btn  !right-auto !left-auto fw-500 fs-16 color-dark">
+              <div className={`img-fancy-btn ms-[50px] rounded-[10px] fw-500 fs-16 color-dark`}>
                 {`${t("see_all")} ${
-                  property?.property_listing_images.length || 0
+                  property?.property_listing_images?.length || 1
                 } ${t("photos")}`}
                 <Fancybox
                   options={{
@@ -48,7 +49,10 @@ const MediaGallery = ({
                     },
                   }}
                 >
-                  {property?.property_listing_images?.map((thumb: any, index: any) => (
+                  {(property?.property_listing_images && property.property_listing_images.length > 0
+                    ? property.property_listing_images
+                    : [{ image: DEFAULT_IMAGE }]
+                  ).map((thumb: any, index: any) => (
                     <a
                       key={index}
                       className="d-block"
@@ -105,7 +109,7 @@ const MediaGallery = ({
                 data-bs-slide-to={`${i}`}
                 className="active"
                 aria-current="true"
-                aria-label="Slide 1"
+                aria-label={`Slide ${i + 1}`}
               >
                 <img src={carousel} alt="" className="w-[100%] h-[100%] " />
               </button>

@@ -21,8 +21,8 @@ const Property = ({
   token,
 }: {
   listings: PropertyTypes[];
-    loading: boolean;
-    token: string | undefined;
+  loading: boolean;
+  token: string | undefined;
 }) => {
   const t = useTranslations("endUser");
 
@@ -67,11 +67,13 @@ const Property = ({
             <div className="row gx-xxl-5">
               {listings.length > 0 ? (
                 listings.map((item, index) => (
-                  <PropertiesCard
-                    token={token as string}
-                    key={index}
-                    item={item}
-                  />
+                  <div className="col-lg-4 col-sm-6">
+                    <PropertiesCard
+                      token={token as string}
+                      key={index}
+                      item={item}
+                    />
+                  </div>
                 ))
               ) : (
                 <div className="col-12 text-center p-5">

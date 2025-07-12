@@ -28,9 +28,9 @@ const Banner = () => {
   // handle status change
   const handleSearchChange = (e: { target: { value: string } }) => {
     if (e.target.value === "") {
-      setFilters({ ...filters, title: null });
+      setFilters({ ...filters, location: null });
     } else {
-      setFilters({ ...filters, title: e.target.value });
+      setFilters({ ...filters, location: e.target.value });
     }
   };
 
@@ -40,6 +40,19 @@ const Banner = () => {
       setFilters({ ...filters, price: null });
     } else {
       setFilters({ ...filters, price: e.target.value });
+    }
+  };
+
+  // handle range change
+  const handlerangeChange = (value: string) => {
+    if (value === "all") {
+      setFilters({ ...filters, price: null, down_price: null });
+    } else {
+      setFilters({
+        ...filters,
+        price: value.split("-")[0],
+        down_price: value.split("-")[1],
+      });
     }
   };
 
@@ -153,6 +166,7 @@ const Banner = () => {
                   handleLocationChange={handleLocationChange}
                   handleTypesChange={handleTypesChange}
                   handleDown_priceChange={handleDown_priceChange}
+                  handlerangeChange={handlerangeChange}
                   filters={filters}
                   popup={false}
                 />
