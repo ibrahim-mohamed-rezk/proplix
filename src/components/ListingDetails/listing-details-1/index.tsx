@@ -60,7 +60,7 @@ const ListingDetailsOne = async ({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <HeaderOne token={token} style={true} />
-      <ListingDetailsOneArea
+      <ListingDetailsOneArea token={token as string}
         property={propertyData?.property}
         similar={propertyData?.similar}
       />

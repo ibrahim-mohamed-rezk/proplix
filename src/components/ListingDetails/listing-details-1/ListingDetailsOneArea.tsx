@@ -21,9 +21,11 @@ import CommonBanner from "../listing-details-common/CommonBanner";
 const ListingDetailsOneArea = ({
   property,
   similar,
+  token
 }: {
   property: PropertyTypes;
-  similar: PropertyTypes[];
+    similar: PropertyTypes[];
+    token: string
 }) => {
   const t = useTranslations("endUser");
 
@@ -31,7 +33,6 @@ const ListingDetailsOneArea = ({
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
       <div className="container">
-        
         <CommonBanner property={property} />
         <MediaGallery property={property} />
         <div className="property-feature-list bg-white shadow4 p-40 mt-50 mb-60">
@@ -68,13 +69,13 @@ const ListingDetailsOneArea = ({
             {/* <div className="property-nearby bg-white shadow4 p-40 mb-50">
               <CommonNearbyList />
             </div> */}
-            <CommonSimilarProperty similar={similar} />
             {/* <div className="property-score bg-white shadow4 p-40 mb-50">
               <CommonProPertyScore />
             </div> */}
             <div className="property-location mb-50">
               <CommonLocation property={property} />
             </div>
+            <CommonSimilarProperty token={token} similar={similar} />
 
             {/* <div className="review-panel-one bg-white shadow4 p-40 mb-50">
               <div className="position-relative z-1">

@@ -9,6 +9,7 @@ import { Link } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
 import { LocationData } from "@/libs/types/types";
 import PropertiesCard from "@/components/cards/PropertiesCard";
+import UseSticky from "@/hooks/UseSticky";
 
 const ListingFifteenArea = () => {
   const [properties, setProperties] = useState<any[]>([]);
@@ -18,6 +19,7 @@ const ListingFifteenArea = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const t = useTranslations("endUser");
+  const { sticky } = UseSticky();
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [filters, setFilters] = useState<{
     [key: string]: string | number | null;
@@ -297,34 +299,43 @@ const ListingFifteenArea = () => {
       </div>
 
       {/* Main Content */}
-      <div
-        className="row gx-0 max-w-[1920px] mx-auto"
-        style={{ height: "100%" }}
-      >
+      <div className="row gx-0 relative max-w-[1920px] mx-auto">
         {/* Map Section - Fixed to top on desktop */}
         <div
           className={`col-xxl-6 col-lg-5 ${
             mobileView === "list" ? "d-none d-lg-block" : "d-block d-lg-block"
           }`}
+          style={{
+            position: sticky ? "fixed" : "sticky",
+            top: "88px",
+            zIndex: -1,
+            alignSelf: "flex-start",
+            minHeight: 300,
+            maxHeight: "calc(100vh - 88px)",
+            // Remove !sticky/top-[70px] from className, use style instead
+          }}
         >
           <div
             id="google-map-area"
-            className="h-[100%] w-full prop-map-container position-sticky"
-            style={{ top: 0, height: "100vh" }}
+            className="h-[100%] w-full prop-map-container"
+            style={{
+              top: 0,
+              height: "100vh",
+              minHeight: 300,
+              position: "relative",
+            }}
           >
-            <div
-              className="google-map-home"
-              id="contact-google-map"
-              style={{ height: "100%" }}
-            >
+            <div className="google-map-home" id="contact-google-map">
               <div
                 ref={mapContainer}
                 className="gmap_canvas h-100 w-100"
-                style={{ height: "100%", minHeight: 300 }}
+                style={{ minHeight: 300 }}
               />
             </div>
           </div>
         </div>
+
+        {sticky && <div className="col-6"> </div>}
 
         {/* Properties List Section - Scrollable with infinite scroll */}
         <div

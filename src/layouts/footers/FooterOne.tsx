@@ -12,13 +12,13 @@ const FooterOne = ({ style }: any) => {
   const t = useTranslations("endUser");
   return (
     <div className={`footer-one ${style ? "dark-bg" : ""}`}>
-      <div className="position-relative z-1">
+      <div className="position-relative bg-[#fff] z-10">
         <div className="container">
           <div className="row justify-content-between">
             <div className="col-lg-4">
               <div
                 className={`footer-intro ${
-                  style ? "position-relative z-1" : ""
+                  style ? "position-relative z-10" : ""
                 }`}
               >
                 <div className="bg-wrapper">

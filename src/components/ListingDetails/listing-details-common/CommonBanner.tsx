@@ -1,15 +1,14 @@
 import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 
 const CommonBanner = ({
-  style_3,
   property,
 }: {
   style_3?: boolean;
   property?: PropertyTypes;
 }) => {
   const t = useTranslations("endUser");
+  
   return (
     <div className="row">
       <div className="col-lg-6">
@@ -31,7 +30,7 @@ const CommonBanner = ({
               className={`list-type !w-fit px-[8px] !border-none rounded-[23px] text-uppercase me-3 !bg-[#FF6625]
             }`}
             >
-              {property?.property_type.title as string}
+              {property?.property_type?.title as string}
             </div>
           </div>
           <div className="address mt-15">
