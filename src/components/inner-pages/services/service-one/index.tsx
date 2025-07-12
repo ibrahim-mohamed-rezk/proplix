@@ -18,7 +18,7 @@ const ServiceOne = () => {
          <HomeBLockFeatureOne />
          <BlockFeatureTwo style={false} />
          <FancyBanner />
-         <Feedback/>
+         {/* <Feedback/> */}
          {/* <BLockFeatureTwo style={true} /> */}
          <FancyBannerCommon />
          <FooterFour />
