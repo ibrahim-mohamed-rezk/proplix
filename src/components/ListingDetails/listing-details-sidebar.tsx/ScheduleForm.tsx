@@ -1,10 +1,9 @@
 "use client";
 
-import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-const ScheduleForm = ({ property }: { property: any }) => {
+const ScheduleForm = ({ property }: { property?: any }) => {
   const t = useTranslations("endUser");
   const [formData, setFormData] = useState({
     name: "",
