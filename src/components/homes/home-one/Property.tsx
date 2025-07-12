@@ -67,7 +67,7 @@ const Property = ({
             <div className="row gx-xxl-5">
               {listings.length > 0 ? (
                 listings.map((item, index) => (
-                  <div className="col-lg-4 col-sm-6">
+                  <div key={index} className="col-lg-4 col-sm-6">
                     <PropertiesCard
                       token={token as string}
                       key={index}

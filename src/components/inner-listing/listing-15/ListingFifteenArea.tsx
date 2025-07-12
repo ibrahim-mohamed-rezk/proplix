@@ -1,12 +1,8 @@
 "use client";
 import DropdownSeven from "@/components/search-dropdown/inner-dropdown/DropdownSeven";
-import NiceSelect from "@/ui/NiceSelect";
 import { useEffect, useState, useRef, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import featureIcon_1 from "@/assets/images/icon/icon_04.svg";
-import featureIcon_2 from "@/assets/images/icon/icon_05.svg";
-import featureIcon_3 from "@/assets/images/icon/icon_06.svg";
 
 import { getData } from "@/libs/server/backendServer";
 import { Link } from "@/i18n/routing";
