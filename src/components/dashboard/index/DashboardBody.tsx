@@ -10,7 +10,7 @@ import icon_3 from "@/assets/images/dashboard/icon/icon_14.svg"
 import icon_4 from "@/assets/images/dashboard/icon/icon_15.svg"
 import DashboardChart from "./DashboardChart"
 import { getData } from "@/libs/server/backendServer"
-import { useTranslations } from "next-intl"
+import { useTranslations,useLocale } from "next-intl"
 
 interface DataType {
    id: number;
@@ -49,6 +49,7 @@ const DashboardBody = ({token}:{token:string}) => {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState<string | null>(null);
   const t = useTranslations('dashboard-index');
+  const locale=useLocale();
 
    // Fetch statistics data
    useEffect(() => {
@@ -161,9 +162,9 @@ const DashboardBody = ({token}:{token:string}) => {
          {/* First Row - Main Statistics (4 icons) */}
          <div className="bg-white  rounded-3 p-4 mb-4">
            <div className="row g-3">
-             {dashboardCardData.map((item) => (
+             {dashboardCardData.map((item,index) => (
                <div key={item.id} className="col-lg-3 col-md-6 col-12">
-                 <div className="dash-card-one bg-gradient-light border-0  rounded-3 position-relative p-3 h-100">
+                 <div className={`${index !== dashboardCardData.length - (locale==="ar"?1:4) ? "dash-card-one" : ""} bg-gradient-light border-0  rounded-3 position-relative p-3 h-100`}>
                    <div className="d-sm-flex align-items-center justify-content-between h-100">
                      <div className="icon rounded-circle d-flex align-items-center justify-content-center order-sm-1 bg-dark" 
                           style={{ 

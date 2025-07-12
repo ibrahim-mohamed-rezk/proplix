@@ -268,7 +268,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     try {
       const response = await postData(
-        "agnet/property_listings",
+        "agent/property_listings",
         formData,
         new AxiosHeaders({ Authorization: `Bearer ${token}` })
       );

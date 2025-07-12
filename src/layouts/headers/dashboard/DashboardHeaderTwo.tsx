@@ -57,7 +57,7 @@ const DashboardHeaderTwo = ({ title }: any) => {
             </button>
             <div className="profile-notification position-relative dropdown-center flex-shrink-0">
               <button
-                className="noti-btn dropdown-toggle"
+                className={`noti-btn dropdown-toggle ${locale==="ar"?"mx-1":"mx-4"}`}
                 type="button"
                 id="notification-dropdown"
                 data-bs-toggle="dropdown"

@@ -119,7 +119,7 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
       setLoading(true);
       // const token = localStorage.getItem('token');
       
-      await deleteData(`agnet/features/${selectedFeatureId}`, new AxiosHeaders({
+      await deleteData(`agent/features/${selectedFeatureId}`, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
       }));
       
@@ -151,7 +151,7 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
         formDataToSend.append(key, value);
       });
       
-      await postData('agnet/features', formDataToSend, new AxiosHeaders({
+      await postData('agent/features', formDataToSend, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
