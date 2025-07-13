@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { getData } from '@/libs/server/backendServer';
 import { AxiosHeaders } from 'axios';
 import { PropertyData, ToastState, PropertyStatistics } from './PropertyTypes';
-
+import { useLocale } from 'next-intl';
 export const useProperty = (propertyId: string, token: string) => {
+  const locale = useLocale();
   const [property, setProperty] = useState<PropertyData | null>(null);
   const [propertystat, setPropertystat] = useState<PropertyStatistics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,8 @@ export const useProperty = (propertyId: string, token: string) => {
   const fetchPropertyStatistics = useCallback(async (authToken: string, id: string) => {
     try {
       const res = await getData(`agent/property/${id}/statistics`, {}, new AxiosHeaders({
-        Authorization: `Bearer ${authToken}`,
+        lang: locale,
+        Authorization: `Bearer ${authToken}`
       }));
       
       if (res.data) {
@@ -54,7 +56,7 @@ export const useProperty = (propertyId: string, token: string) => {
       console.error('Failed to fetch property statistics', error);
       showToast('Failed to load property statistics', 'error');
     }
-  }, []);
+  }, [locale]);
 
   const refetch = useCallback(() => {
     if (token && propertyId) {

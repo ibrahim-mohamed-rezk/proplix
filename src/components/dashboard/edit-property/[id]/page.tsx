@@ -24,7 +24,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
   const propertyId = params?.id as string;
 
   // const { property, loading, toast } = useProperty(propertyId, token);
-  const { property, propertystat, loading, toast,refetch } = useProperty(
+  const { property, propertystat, loading, toast, refetch } = useProperty(
     propertyId,
     token
   );
@@ -44,18 +44,32 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           />
         ) : null;
       case "amenities":
-        return <AmenitiesTab refetch={refetch} property={property} token={token} />;
+        return (
+          <AmenitiesTab refetch={refetch} property={property} token={token} />
+        );
       case "features":
-        return <FeaturesTab refetch={refetch} property={property} token={token} />;
+        return (
+          <FeaturesTab refetch={refetch} property={property} token={token} />
+        );
       case "locations":
-        return <LocationTab refetch={refetch} property={property} token={token as string} />;
+        return (
+          <LocationTab
+            refetch={refetch}
+            property={property}
+            token={token as string}
+          />
+        );
       case "images":
-        return <ImagesTab refetch={refetch} property={property} token={token} />;
+        return (
+          <ImagesTab refetch={refetch} property={property} token={token} />
+        );
       case "floorplan":
-        return <FloorPlanTab refetch={refetch} property={property} token={token} />;
+        return (
+          <FloorPlanTab refetch={refetch} property={property} token={token} />
+        );
       default:
         return propertystat ? (
-          <MainTab 
+          <MainTab
             token={token}
             property={property}
             propertystat={propertystat}
@@ -83,13 +97,13 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           {/* Header */}
           <div className="d-flex justify-content-between  my-4">
             <div className="d-flex justify-between container ">
-              <h2 className="h3 font-weight-bold text-dark mb-2">
-                {t("property_title")}: {property?.data?.descriptions?.en?.title}
-              </h2>
+              <h4 className=" font-weight-bold text-dark mb-2">
+                {t("property_title")}:{property?.data?.descriptions?.en?.title}
+              </h4>
               <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 text-center">
                 <p className="mb-0 text-muted d-flex align-items-center gap-2">
                   {t("area")}:
-                  <span className="badge bg-light text-dark rounded-pill px-3 py-2 shadow-sm">
+                  <span className="badge bg-light text-dark rounded-4-3 p-2 shadow-sm">
                     {property?.data?.area?.description?.en?.name}
                   </span>
                 </p>
@@ -97,14 +111,14 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
                 <div className="d-flex align-items-center gap-3">
                   <span className="text-muted d-flex align-items-center gap-2">
                     {t("approval_status")}:
-                    <span className="badge bg-primary bg-opacity-75 text-white rounded-pill px-3 py-2 shadow-sm">
+                    <span className="badge bg-primary bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
                       {property?.data?.approval_status}
                     </span>
                   </span>
 
                   <span className="text-muted d-flex align-items-center gap-2">
                     {t("status")}:
-                    <span className="badge bg-success bg-opacity-75 text-white rounded-pill px-3 py-2 shadow-sm">
+                    <span className="badge bg-success bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
                       {property?.data?.status}
                     </span>
                   </span>
@@ -129,7 +143,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           </div>
 
           {/* Tab Content */}
-          <div className="tab-content bg-white p-5">{renderTabContent()}</div>
+          <div className="tab-content bg-white p-5 ">{renderTabContent()}</div>
         </div>
       </div>
     </div>

@@ -273,7 +273,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
         new AxiosHeaders({ Authorization: `Bearer ${token}` })
       );
       showToast(t("property_added_successfully"), "success");
-      router.push(`/properties/view/${response?.data?.id}`);
+      router.push(`/properties/edit-property/${response?.data?.id}`);
     } catch (error) {
       console.error("Failed to create property:", error);
       showToast(t("failed_to_add_property"), "error");

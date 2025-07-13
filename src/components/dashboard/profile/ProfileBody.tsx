@@ -89,11 +89,6 @@ const ProfileBody = ({ token }: { token: string }) => {
     setCurrentUserData(userData);
   }, []);
 
-  // Check if password is provided before allowing submission
-  const canSubmit = () => {
-    return currentLocationData.current_password.trim() !== '';
-  };
-
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -131,10 +126,7 @@ const ProfileBody = ({ token }: { token: string }) => {
 
   const handleUpdateProfile = async () => {
     // Check if password is provided
-    if (!canSubmit()) {
-      toast.error(t('Please enter your current password to save changes'));
-      return;
-    }
+   
 
     try {
       setUpdating(true);
@@ -296,7 +288,6 @@ const ProfileBody = ({ token }: { token: string }) => {
           onLocationChange={handleLocationChange}
           onUpdateProfile={handleUpdateProfile}
           isUpdating={updating}
-          canSubmit={canSubmit()}
         />
       </div>
     </div>

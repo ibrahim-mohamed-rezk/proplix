@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { PropertyData } from '../../PropertyTypes';
 import { ReadOnlyField } from '../TabButton';
 import { useTranslations } from 'next-intl';
+import defaultAvatar from "@/assets/images/loader.gif"
 
 interface MainTabProps {
   token: string;
@@ -20,12 +21,12 @@ export const MainTab: React.FC<MainTabProps> = ({ property, token, propertystat 
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-start mb-3">
           <div>
-            <h2 className="h3 font-weight-bold text-dark mb-2">
+            <h4 className=" font-weight-bold text-dark mb-2">
               {t("property_title")}: {property?.data?.descriptions?.en?.title}
-            </h2>
+            </h4>
           </div>
           <div className="text-right">
-            <div className="h3 font-weight-bold text-primary">
+            <div className="h4 font-weight-bold text-primary">
               EGP {property?.data?.price?.toLocaleString()}
             </div>
             {property?.data?.down_price && (
@@ -80,14 +81,14 @@ export const MainTab: React.FC<MainTabProps> = ({ property, token, propertystat 
         <h3 className="h5 font-weight-semibold text-dark mb-3">{t("owner_information")}</h3>
         <div className="card shadow-sm border-muted rounded">
           <div className="card-body">
-            <div className="d-flex align-items-center gap-3 mb-3">
+            <div className="d-flex align-items-center gap-3">
               {property?.data?.user?.avatar && (
                 <Image
-                  src={property?.data?.user?.avatar}
+                  src={property.data.user.avatar ||defaultAvatar}
                   alt={property?.data?.user?.name}
-                  width={60}
-                  height={60}
-                  className="rounded-circle"
+                  width={150}
+                  height={150}
+                  className="rounded-4"
                 />
               )}
               <div>

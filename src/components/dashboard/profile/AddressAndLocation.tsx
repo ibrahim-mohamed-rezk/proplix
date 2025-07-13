@@ -53,15 +53,14 @@ interface AddressAndLocationProps {
   onLocationChange: (locationData: LocationData) => void;
   onUpdateProfile: () => void;
   isUpdating?: boolean;
-  canSubmit?: boolean; // Add this prop to control submit button state
+  // Remove canSubmit prop as we'll calculate it internally
 }
 
 const AddressAndLocation = ({
   profileData,
   onLocationChange,
   onUpdateProfile,
-  isUpdating = false,
-  canSubmit = true // Default to true for backward compatibility
+  isUpdating = false
 }: AddressAndLocationProps) => {
   const [locationData, setLocationData] = useState<LocationData>({
     address: '',
@@ -73,6 +72,9 @@ const AddressAndLocation = ({
     current_password: ''
   });
   const t = useTranslations('ProfileBody');
+
+  // Calculate canSubmit based on password field
+  const canSubmit = locationData.current_password.trim().length > 0;
 
   // Initialize location data when profileData changes (only once)
   useEffect(() => {
@@ -231,28 +233,24 @@ const AddressAndLocation = ({
             onChange={(e) => handleInputChange('current_password', e.target.value)}
             placeholder={t("Enter your current password")}
             disabled={isUpdating}
-            className={!canSubmit && locationData.current_password === '' ? 'is-invalid' : ''}
+            className={!canSubmit ? 'is-invalid' : ''}
             autoComplete="current-password"
+            required
           />
-          {!canSubmit && locationData.current_password === '' && (
-            <div className="invalid-feedback">
-              {t(" Password is required to save changes")}
-            </div>
-          )}
-          <div className="text-muted small mt-1">
+          {/* <div className="text-muted small mt-1">
             <em>{t("Required to verify your identity before saving changes")}</em>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Submit Buttons */}
-      <div className="button-group d-inline-flex align-items-center mb-10  ">
+      <div className="button-group d-inline-flex align-items-center mb-10">
         <button
           type="button"
-          className={`dash-btn-two tran3s me-3 ${!canSubmit ? 'disabled' : ''}`}
+          className={`dash-btn-two tran3s me-3 ${!canSubmit ? 'disabled opacity-50' : ''}`}
           onClick={onUpdateProfile}
           disabled={isUpdating || !canSubmit}
-          title={!canSubmit ? 'Please enter your current password' : 'Save profile changes'}
+          title={!canSubmit ? t('Please enter your current password') : t('Save profile changes')}
         >
           {isUpdating ? (
             <>
@@ -268,23 +266,12 @@ const AddressAndLocation = ({
           className="dash-cancel-btn tran3s mx-5"
           onClick={handleCancel}
           disabled={isUpdating}
-          title="Reset to original values"
+          title={t("Reset to original values")}
         >
           {t("Cancel")}
         </button>
       </div>
-
-      {/* Password requirement notice
-      {
-        !canSubmit && (
-          <div className="mt-2">
-            <small className="text-muted">
-              <em>{t("* Please enter your current password to save changes")}</em>
-            </small>
-          </div>
-        )
-      } */}
-    </div >
+    </div>
   );
 }
 

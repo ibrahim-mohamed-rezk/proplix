@@ -5,6 +5,7 @@ import { AxiosHeaders } from 'axios';
 import ModalForm from '../ModalForm';
 import { PropertyAmenity, PropertyData } from '../../PropertyTypes';
 import { useTranslations } from 'next-intl';
+import { Plus, Trash2, Edit } from 'lucide-react';
 
 interface AmenitiesTabProps {
   property: PropertyData;
@@ -222,7 +223,8 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, ref
           onClick={handleAddClick}
           className="btn dash-btn-two d-flex align-items-center gap-2"
         >
-          <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+          {/* <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" /> */}
+          <Plus size={20}/>
           {t("Add New Amenity")}
         </button>
       </div>
@@ -242,14 +244,16 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, ref
                       className="btn btn-success"
                       title="Edit amenity"
                     >
-                      <img src="/assets/images/dashboard/icon/icon_24.svg" alt="Edit" width="16" />
+                      {/* <img src="/assets/images/dashboard/icon/icon_24.svg" alt="Edit" width="16" /> */}
+                      <Edit size={20}/>
                     </button>
                     <button
                       onClick={() => handleDeleteClick(amenity?.id?.toString())}
                       className="btn btn-danger"
                       title="Delete amenity"
                     >
-                      <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="16" />
+                      {/* <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="16" /> */}
+                      <Trash2 size={20}/>
                     </button>
                   </div>
                 </div>
