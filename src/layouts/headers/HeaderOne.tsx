@@ -51,12 +51,11 @@ const HeaderOne = ({
       },
     });
     setUser(JSON.parse(res.data.user));
-  }
+  };
 
   useEffect(() => {
     feachUser();
-  },[])
-
+  }, []);
 
   const changeLanguage = (l: string) => {
     const paramsString = searchParams.toString();
@@ -143,9 +142,11 @@ const HeaderOne = ({
                 <div className="relative">
                   <button
                     onClick={() => setLangOpen((o) => !o)}
-                    className="flex items-center border border-transparent hover:border-primary-500 hover:shadow-lg rounded-[clamp(12px,1vw,24px)] font-['Libre_Baskerville'] text-[clamp(15px,1.1vw,22px)] font-semibold py-[clamp(5px,0.6vw,8px)] px-[clamp(5px,1vw,8px)] justify-center gap-[8px] text-black transition-all duration-200 focus:outline-none"
+                    className="flex btn-one lang items-center shadow border border-primary-200 rounded-[clamp(12px,.5vw,24px)] font-['Gordita']  justify-center gap-[8px] transition-all duration-200 focus:outline-none"
                   >
-                    <span className={`fi fi-${flagMap[locale]} mr-1`} />
+                    <span
+                      className={`fi fi-${flagMap[locale]} !fill-[#FF6725] mr-1`}
+                    />
                     <Image
                       src={`/images/${locale}.svg`}
                       alt="Flag"
@@ -153,10 +154,10 @@ const HeaderOne = ({
                       height={20}
                       className="rounded shadow-sm border border-gray-200"
                     />
-                    <span className="uppercase text-[#222] font-bold font-['Libre_Baskerville'] text-[18px] tracking-wider">
+                    <span className="font-['Gordita'] capitalize  text-[#FF6725] font-bold text-[18px] tracking-wider">
                       {locale}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-[18px] text-[#222]" />
+                    <ChevronDown className="w-4 h-4 text-[18px] text-[#FF6725]" />
                   </button>
                   <div ref={langRef}>
                     <div
@@ -216,7 +217,11 @@ const HeaderOne = ({
                           } mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn`}
                         >
                           <Link
-                            href={user?.role === "customer" ? "/my-profile?page=personal-information" : "/dashboard/profile"}
+                            href={
+                              user?.role === "customer"
+                                ? "/my-profile?page=personal-information"
+                                : "/dashboard/profile"
+                            }
                             className="dropdown-item justify-center !w-fit !flex items-center gap-[8px] px-4 py-3 hover:bg-primary-50 transition-colors"
                           >
                             <i className="fa-regular fa-user text-primary-500"></i>
@@ -247,25 +252,27 @@ const HeaderOne = ({
                     )}
                   </div>
                 ) : (
-                  <ul className="d-flex gap-3 align-items-center style-none">
+                  <ul className="d-flex gap-2 align-items-center style-none">
                     <li className="hidden lggin-btn-descktop">
                       <Link
                         href="#"
                         data-bs-toggle="modal"
                         data-bs-target="#loginModal"
-                        className="btn-one flex items-center justify-center gap-2 px-2 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow hover:bg-primary-50 transition-all"
+                        className="btn-one login-btn hover:text-[#FF6725] !min-w-[100px] flex items-center justify-center gap-1 px-1 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow  transition-all"
                       >
                         <i className="fa-regular fa-lock"></i>
-                        <span className="font-semibold">{t("login")}</span>
+                        <span className="font-semibold hover:!text-[#FF6725] !hover:text-black">
+                          {t("login")}
+                        </span>
                       </Link>
                     </li>
                     <li className="hidden lggin-btn-descktop">
                       <Link
                         href="/signup-agent"
-                        className="btn-one bg-gradient-to-r from-[#FF6725] to-[#F26A3F] !text-[#fff] flex items-center justify-center gap-2 px-2 py-1 rounded-xl shadow font-semibold hover:scale-105 transition-transform"
+                        className="btn-one bg-gradient-to-r from-[#FF6725] to-[#F26A3F] !text-[#fff] flex items-center justify-center gap-1 px-1 py-1 rounded-xl shadow font-semibold hover:scale-105 transition-transform"
                       >
                         <i className="fa-regular fa-lock"></i>
-                        <span>{t("signup as agent")}</span>
+                        <span className="text-[16px]">{t("signup as agent")}</span>
                       </Link>
                     </li>
                   </ul>

@@ -41,7 +41,7 @@ const PropertiesCard = ({
   return (
     <div
       key={item.id}
-      className="col-lg-4 col-sm-6 d-flex mb-50 wow fadeInUp"
+      className="w-full d-flex mb-50 wow fadeInUp"
       data-wow-delay={item.data_delay_time}
     >
       <div className={`listing-card-one rounded-[25px] w-full `}>
@@ -57,6 +57,13 @@ const PropertiesCard = ({
               } rounded-[25px] w-fit`}
             >
               {item.status}
+            </div>
+            <div
+              className={`tag !left-[70px] px-2 "!bg-[#FF6B2C]"
+                 
+              } rounded-[25px] w-fit`}
+            >
+              {item.property_type?.title}
             </div>
             <button
               onClick={() => {
@@ -131,7 +138,7 @@ const PropertiesCard = ({
         <div className="property-info p-25">
           <Link
             href={`/properties/${item.slug}`}
-            className="title no-underline !text-[#FF6625] tran3s"
+            className="title no-underline line-clamp-1 !text-[#FF6625] tran3s"
           >
             {item.title}
           </Link>
@@ -168,7 +175,7 @@ const PropertiesCard = ({
                 minimumFractionDigits: item.price ? 0 : 2,
                 maximumFractionDigits: 2,
               })}
-              EGP
+              EGP{item.status === "rent" && "/M"}
               {/* {item.price && (
                          <>
                            /<sub>m</sub>

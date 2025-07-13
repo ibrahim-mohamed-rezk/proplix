@@ -1,10 +1,10 @@
 import HeaderOne from "@/layouts/headers/HeaderOne";
 import ListingDetailsOneArea from "./ListingDetailsOneArea";
 import FancyBanner from "@/components/common/FancyBanner";
-import FooterFour from "@/layouts/footers/FooterFour";
 import { cookies } from "next/headers";
 import { getData } from "@/libs/server/backendServer";
 import Script from "next/script";
+import FooterOne from "@/layouts/footers/FooterOne";
 
 const ListingDetailsOne = async ({
   slug,
@@ -60,12 +60,12 @@ const ListingDetailsOne = async ({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <HeaderOne token={token} style={true} />
-      <ListingDetailsOneArea
+      <ListingDetailsOneArea token={token as string}
         property={propertyData?.property}
         similar={propertyData?.similar}
       />
       <FancyBanner />
-      <FooterFour />
+      <FooterOne />
     </>
   );
 };

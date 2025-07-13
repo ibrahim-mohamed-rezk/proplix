@@ -36,21 +36,36 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   left: auto;
 }
 
-.prop-map-container{
+.prop-map-container {
   min-height: 500px !important;
 }
 
-@media(min-width: 992px) {
-  .lggin-btn-descktop{
+@media (min-width: 992px) {
+  .lggin-btn-descktop {
     display: block !important;
   }
 
-  .prop-map-container{
+  .prop-map-container {
     min-height: 1300px !important;
   }
 }
 
-.accordion-button::after{
-  margin-inline-start: auto ! important;
-  margin-inline-end: 0 ! important;
+.accordion-button::after {
+  margin-inline-start: auto !important;
+  margin-inline-end: 0 !important;
+}
+
+.login-btn.btn-one:hover {
+  color: #ff6725 !important;
+}
+
+.btn-one.lang{
+  width: fit-content !important;
+  min-width: 50px !important;
+  padding: 3px 0px !important;
+
+}
+.btn-one.lang:hover, .btn-one.lang:focus{
+  background-color: #fff !important;
+  color: #ff6725 !important;
 }

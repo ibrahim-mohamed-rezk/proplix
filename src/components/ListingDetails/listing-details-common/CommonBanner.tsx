@@ -1,30 +1,37 @@
 import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 
 const CommonBanner = ({
-  style_3,
   property,
 }: {
   style_3?: boolean;
   property?: PropertyTypes;
 }) => {
   const t = useTranslations("endUser");
+  
   return (
     <div className="row">
       <div className="col-lg-6">
         <h3 className="property-titlee">{property?.title}</h3>
         <div className="d-flex flex-wrap flex-col mt-10">
-          <div
-            className={`list-type !border-none rounded-[23px] text-uppercase me-3 ${
-              property?.status.toLowerCase() === "sale"
-                ? "!bg-[#00B579]"
-                : property?.status.toLowerCase() === "rent"
-                ? "!bg-[#FF6625]"
-                : "bg-three"
+          <div className="d-flex items-center justify-start">
+            <div
+              className={`list-type !border-none rounded-[23px] text-uppercase me-3 ${
+                property?.status.toLowerCase() === "sale"
+                  ? "!bg-[#00B579]"
+                  : property?.status.toLowerCase() === "rent"
+                  ? "!bg-[#FF6625]"
+                  : "bg-three"
+              }`}
+            >
+              {t(property?.status as string)}
+            </div>
+            <div
+              className={`list-type !w-fit px-[8px] !border-none rounded-[23px] text-uppercase me-3 !bg-[#FF6625]
             }`}
-          >
-            {t(property?.status as string)}
+            >
+              {property?.property_type?.title as string}
+            </div>
           </div>
           <div className="address mt-15">
             <i className="bi bi-geo-alt"></i> {property?.area.name}
@@ -67,7 +74,7 @@ const CommonBanner = ({
             </a>
             <a
               href={`https://wa.me/${property?.user.phone}`}
-              target="_blank" 
+              target="_blank"
               className="bg-[#00B266] rounded-[8px] flex-1 flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-xl shadow-lg"
               type="button"
             >
