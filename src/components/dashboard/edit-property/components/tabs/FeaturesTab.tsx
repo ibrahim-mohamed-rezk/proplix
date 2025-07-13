@@ -6,7 +6,6 @@ import { deleteData, postData } from '@/libs/server/backendServer';
 import { AxiosHeaders } from 'axios';
 import ModalForm from '../ModalForm';
 import { useTranslations } from 'next-intl';
-// import { PropertyFeature } from '@/types/PropertyTypes';
 
 interface PropertyFeature {
   id: number;
@@ -36,14 +35,13 @@ interface PropertyFeature {
 }
 
 interface FeaturesTabProps {
-  token:string;
+  token: string;
   property: PropertyData;
-  onUpdate?: () => void; // Callback to refresh property data
+  refetch?: () => void; // Callback to refresh property data
 }
 
 interface FeatureFormData {
   property_listing_id: string;
-  
   type: string;
   'key[en]': string;
   'key[ar]': string;
@@ -58,10 +56,10 @@ const FEATURE_TYPES = [
   { value: 'indoor_feature', label: 'Indoor Feature' }
 ];
 
-export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,token }) => {
+export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, refetch, token }) => {
   const params = useParams();
   const propertyId = params?.id as string;
-  const  t  = useTranslations("features");
+  const t = useTranslations("features");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -79,7 +77,6 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
   const resetFormData = () => {
     setFormData({
       property_listing_id: propertyId || '',
-     
       type: 'property_feature',
       'key[en]': '',
       'key[ar]': '',
@@ -96,7 +93,6 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
   const handleEditClick = (feature: PropertyFeature) => {
     setFormData({
       property_listing_id: propertyId || '',
-      
       type: feature?.type || 'property_feature',
       'key[en]': feature?.key || '',
       'key[ar]': feature?.key || '', // Assuming key is the same for both languages based on JSON structure
@@ -117,7 +113,6 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       await deleteData(`agent/features/${selectedFeatureId}`, new AxiosHeaders({
         Authorization: `Bearer ${token}`,
@@ -126,13 +121,12 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
       setShowDeleteModal(false);
       setSelectedFeatureId(null);
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful deletion
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to delete feature:', error);
-      // You might want to show a toast notification here
     } finally {
       setLoading(false);
     }
@@ -143,7 +137,6 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       // Create FormData object
       const formDataToSend = new FormData();
@@ -159,13 +152,12 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
       setShowAddModal(false);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful creation
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to add feature:', error);
-      // You might want to show a toast notification here
     } finally {
       setLoading(false);
     }
@@ -178,7 +170,6 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       // Create FormData object
       const formDataToSend = new FormData();
@@ -196,13 +187,12 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
       setSelectedFeatureId(null);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful update
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to update feature:', error);
-      // You might want to show a toast notification here
     } finally {
       setLoading(false);
     }

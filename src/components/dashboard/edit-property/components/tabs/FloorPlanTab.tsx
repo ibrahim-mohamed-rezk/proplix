@@ -9,9 +9,9 @@ import ModalForm from '../ModalForm';
 import { useTranslations } from 'next-intl';
 
 interface FloorPlanTabProps {
-  token:string;
+  token: string;
   property: PropertyData;
-  onUpdate?: () => void; // Callback to refresh property data
+  refetch?: () => void; // Callback to refresh property data
 }
 
 interface FloorPlanFormData {
@@ -19,7 +19,7 @@ interface FloorPlanFormData {
   floor_plans: FileList | null;
 }
 
-export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,token }) => {
+export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, refetch, token }) => {
   const params = useParams();
   const propertyId = params?.id as string;
   const t = useTranslations("floorplan");
@@ -75,7 +75,6 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       // Build query string for multiple IDs
       const queryParams = selectedPlanIds
@@ -89,13 +88,12 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
       setShowDeleteModal(false);
       setSelectedPlanIds([]);
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful deletion
+      if (refetch) {
+        refetch();
       }
-    } catch {
-      // console.error(t("Failed to delete floor plans"), error);
-      // You might want to show a toast notification here
+    } catch (error) {
+      console.error('Failed to delete floor plans:', error);
     } finally {
       setLoading(false);
     }
@@ -111,7 +109,6 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       // Create FormData object
       const formDataToSend = new FormData();
@@ -130,13 +127,12 @@ export const FloorPlanTab: React.FC<FloorPlanTabProps> = ({ property, onUpdate,t
       setShowAddModal(false);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful creation
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to add floor plans:', error);
-      // You might want to show a toast notification here
     } finally {
       setLoading(false);
     }

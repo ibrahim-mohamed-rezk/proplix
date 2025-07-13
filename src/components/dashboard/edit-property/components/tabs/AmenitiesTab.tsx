@@ -8,8 +8,8 @@ import { useTranslations } from 'next-intl';
 
 interface AmenitiesTabProps {
   property: PropertyData;
-  token: string; // Add token to the props interface
-  onUpdate?: () => void; // Callback to refresh property data
+  token: string;
+  refetch?: () => void; // Callback to refresh property data
 }
 
 interface AmenityFormData {
@@ -18,8 +18,7 @@ interface AmenityFormData {
   'title[ar]': string;
 }
 
-// Fix the function signature - token should be part of props, not a separate parameter
-export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onUpdate }) => {
+export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, refetch }) => {
   const params = useParams();
   const propertyId = params?.id as string;
   const t = useTranslations("Amenities");
@@ -70,15 +69,15 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       setLoading(true);
       
       await deleteData(`agent/amenities/${selectedAmenityId}`, new AxiosHeaders({
-        Authorization: `Bearer ${token}`, // Use token from props
+        Authorization: `Bearer ${token}`,
       }));
       
       setShowDeleteModal(false);
       setSelectedAmenityId(null);
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful deletion
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to delete amenity:', error);
@@ -100,16 +99,16 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       formDataToSend.append('title[ar]', formData['title[ar]']);
       
       await postData('agent/amenities', formDataToSend, new AxiosHeaders({
-        Authorization: `Bearer ${token}`, // Use token from props
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
       
       setShowAddModal(false);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful creation
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to add amenity:', error);
@@ -134,7 +133,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       formDataToSend.append('_method', 'PUT'); // Laravel method spoofing for FormData
       
       await postData(`agent/amenities/${selectedAmenityId}`, formDataToSend, new AxiosHeaders({
-        Authorization: `Bearer ${token}`, // Use token from props
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
       
@@ -142,9 +141,9 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       setSelectedAmenityId(null);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful update
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to update amenity:', error);

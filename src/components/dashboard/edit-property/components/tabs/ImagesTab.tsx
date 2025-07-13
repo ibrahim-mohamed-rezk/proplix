@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-// import { Plus, Trash2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { PropertyData } from '../../PropertyTypes';
 import { deleteData, postData } from '@/libs/server/backendServer';
@@ -9,9 +8,9 @@ import ModalForm from '../ModalForm';
 import { useTranslations } from 'next-intl';
 
 interface ImagesTabProps {
-  token:string;
+  token: string;
   property: PropertyData;
-  onUpdate?: () => void; // Callback to refresh property data
+  refetch?: () => void; // Callback to refresh property data
 }
 
 interface ImageFormData {
@@ -19,7 +18,7 @@ interface ImageFormData {
   images: FileList | null;
 }
 
-export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }) => {
+export const ImagesTab: React.FC<ImagesTabProps> = ({ property, refetch, token }) => {
   const params = useParams();
   const propertyId = params?.id as string;
   const t = useTranslations("Images");
@@ -75,7 +74,6 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       // Build query string for multiple IDs
       const queryParams = selectedImageIds
@@ -89,13 +87,12 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
       setShowDeleteModal(false);
       setSelectedImageIds([]);
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful deletion
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to delete images:', error);
-      // You might want to show a toast notification here
     } finally {
       setLoading(false);
     }
@@ -111,7 +108,6 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
     
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
       
       // Create FormData object
       const formDataToSend = new FormData();
@@ -130,13 +126,12 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, onUpdate,token }
       setShowAddModal(false);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful creation
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to add images:', error);
-      // You might want to show a toast notification here
     } finally {
       setLoading(false);
     }

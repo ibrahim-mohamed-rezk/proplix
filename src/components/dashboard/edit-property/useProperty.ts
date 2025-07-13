@@ -7,7 +7,7 @@ export const useProperty = (propertyId: string, token: string) => {
   const [property, setProperty] = useState<PropertyData | null>(null);
   const [propertystat, setPropertystat] = useState<PropertyStatistics | null>(null);
   const [loading, setLoading] = useState(true);
-
+  
   const [toast, setToast] = useState<ToastState>({
     message: '',
     type: 'info',
@@ -56,6 +56,13 @@ export const useProperty = (propertyId: string, token: string) => {
     }
   }, []);
 
+  const refetch = useCallback(() => {
+    if (token && propertyId) {
+      fetchProperty(token, propertyId);
+      fetchPropertyStatistics(token, propertyId);
+    }
+  }, [token, propertyId, fetchProperty, fetchPropertyStatistics]);
+
   useEffect(() => {
     if (token) {
       // Token is available
@@ -78,7 +85,6 @@ export const useProperty = (propertyId: string, token: string) => {
     loading,
     toast,
     showToast,
-    fetchProperty, // Export fetchProperty for manual refetching
-    fetchPropertyStatistics // Export fetchPropertyStatistics for manual refetching
+    refetch, // ✅ Now available for MainTab
   };
 };

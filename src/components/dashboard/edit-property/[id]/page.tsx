@@ -24,7 +24,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
   const propertyId = params?.id as string;
 
   // const { property, loading, toast } = useProperty(propertyId, token);
-  const { property, propertystat, loading, toast } = useProperty(
+  const { property, propertystat, loading, toast,refetch } = useProperty(
     propertyId,
     token
   );
@@ -44,18 +44,18 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           />
         ) : null;
       case "amenities":
-        return <AmenitiesTab property={property} token={token} />;
+        return <AmenitiesTab refetch={refetch} property={property} token={token} />;
       case "features":
-        return <FeaturesTab property={property} token={token} />;
+        return <FeaturesTab refetch={refetch} property={property} token={token} />;
       case "locations":
-        return <LocationTab property={property} token={token as string} />;
+        return <LocationTab refetch={refetch} property={property} token={token as string} />;
       case "images":
-        return <ImagesTab property={property} token={token} />;
+        return <ImagesTab refetch={refetch} property={property} token={token} />;
       case "floorplan":
-        return <FloorPlanTab property={property} token={token} />;
+        return <FloorPlanTab refetch={refetch} property={property} token={token} />;
       default:
         return propertystat ? (
-          <MainTab
+          <MainTab 
             token={token}
             property={property}
             propertystat={propertystat}
