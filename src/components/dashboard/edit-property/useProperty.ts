@@ -25,6 +25,7 @@ export const useProperty = (propertyId: string, token: string) => {
       setLoading(true);
       const res = await getData(`agent/property_listings/${id}`, {}, new AxiosHeaders({
         Authorization: `Bearer ${authToken}`,
+        lang: locale,
       }));
       
       if (res.data) {
@@ -38,12 +39,11 @@ export const useProperty = (propertyId: string, token: string) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   const fetchPropertyStatistics = useCallback(async (authToken: string, id: string) => {
     try {
       const res = await getData(`agent/property/${id}/statistics`, {}, new AxiosHeaders({
-        lang: locale,
         Authorization: `Bearer ${authToken}`
       }));
       
@@ -55,8 +55,10 @@ export const useProperty = (propertyId: string, token: string) => {
     } catch (error) {
       console.error('Failed to fetch property statistics', error);
       showToast('Failed to load property statistics', 'error');
+    } finally {
+      setLoading(false);
     }
-  }, [locale]);
+  }, []);
 
   const refetch = useCallback(() => {
     if (token && propertyId) {

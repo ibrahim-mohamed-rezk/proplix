@@ -186,7 +186,7 @@ const PropertyTableBody = ({
                 </div>
               </td>
               <td>{item.title}</td>
-              <td>{item.price} EGY</td>
+              <td>{item.price} EGP</td>
               <td>{formatDate(item.created_at)}</td>
               <td>{item.views || 0}</td>
               <td>

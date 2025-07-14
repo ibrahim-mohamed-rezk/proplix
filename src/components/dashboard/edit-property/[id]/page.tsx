@@ -17,6 +17,7 @@ import { FeaturesTab } from "../components/tabs/FeaturesTab";
 import { LocationTab } from "../components/tabs/LocationsTab";
 import { ImagesTab } from "../components/tabs/ImagesTab";
 import { FloorPlanTab } from "../components/tabs/FloorPlanTab";
+import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 // src/app/[locale]/dashboard/edit-property/components/tabs/FloorPlanTab.tsx
 export default function PropertyDetailsPage({ token }: { token: string }) {
   const t = useTranslations("properties");
@@ -87,47 +88,16 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
   }
 
   return (
-    <div className=" bg-red-500 text-dark p-4 dashboard-body">
+   <div className="dashboard-body " style={{ marginTop: -80 }}>
+            <DashboardHeaderTwo title="Edit Property" />
+
+    <div className=" bg-red-500 text-dark p-4 ">
       {toast.show && (
         <Toast message={toast?.message} type={toast?.type} duration={3000} />
       )}
 
       <div className="container bg-red-500 rounded b overflow-hidden">
-        <div className=" m-0 p-0">
-          {/* Header */}
-          <div className="d-flex justify-content-between  my-4">
-            <div className="d-flex justify-between container ">
-              <h4 className=" font-weight-bold text-dark mb-2">
-                {t("property_title")}:{property?.data?.descriptions?.en?.title}
-              </h4>
-              <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 text-center">
-                <p className="mb-0 text-muted d-flex align-items-center gap-2">
-                  {t("area")}:
-                  <span className="badge bg-light text-dark rounded-4-3 p-2 shadow-sm">
-                    {property?.data?.area?.description?.en?.name}
-                  </span>
-                </p>
-
-                <div className="d-flex align-items-center gap-3">
-                  <span className="text-muted d-flex align-items-center gap-2">
-                    {t("approval_status")}:
-                    <span className="badge bg-primary bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
-                      {property?.data?.approval_status}
-                    </span>
-                  </span>
-
-                  <span className="text-muted d-flex align-items-center gap-2">
-                    {t("status")}:
-                    <span className="badge bg-success bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
-                      {property?.data?.status}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
+        <div className=" m-0 my-2 p-0">
           <div className="d-flex flex-wrap mb-4 ">
             {PROPERTY_TABS.map((tab) => (
               <TabButton
@@ -146,6 +116,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           <div className="tab-content bg-white p-5 ">{renderTabContent()}</div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

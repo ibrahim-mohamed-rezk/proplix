@@ -6,6 +6,7 @@ import { deleteData, postData } from '@/libs/server/backendServer';
 import { AxiosHeaders } from 'axios';
 import ModalForm from '../ModalForm';
 import { useTranslations } from 'next-intl';
+import { Plus, Trash2, Edit } from 'lucide-react';
 
 interface ImagesTabProps {
   token: string;
@@ -206,7 +207,8 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, refetch, token }
                   onClick={handleBulkDeleteClick}
                   className="btn btn-danger btn-sm shadow-sm d-flex align-items-center gap-2"
                 >
-                  <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="16" height="16" />
+                  {/* <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="16" height="16" /> */}
+                  <Trash2 size={16}/>
                   {t("Delete Selected")} ({selectedImageIds?.length})
                 </button>
               )}
@@ -216,7 +218,8 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, refetch, token }
             onClick={handleAddClick}
             className="btn dash-btn-two shadow-sm d-flex align-items-center gap-2"
           >
-            <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="16" height="16" />
+            {/* <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="16" height="16" /> */}
+            <Plus size={16}/>
             {t("Add New Images")}
           </button>
         </div>
@@ -274,7 +277,7 @@ export const ImagesTab: React.FC<ImagesTabProps> = ({ property, refetch, token }
         </div>
       ) : (
         <div className="text-center text-muted py-5">
-          <p className="mb-0">No images available for this property</p>
+          <p className="mb-0">{t("No images available for this property")}</p>
         </div>
       )}
 

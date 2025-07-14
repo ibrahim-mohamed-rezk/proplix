@@ -188,7 +188,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, ref
           required
         />
       </div>
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-end m-2">
         <button
           type="button"
           onClick={() => {

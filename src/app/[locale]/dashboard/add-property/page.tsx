@@ -2,6 +2,8 @@ import DashboardAddProperty from "@/components/dashboard/add-property";
 import Wrapper from "@/layouts/Wrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
+
 
 export const metadata = {
   title: "Dashboard Add Property Problix - Real Estate React Next js Template",
@@ -17,6 +19,7 @@ const index = async () => {
 
    return (
       <Wrapper>
+                  <DashboardHeaderOne />
          <DashboardAddProperty token={token as string} />
       </Wrapper>
    )
