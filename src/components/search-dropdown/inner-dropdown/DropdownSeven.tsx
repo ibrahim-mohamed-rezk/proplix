@@ -608,7 +608,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
               </div>
             </div>
           </div>
-          <div className="col-xxl-2 col-xl-3 col-sm-6">
+          <div className="col-xl-2 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("status")}</div>
               <NiceSelect
@@ -626,7 +626,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
             </div>
           </div>
 
-          <div className="col-xl-3 col-sm-4">
+          <div className="col-xl-2 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("price_range")}</div>
               <NiceSelect

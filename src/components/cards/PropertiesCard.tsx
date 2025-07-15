@@ -130,6 +130,9 @@ const PropertiesCard = ({
                   src={item.cover}
                   className="w-full h-[295px] rounded-[25px]"
                   alt={item.title}
+                  // style={{
+                  //   height: "clamp(100px,15.365vw,2095px)",
+                  // }}
                 />
               </Link>
             </div>

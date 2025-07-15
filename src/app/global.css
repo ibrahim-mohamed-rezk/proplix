@@ -69,3 +69,14 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   background-color: #fff !important;
   color: #ff6725 !important;
 }
+@media (max-width: 992px) {
+  .hided-in-mobile {
+    display: none !important;
+  }
+
+  .pro-list-map{
+    position: sticky !important;
+  }
+  
+}
+
