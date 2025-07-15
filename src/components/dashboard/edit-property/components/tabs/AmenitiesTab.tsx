@@ -5,11 +5,12 @@ import { AxiosHeaders } from 'axios';
 import ModalForm from '../ModalForm';
 import { PropertyAmenity, PropertyData } from '../../PropertyTypes';
 import { useTranslations } from 'next-intl';
+import { Plus, Trash2, Edit } from 'lucide-react';
 
 interface AmenitiesTabProps {
   property: PropertyData;
-  token: string; // Add token to the props interface
-  onUpdate?: () => void; // Callback to refresh property data
+  token: string;
+  refetch?: () => void; // Callback to refresh property data
 }
 
 interface AmenityFormData {
@@ -18,8 +19,7 @@ interface AmenityFormData {
   'title[ar]': string;
 }
 
-// Fix the function signature - token should be part of props, not a separate parameter
-export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onUpdate }) => {
+export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, refetch }) => {
   const params = useParams();
   const propertyId = params?.id as string;
   const t = useTranslations("Amenities");
@@ -70,15 +70,15 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       setLoading(true);
       
       await deleteData(`agent/amenities/${selectedAmenityId}`, new AxiosHeaders({
-        Authorization: `Bearer ${token}`, // Use token from props
+        Authorization: `Bearer ${token}`,
       }));
       
       setShowDeleteModal(false);
       setSelectedAmenityId(null);
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful deletion
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to delete amenity:', error);
@@ -100,16 +100,16 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       formDataToSend.append('title[ar]', formData['title[ar]']);
       
       await postData('agent/amenities', formDataToSend, new AxiosHeaders({
-        Authorization: `Bearer ${token}`, // Use token from props
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
       
       setShowAddModal(false);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful creation
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to add amenity:', error);
@@ -134,7 +134,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       formDataToSend.append('_method', 'PUT'); // Laravel method spoofing for FormData
       
       await postData(`agent/amenities/${selectedAmenityId}`, formDataToSend, new AxiosHeaders({
-        Authorization: `Bearer ${token}`, // Use token from props
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       }));
       
@@ -142,9 +142,9 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
       setSelectedAmenityId(null);
       resetFormData();
       
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+      // Call refetch to refresh the property data after successful update
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
       console.error('Failed to update amenity:', error);
@@ -188,7 +188,7 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
           required
         />
       </div>
-      <div className="d-flex justify-content-end">
+      <div className="d-flex justify-content-end m-2">
         <button
           type="button"
           onClick={() => {
@@ -223,7 +223,8 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
           onClick={handleAddClick}
           className="btn dash-btn-two d-flex align-items-center gap-2"
         >
-          <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" />
+          {/* <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Add" width="20" /> */}
+          <Plus size={20}/>
           {t("Add New Amenity")}
         </button>
       </div>
@@ -243,14 +244,16 @@ export const AmenitiesTab: React.FC<AmenitiesTabProps> = ({ property, token, onU
                       className="btn btn-success"
                       title="Edit amenity"
                     >
-                      <img src="/assets/images/dashboard/icon/icon_24.svg" alt="Edit" width="16" />
+                      {/* <img src="/assets/images/dashboard/icon/icon_24.svg" alt="Edit" width="16" /> */}
+                      <Edit size={20}/>
                     </button>
                     <button
                       onClick={() => handleDeleteClick(amenity?.id?.toString())}
                       className="btn btn-danger"
                       title="Delete amenity"
                     >
-                      <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="16" />
+                      {/* <img src="/assets/images/dashboard/icon/icon_29.svg" alt="Delete" width="16" /> */}
+                      <Trash2 size={20}/>
                     </button>
                   </div>
                 </div>

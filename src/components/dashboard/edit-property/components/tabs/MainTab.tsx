@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { PropertyData } from '../../PropertyTypes';
 import { ReadOnlyField } from '../TabButton';
 import { useTranslations } from 'next-intl';
+import defaultAvatar from "@/assets/images/loader.gif"
 
 interface MainTabProps {
   token: string;
@@ -17,22 +18,55 @@ export const MainTab: React.FC<MainTabProps> = ({ property, token, propertystat 
   return (
     <div className="mb-4">
       {/* Property Header */}
-      <div className="mb-4">
-        <div className="d-flex justify-content-between align-items-start mb-3">
+      <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between container w-100 mb-4">
           <div>
-            <h2 className="h3 font-weight-bold text-dark mb-2">
-              {t("property_title")}: {property?.data?.descriptions?.en?.title}
-            </h2>
-          </div>
-          <div className="text-right">
-            <div className="h3 font-weight-bold text-primary">
-              EGP {property?.data?.price?.toLocaleString()}
-            </div>
-            {property?.data?.down_price && (
-              <div className="text-muted">
-                {t("down_price")}: EGP {property?.data?.down_price?.toLocaleString()}
+          <h4 className="font-weight-bold text-dark  mb-4">
+            {t("property_title")}: {property?.data?.descriptions?.en?.title}
+          </h4>
+          {/* Status Badges */}
+              <div className="d-flex align-items-center gap-3 flex-wrap justify-content-center">
+                <p className="mb-0 text-muted d-flex align-items-center gap-2">
+              {t("area")}:
+              <span className="badge bg-light text-dark rounded-4-3 p-2 shadow-sm">
+                {property?.data?.area?.description?.en?.name}
+              </span>
+            </p>
+                <span className="text-muted d-flex align-items-center gap-2">
+                  {t("approval_status")}:
+                  <span className="badge bg-primary bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
+                    {property?.data?.approval_status}
+                  </span>
+                </span>
+                
+                <span className="text-muted d-flex align-items-center gap-2">
+                  {t("status")}:
+                  <span className="badge bg-success bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
+                    {property?.data?.status}
+                  </span>
+                </span>
               </div>
-            )}
+              </div>
+          <div className="d-flex flex-column flex-md-row align-items-center justify-content-center  text-center">
+            {/* Area Badge */}
+            
+            
+            {/* Price and Status Section */}
+            <div className="d-flex flex-column align-items-center gap-4">
+              {/* Price Section */}
+              <div className="text-center">
+                <div className="h5 font-weight-bold text-primary ">
+                  EGP {property?.data?.price?.toLocaleString()}
+                </div>
+                {property?.data?.down_price && (
+                  <div className="text-muted small">
+                    {t("down_price")}: EGP {property?.data?.down_price?.toLocaleString()}
+                  </div>
+                )}
+              </div>
+              
+              
+            </div>
           </div>
         </div>
       </div>
@@ -80,14 +114,14 @@ export const MainTab: React.FC<MainTabProps> = ({ property, token, propertystat 
         <h3 className="h5 font-weight-semibold text-dark mb-3">{t("owner_information")}</h3>
         <div className="card shadow-sm border-muted rounded">
           <div className="card-body">
-            <div className="d-flex align-items-center gap-3 mb-3">
+            <div className="d-flex align-items-center gap-3">
               {property?.data?.user?.avatar && (
                 <Image
-                  src={property?.data?.user?.avatar}
+                  src={property.data.user.avatar || defaultAvatar}
                   alt={property?.data?.user?.name}
-                  width={60}
-                  height={60}
-                  className="rounded-circle"
+                  width={150}
+                  height={150}
+                  className="rounded-4"
                 />
               )}
               <div>

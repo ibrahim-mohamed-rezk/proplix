@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Edit } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import { PropertyData } from '../../PropertyTypes';
-import { deleteData, postData } from '@/libs/server/backendServer';
-import { AxiosHeaders } from 'axios';
-import ModalForm from '../ModalForm';
-import { useTranslations } from 'next-intl';
-// import { PropertyFeature } from '@/types/PropertyTypes';
+import React, { useState } from "react";
+import { Plus, Trash2, Edit } from "lucide-react";
+import { useParams } from "next/navigation";
+import { PropertyData } from "../../PropertyTypes";
+import { deleteData, postData } from "@/libs/server/backendServer";
+import { AxiosHeaders } from "axios";
+import ModalForm from "../ModalForm";
+import { useTranslations } from "next-intl";
 
 interface PropertyFeature {
   id: number;
@@ -15,76 +14,71 @@ interface PropertyFeature {
   value: string;
   description: {
     en: {
-      title: string | null;
-      description: string | null;
-      keywords: string | null;
-      slug: string | null;
-      meta_title: string | null;
-      meta_description: string | null;
-      meta_keywords: string | null;
+      key: string | null;        // Added for multilingual key
+      value: string | null;      // Added for multilingual value
     };
     ar: {
+      key: string | null;        // Added for multilingual key
+      value: string | null;      // Added for multilingual value
       title: string | null;
-      description: string | null;
-      keywords: string | null;
-      slug: string | null;
-      meta_title: string | null;
-      meta_description: string | null;
-      meta_keywords: string | null;
     };
   };
 }
 
 interface FeaturesTabProps {
-  token:string;
+  token: string;
   property: PropertyData;
-  onUpdate?: () => void; // Callback to refresh property data
+  refetch?: () => void; // Callback to refresh property data
 }
 
 interface FeatureFormData {
   property_listing_id: string;
-  
   type: string;
-  'key[en]': string;
-  'key[ar]': string;
-  'value[en]': string;
-  'value[ar]': string;
+  "key[en]": string;
+  "key[ar]": string;
+  "value[en]": string;
+  "value[ar]": string;
 }
 
 const FEATURE_TYPES = [
-  { value: 'property_feature', label: 'Property Feature' },
-  { value: 'utility_detail', label: 'Utility Detail' },
-  { value: 'outdoor_feature', label: 'Outdoor Feature' },
-  { value: 'indoor_feature', label: 'Indoor Feature' }
+  { value: "property_feature", label: "Property Feature" },
+  { value: "utility_detail", label: "Utility Detail" },
+  { value: "outdoor_feature", label: "Outdoor Feature" },
+  { value: "indoor_feature", label: "Indoor Feature" },
 ];
 
-export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,token }) => {
+export const FeaturesTab: React.FC<FeaturesTabProps> = ({
+  property,
+  refetch,
+  token,
+}) => {
   const params = useParams();
   const propertyId = params?.id as string;
-  const  t  = useTranslations("features");
+  const t = useTranslations("features");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FeatureFormData>({
-    property_listing_id: propertyId || '',
-    type: 'property_feature',
-    'key[en]': '',
-    'key[ar]': '',
-    'value[en]': '',
-    'value[ar]': ''
+    property_listing_id: propertyId || "",
+    type: "property_feature",
+    "key[en]": "",
+    "key[ar]": "",
+    "value[en]": "",
+    "value[ar]": "",
   });
 
   const resetFormData = () => {
     setFormData({
-      property_listing_id: propertyId || '',
-     
-      type: 'property_feature',
-      'key[en]': '',
-      'key[ar]': '',
-      'value[en]': '',
-      'value[ar]': ''
+      property_listing_id: propertyId || "",
+      type: "property_feature",
+      "key[en]": "",
+      "key[ar]": "",
+      "value[en]": "",
+      "value[ar]": "",
     });
   };
 
@@ -95,13 +89,12 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
 
   const handleEditClick = (feature: PropertyFeature) => {
     setFormData({
-      property_listing_id: propertyId || '',
-      
-      type: feature?.type || 'property_feature',
-      'key[en]': feature?.key || '',
-      'key[ar]': feature?.key || '', // Assuming key is the same for both languages based on JSON structure
-      'value[en]': feature?.value || '',
-      'value[ar]': feature.value || '' // Assuming value is the same for both languages based on JSON structure
+      property_listing_id: propertyId || "",
+      type: feature?.type || "property_feature",
+      "key[en]": feature?.description?.en?.key || "",
+      "key[ar]": feature?.description?.ar?.key || "",
+      "value[en]": feature?.description?.en?.value || "",
+      "value[ar]": feature?.description?.ar?.value || "",
     });
     setSelectedFeatureId(feature.id.toString());
     setShowEditModal(true);
@@ -114,25 +107,26 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
 
   const handleDeleteConfirm = async () => {
     if (!selectedFeatureId) return;
-    
+
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
-      
-      await deleteData(`agent/features/${selectedFeatureId}`, new AxiosHeaders({
-        Authorization: `Bearer ${token}`,
-      }));
-      
+
+      await deleteData(
+        `agent/features/${selectedFeatureId}`,
+        new AxiosHeaders({
+          Authorization: `Bearer ${token}`,
+        })
+      );
+
       setShowDeleteModal(false);
       setSelectedFeatureId(null);
-      
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+
+      // Call refetch to refresh the property data after successful deletion
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
-      console.error('Failed to delete feature:', error);
-      // You might want to show a toast notification here
+      console.error("Failed to delete feature:", error);
     } finally {
       setLoading(false);
     }
@@ -140,32 +134,34 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
-      
+
       // Create FormData object
       const formDataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
-      
-      await postData('agent/features', formDataToSend, new AxiosHeaders({
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
-      }));
-      
+
+      await postData(
+        "agent/features",
+        formDataToSend,
+        new AxiosHeaders({
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        })
+      );
+
       setShowAddModal(false);
       resetFormData();
-      
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+
+      // Call refetch to refresh the property data after successful creation
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
-      console.error('Failed to add feature:', error);
-      // You might want to show a toast notification here
+      console.error("Failed to add feature:", error);
     } finally {
       setLoading(false);
     }
@@ -173,45 +169,47 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedFeatureId) return;
-    
+
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
-      
+
       // Create FormData object
       const formDataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
-      formDataToSend.append('_method', 'PUT'); // Laravel method spoofing for FormData
-      
-      await postData(`agent/features/${selectedFeatureId}`, formDataToSend, new AxiosHeaders({
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
-      }));
-      
+      formDataToSend.append("_method", "PUT"); // Laravel method spoofing for FormData
+
+      await postData(
+        `agent/features/${selectedFeatureId}`,
+        formDataToSend,
+        new AxiosHeaders({
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        })
+      );
+
       setShowEditModal(false);
       setSelectedFeatureId(null);
       resetFormData();
-      
-      // Call the update callback to refresh the property data
-      if (onUpdate) {
-        onUpdate();
+
+      // Call refetch to refresh the property data after successful update
+      if (refetch) {
+        refetch();
       }
     } catch (error) {
-      console.error('Failed to update feature:', error);
-      // You might want to show a toast notification here
+      console.error("Failed to update feature:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (field: keyof FeatureFormData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -220,12 +218,10 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
       <div className="row">
         <div className="col-12">
           <div className="mb-3">
-            <label className="form-label fw-medium">
-              {t("Feature Type")}
-            </label>
+            <label className="form-label fw-medium">{t("Feature Type")}</label>
             <select
               value={formData.type}
-              onChange={(e) => handleInputChange('type', e.target.value)}
+              onChange={(e) => handleInputChange("type", e.target.value)}
               className="form-select"
               required
             >
@@ -237,37 +233,33 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
             </select>
           </div>
         </div>
-        
+
         <div className="col-md-6">
           <div className="mb-3">
-            <label className="form-label fw-medium">
-              {t("Key (English)")}
-            </label>
+            <label className="form-label fw-medium">{t("Key (English)")}</label>
             <input
               type="text"
-              value={formData['key[en]']}
-              onChange={(e) => handleInputChange('key[en]', e.target.value)}
+              value={formData["key[en]"]}
+              onChange={(e) => handleInputChange("key[en]", e.target.value)}
               className="form-control"
               required
             />
           </div>
         </div>
-        
+
         <div className="col-md-6">
           <div className="mb-3">
-            <label className="form-label fw-medium">
-              {t("Key (Arabic)")}
-            </label>
+            <label className="form-label fw-medium">{t("Key (Arabic)")}</label>
             <input
               type="text"
-              value={formData['key[ar]']}
-              onChange={(e) => handleInputChange('key[ar]', e.target.value)}
+              value={formData["key[ar]"]}
+              onChange={(e) => handleInputChange("key[ar]", e.target.value)}
               className="form-control"
               required
             />
           </div>
         </div>
-        
+
         <div className="col-md-6">
           <div className="mb-3">
             <label className="form-label fw-medium">
@@ -275,14 +267,14 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
             </label>
             <input
               type="text"
-              value={formData['value[en]']}
-              onChange={(e) => handleInputChange('value[en]', e.target.value)}
+              value={formData["value[en]"]}
+              onChange={(e) => handleInputChange("value[en]", e.target.value)}
               className="form-control"
               required
             />
           </div>
         </div>
-        
+
         <div className="col-md-6">
           <div className="mb-3">
             <label className="form-label fw-medium">
@@ -290,15 +282,15 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
             </label>
             <input
               type="text"
-              value={formData['value[ar]']}
-              onChange={(e) => handleInputChange('value[ar]', e.target.value)}
+              value={formData["value[ar]"]}
+              onChange={(e) => handleInputChange("value[ar]", e.target.value)}
               className="form-control"
               required
             />
           </div>
         </div>
       </div>
-      
+
       <div className="d-flex justify-content-end gap-2 mt-4">
         <button
           type="button"
@@ -315,12 +307,14 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
         >
           {t("Cancel")}
         </button>
-        <button
-          type="submit"
-          className="btn dash-btn-two"
-          disabled={loading}
-        >
-          {loading ? (isEdit ? t('Updating') : t('Adding')) : (isEdit ? t('Update Feature') : t('Add Feature'))}
+        <button type="submit" className="btn dash-btn-two" disabled={loading}>
+          {loading
+            ? isEdit
+              ? t("Updating")
+              : t("Adding")
+            : isEdit
+            ? t("Update Feature")
+            : t("Add Feature")}
         </button>
       </div>
     </form>
@@ -347,26 +341,43 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
                 <div className="card-body">
                   <div className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center gap-3 flex-grow-1">
-                      <div className="bg-primary rounded-circle" style={{width: '8px', height: '8px'}}></div>
-                      <div>
-                        <span className="fw-medium text-dark">
-                          {feature?.key}:
-                        </span>
-                        <span className="text-muted ms-2">
-                          {feature?.value}
-                        </span>
+                      <div
+                        className="bg-primary rounded-circle"
+                        style={{ width: "8px", height: "8px" }}
+                      ></div>
+                      <div className="d-flex flex-column gap-1">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="fw-semibold text-secondary">
+                            {t("key")}  :  
+                          </span>
+                          <span className="text-dark">
+                            {feature?.description?.en?.key || feature?.key}
+                          </span>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="fw-semibold text-secondary">
+                            {t("value")} : 
+                          </span>
+                          <span className="text-muted">
+                            {feature?.description?.en?.value || feature?.value}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="d-flex gap-2">
                       <button
-                        onClick={() => handleEditClick(feature as unknown as PropertyFeature)}
+                        onClick={() =>
+                          handleEditClick(feature as unknown as PropertyFeature)
+                        }
                         className="btn btn-success btn-sm"
                         title="Edit feature"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => handleDeleteClick(feature?.id?.toString())}
+                        onClick={() =>
+                          handleDeleteClick(feature?.id?.toString())
+                        }
                         className="btn btn-danger btn-sm"
                         title="Delete feature"
                       >
@@ -420,7 +431,9 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
         }}
       >
         <p className="text-muted mb-4">
-          {t("Are you sure you want to delete this feature? This action cannot be undone")}
+          {t(
+            "Are you sure you want to delete this feature? This action cannot be undone"
+          )}
         </p>
         <div className="d-flex justify-content-end gap-2">
           <button
@@ -438,7 +451,7 @@ export const FeaturesTab: React.FC<FeaturesTabProps> = ({ property, onUpdate,tok
             className="btn btn-danger"
             disabled={loading}
           >
-            {loading ? t('Deleting') : t('Delete')}
+            {loading ? t("Deleting") : t("Delete")}
           </button>
         </div>
       </ModalForm>

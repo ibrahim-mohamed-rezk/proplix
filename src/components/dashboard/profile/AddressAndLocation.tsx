@@ -53,7 +53,7 @@ interface AddressAndLocationProps {
   onLocationChange: (locationData: LocationData) => void;
   onUpdateProfile: () => void;
   isUpdating?: boolean;
-  canSubmit?: boolean; // Add this prop to control submit button state
+  // Remove canSubmit prop as we'll calculate it internally
 }
 
 const AddressAndLocation = ({
@@ -61,30 +61,37 @@ const AddressAndLocation = ({
   onLocationChange,
   onUpdateProfile,
   isUpdating = false,
-  canSubmit = true // Default to true for backward compatibility
 }: AddressAndLocationProps) => {
   const [locationData, setLocationData] = useState<LocationData>({
-    address: '',
-    country: '',
-    city: '',
-    zip_code: '',
-    state: '',
-    map_location: '',
-    current_password: ''
+    address: "",
+    country: "",
+    city: "",
+    zip_code: "",
+    state: "",
+    map_location: "",
+    current_password: "",
   });
-  const t = useTranslations('ProfileBody');
+  const t = useTranslations("ProfileBody");
+
+  // Calculate canSubmit based on password field
+  const canSubmit = locationData.current_password.trim().length > 0;
 
   // Initialize location data when profileData changes (only once)
   useEffect(() => {
-    if (profileData && locationData.address === '' && locationData.country === '' && locationData.city === '') {
+    if (
+      profileData &&
+      locationData.address === "" &&
+      locationData.country === "" &&
+      locationData.city === ""
+    ) {
       const initialData = {
-        address: profileData.address || '',
-        country: profileData.country || '',
-        city: profileData.city || '',
-        zip_code: profileData.zip_code || '',
-        state: profileData.state || '',
-        map_location: profileData.address || '',
-        current_password: ''
+        address: profileData.address || "",
+        country: profileData.country || "",
+        city: profileData.city || "",
+        zip_code: profileData.zip_code || "",
+        state: profileData.state || "",
+        map_location: profileData.address || "",
+        current_password: "",
       };
       setLocationData(initialData);
       onLocationChange(initialData);
@@ -94,7 +101,7 @@ const AddressAndLocation = ({
   const handleInputChange = (field: keyof LocationData, value: string) => {
     const updatedData = {
       ...locationData,
-      [field]: value
+      [field]: value,
     };
     setLocationData(updatedData);
     onLocationChange(updatedData);
@@ -103,13 +110,13 @@ const AddressAndLocation = ({
   const handleCancel = () => {
     if (profileData) {
       const resetData = {
-        address: profileData.address || '',
-        country: profileData.country || '',
-        city: profileData.city || '',
-        zip_code: profileData.zip_code || '',
-        state: profileData.state || '',
-        map_location: profileData.address || '',
-        current_password: '' // Reset password field
+        address: profileData.address || "",
+        country: profileData.country || "",
+        city: profileData.city || "",
+        zip_code: profileData.zip_code || "",
+        state: profileData.state || "",
+        map_location: profileData.address || "",
+        current_password: "", // Reset password field
       };
       setLocationData(resetData);
       onLocationChange(resetData);
@@ -127,7 +134,7 @@ const AddressAndLocation = ({
               type="text"
               id="address"
               value={locationData.address}
-              onChange={(e) => handleInputChange('address', e.target.value)}
+              onChange={(e) => handleInputChange("address", e.target.value)}
               placeholder="19 Yawkey Way"
               disabled={isUpdating}
             />
@@ -142,7 +149,7 @@ const AddressAndLocation = ({
               type="text"
               id="country"
               value={locationData.country}
-              onChange={(e) => handleInputChange('country', e.target.value)}
+              onChange={(e) => handleInputChange("country", e.target.value)}
               placeholder="Select Country"
               disabled={isUpdating}
             />
@@ -157,7 +164,7 @@ const AddressAndLocation = ({
               type="text"
               id="city"
               value={locationData.city}
-              onChange={(e) => handleInputChange('city', e.target.value)}
+              onChange={(e) => handleInputChange("city", e.target.value)}
               placeholder="Select City"
               disabled={isUpdating}
             />
@@ -172,7 +179,7 @@ const AddressAndLocation = ({
               type="text"
               id="zip_code"
               value={locationData.zip_code}
-              onChange={(e) => handleInputChange('zip_code', e.target.value)}
+              onChange={(e) => handleInputChange("zip_code", e.target.value)}
               placeholder="1708"
               disabled={isUpdating}
             />
@@ -187,7 +194,7 @@ const AddressAndLocation = ({
               type="text"
               id="state"
               value={locationData.state}
-              onChange={(e) => handleInputChange('state', e.target.value)}
+              onChange={(e) => handleInputChange("state", e.target.value)}
               placeholder="Select State"
               disabled={isUpdating}
             />
@@ -204,7 +211,9 @@ const AddressAndLocation = ({
               type="text"
               id="map_location"
               value={locationData.map_location}
-              onChange={(e) => handleInputChange('map_location', e.target.value)}
+              onChange={(e) =>
+                handleInputChange("map_location", e.target.value)
+              }
               placeholder="XC23+6XC, Moiran, N105"
               disabled={isUpdating}
             />
@@ -214,7 +223,11 @@ const AddressAndLocation = ({
               disabled={isUpdating}
               title="Select location on map"
             >
-              <Image src={locationImage} alt="Location Pin" className="lazy-img m-auto" />
+              <Image
+                src={locationImage}
+                alt="Location Pin"
+                className="lazy-img m-auto"
+              />
             </button>
           </div>
         </div>
@@ -228,39 +241,49 @@ const AddressAndLocation = ({
             type="password"
             id="current_password"
             value={locationData.current_password}
-            onChange={(e) => handleInputChange('current_password', e.target.value)}
+            onChange={(e) =>
+              handleInputChange("current_password", e.target.value)
+            }
             placeholder={t("Enter your current password")}
             disabled={isUpdating}
-            className={!canSubmit && locationData.current_password === '' ? 'is-invalid' : ''}
+            className={!canSubmit ? "is-invalid" : ""}
             autoComplete="current-password"
+            required
           />
-          {!canSubmit && locationData.current_password === '' && (
-            <div className="invalid-feedback">
-              {t(" Password is required to save changes")}
-            </div>
-          )}
           <div className="text-muted small mt-1">
-            <em>{t("Required to verify your identity before saving changes")}</em>
+            <em className="text-danger">
+              {t("Required to verify your identity before saving changes")}
+            </em>
           </div>
         </div>
       </div>
 
       {/* Submit Buttons */}
-      <div className="button-group d-inline-flex align-items-center mb-10  ">
+      <div className="button-group d-inline-flex align-items-center mb-10">
         <button
           type="button"
-          className={`dash-btn-two tran3s me-3 ${!canSubmit ? 'disabled' : ''}`}
+          className={`dash-btn-two tran3s me-3 ${
+            !canSubmit ? "disabled opacity-50" : ""
+          }`}
           onClick={onUpdateProfile}
           disabled={isUpdating || !canSubmit}
-          title={!canSubmit ? 'Please enter your current password' : 'Save profile changes'}
+          title={
+            !canSubmit
+              ? t("Please enter your current password")
+              : t("Save profile changes")
+          }
         >
           {isUpdating ? (
             <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <span
+                className="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
               {t("Updating")}
             </>
           ) : (
-            t('Save Changes')
+            t("Save Changes")
           )}
         </button>
         <button
@@ -268,24 +291,13 @@ const AddressAndLocation = ({
           className="dash-cancel-btn tran3s mx-5"
           onClick={handleCancel}
           disabled={isUpdating}
-          title="Reset to original values"
+          title={t("Reset to original values")}
         >
           {t("Cancel")}
         </button>
       </div>
-
-      {/* Password requirement notice
-      {
-        !canSubmit && (
-          <div className="mt-2">
-            <small className="text-muted">
-              <em>{t("* Please enter your current password to save changes")}</em>
-            </small>
-          </div>
-        )
-      } */}
-    </div >
+    </div>
   );
-}
+};
 
 export default AddressAndLocation;

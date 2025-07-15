@@ -83,13 +83,15 @@ export type LocationPoint = {
   longitude: number;
 };
 
-export type PropertyLocation = {
+export interface PropertyLocation {
   id: number;
   name: string;
-  latitude: number;
-  longitude: number;
-  location_points: LocationPoint[];
-};
+  location: string;
+  location_place_id: string;
+  location_lat: number;
+  location_lng: number;
+  location_points?: LocationPoint[];
+}
 export type PropertyModule = {
   module: string;
 };

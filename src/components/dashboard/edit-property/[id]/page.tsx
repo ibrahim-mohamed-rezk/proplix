@@ -17,6 +17,7 @@ import { FeaturesTab } from "../components/tabs/FeaturesTab";
 import { LocationTab } from "../components/tabs/LocationsTab";
 import { ImagesTab } from "../components/tabs/ImagesTab";
 import { FloorPlanTab } from "../components/tabs/FloorPlanTab";
+import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 // src/app/[locale]/dashboard/edit-property/components/tabs/FloorPlanTab.tsx
 export default function PropertyDetailsPage({ token }: { token: string }) {
   const t = useTranslations("properties");
@@ -24,7 +25,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
   const propertyId = params?.id as string;
 
   // const { property, loading, toast } = useProperty(propertyId, token);
-  const { property, propertystat, loading, toast } = useProperty(
+  const { property, propertystat, loading, toast, refetch } = useProperty(
     propertyId,
     token
   );
@@ -44,15 +45,29 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           />
         ) : null;
       case "amenities":
-        return <AmenitiesTab property={property} token={token} />;
+        return (
+          <AmenitiesTab refetch={refetch} property={property} token={token} />
+        );
       case "features":
-        return <FeaturesTab property={property} token={token} />;
+        return (
+          <FeaturesTab refetch={refetch} property={property} token={token} />
+        );
       case "locations":
-        return <LocationTab property={property} token={token as string} />;
+        return (
+          <LocationTab
+            refetch={refetch}
+            property={property}
+            token={token as string}
+          />
+        );
       case "images":
-        return <ImagesTab property={property} token={token} />;
+        return (
+          <ImagesTab refetch={refetch} property={property} token={token} />
+        );
       case "floorplan":
-        return <FloorPlanTab property={property} token={token} />;
+        return (
+          <FloorPlanTab refetch={refetch} property={property} token={token} />
+        );
       default:
         return propertystat ? (
           <MainTab
@@ -73,47 +88,16 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
   }
 
   return (
-    <div className=" bg-red-500 text-dark p-4 dashboard-body">
+   <div className="dashboard-body " style={{ marginTop: -80 }}>
+            <DashboardHeaderTwo title="Edit Property" />
+
+    <div className=" bg-red-500 text-dark p-4 ">
       {toast.show && (
         <Toast message={toast?.message} type={toast?.type} duration={3000} />
       )}
 
       <div className="container bg-red-500 rounded b overflow-hidden">
-        <div className=" m-0 p-0">
-          {/* Header */}
-          <div className="d-flex justify-content-between  my-4">
-            <div className="d-flex justify-between container ">
-              <h2 className="h3 font-weight-bold text-dark mb-2">
-                {t("property_title")}: {property?.data?.descriptions?.en?.title}
-              </h2>
-              <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 text-center">
-                <p className="mb-0 text-muted d-flex align-items-center gap-2">
-                  {t("area")}:
-                  <span className="badge bg-light text-dark rounded-pill px-3 py-2 shadow-sm">
-                    {property?.data?.area?.description?.en?.name}
-                  </span>
-                </p>
-
-                <div className="d-flex align-items-center gap-3">
-                  <span className="text-muted d-flex align-items-center gap-2">
-                    {t("approval_status")}:
-                    <span className="badge bg-primary bg-opacity-75 text-white rounded-pill px-3 py-2 shadow-sm">
-                      {property?.data?.approval_status}
-                    </span>
-                  </span>
-
-                  <span className="text-muted d-flex align-items-center gap-2">
-                    {t("status")}:
-                    <span className="badge bg-success bg-opacity-75 text-white rounded-pill px-3 py-2 shadow-sm">
-                      {property?.data?.status}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
+        <div className=" m-0 my-2 p-0">
           <div className="d-flex flex-wrap mb-4 ">
             {PROPERTY_TABS.map((tab) => (
               <TabButton
@@ -129,9 +113,10 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
           </div>
 
           {/* Tab Content */}
-          <div className="tab-content bg-white p-5">{renderTabContent()}</div>
+          <div className="tab-content bg-white p-5 ">{renderTabContent()}</div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

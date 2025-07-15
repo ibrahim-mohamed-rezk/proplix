@@ -130,7 +130,7 @@ const DashboardHeaderTwo = ({ title }: any) => {
                 href={`/${locale}/dashboard/add-property`}
                 className="btn-two"
               >
-                <span>Add Listing</span>{" "}
+                <span className="px-2">{t("Add Listing")}</span>{" "}
                 <i className="fa-thin fa-arrow-up-right"></i>
               </Link>
             </div>
