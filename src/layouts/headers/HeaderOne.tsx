@@ -172,7 +172,7 @@ const HeaderOne = ({
                           <li key={l}>
                             <button
                               onClick={() => changeLanguage(l)}
-                              className="w-full flex items-center gap-[5px] justify-center px-3 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
+                              className="w-full flex items-center gap-[5px] justify-center px-1 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
                             >
                               <Image
                                 src={`/images/${l}.svg`}
@@ -182,7 +182,7 @@ const HeaderOne = ({
                                 className="rounded shadow border border-gray-200"
                               />
                               <span className={`fi fi-${flagMap[l]} mr-2 `} />
-                              <span className="capitalize font-semibold font-['Libre_Baskerville'] text-[clamp(13px,1vw,20px)] w-fit flex-1">
+                              <span className="capitalize font-semibold font-['Libre_Baskerville'] text-start  w-fit flex-1">
                                 {l}
                               </span>
                               {l === locale && (

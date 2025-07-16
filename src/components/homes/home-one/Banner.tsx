@@ -120,7 +120,7 @@ const Banner = () => {
             <div className="search-wrapper-one rounded-[20px] layout-one bg relative mb-75 md-mb-50">
               {/* status filters */}
               <div
-                className={`px-[4px] pt-[4px] z-0 absolute sell-rent-buttons start-[70px] bg-white inline-flex justify-end items-start`}
+                className={`px-[4px] pt-[4px] z-0 absolute sell-rent-buttons rounded-t-[8px]  start-[70px] bg-white inline-flex justify-end items-start`}
               >
                 <div
                   onClick={() => changeStatus("sale")}
