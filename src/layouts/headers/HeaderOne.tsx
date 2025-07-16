@@ -238,7 +238,7 @@ const HeaderOne = ({
                       )}
                     </div>
                     {/* add listing btn */}
-                    {user?.role !== "customer" && (
+                    {user?.role && user?.role !== "customer" && (
                       <li className="d-none d-md-inline-block ms-3">
                         <Link
                           href="/dashboard/add-property"
@@ -272,7 +272,9 @@ const HeaderOne = ({
                         className="btn-one bg-gradient-to-r from-[#FF6725] to-[#F26A3F] !text-[#fff] flex items-center justify-center gap-1 px-1 py-1 rounded-xl shadow font-semibold hover:scale-105 transition-transform"
                       >
                         <i className="fa-regular fa-lock"></i>
-                        <span className="text-[16px]">{t("signup as agent")}</span>
+                        <span className="text-[16px]">
+                          {t("signup as agent")}
+                        </span>
                       </Link>
                     </li>
                   </ul>
