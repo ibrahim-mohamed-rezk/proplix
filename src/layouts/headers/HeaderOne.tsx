@@ -161,7 +161,7 @@ const HeaderOne = ({
                   </button>
                   <div ref={langRef}>
                     <div
-                      className={`absolute z-30 mt-2 w-[clamp(80px,8vw,180px)] border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
+                      className={`absolute rounded-[8px] z-30 mt-2 border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
                         langOpen
                           ? "opacity-100 scale-100 pointer-events-auto"
                           : "opacity-0 scale-95 pointer-events-none"
@@ -172,7 +172,7 @@ const HeaderOne = ({
                           <li key={l}>
                             <button
                               onClick={() => changeLanguage(l)}
-                              className="w-full flex items-center justify-center px-3 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
+                              className="w-full flex items-center gap-[5px] justify-center px-3 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
                             >
                               <Image
                                 src={`/images/${l}.svg`}
@@ -186,7 +186,7 @@ const HeaderOne = ({
                                 {l}
                               </span>
                               {l === locale && (
-                                <Check className="w-4 h-4 text-primary-500" />
+                                <Check className="w-[18px] h-[18px] text-primary-500" />
                               )}
                             </button>
                           </li>

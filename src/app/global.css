@@ -59,24 +59,37 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   color: #ff6725 !important;
 }
 
-.btn-one.lang{
+.btn-one.lang {
   width: fit-content !important;
   min-width: 50px !important;
   padding: 3px 0px !important;
-
 }
-.btn-one.lang:hover, .btn-one.lang:focus{
+.btn-one.lang:hover,
+.btn-one.lang:focus {
   background-color: #fff !important;
   color: #ff6725 !important;
 }
+
+.sell-rent-buttons {
+  top: -20px !important;
+}
+
+@media (max-width: 1400px) {
+  .sell-rent-buttons {
+    top: -28px !important;
+  }
+}
+
 @media (max-width: 992px) {
   .hided-in-mobile {
     display: none !important;
   }
 
-  .pro-list-map{
+  .pro-list-map {
     position: sticky !important;
   }
-  
-}
 
+  .sell-rent-buttons {
+    top: -30px !important;
+  }
+}
