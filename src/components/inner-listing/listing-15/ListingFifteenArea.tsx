@@ -236,7 +236,7 @@ const ListingFifteenArea = () => {
       </div>
 
       {/* property type filter */}
-      <div className="listing-type-filter border-0">
+     {!sticky && <div className="listing-type-filter border-0">
         <div className="wrapper">
           <ul className="style-none  d-flex flex-wrap align-items-center justify-content-start ">
             <li className="!m-[0px]">{t(`Select Type`)}</li>
@@ -262,7 +262,7 @@ const ListingFifteenArea = () => {
             ))}
           </ul>
         </div>
-      </div>
+      </div>}
 
       {/* Mobile View Toggle - Only visible on mobile */}
       <div className="d-block d-lg-none mb-3">
