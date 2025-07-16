@@ -258,10 +258,10 @@ const HeaderOne = ({
                         href="#"
                         data-bs-toggle="modal"
                         data-bs-target="#loginModal"
-                        className="btn-one login-btn hover:text-[#FF6725] !min-w-[100px] flex items-center justify-center gap-1 px-1 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow  transition-all"
+                        className="btn-one login-btn hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black !min-w-[100px] flex items-center justify-center gap-1 px-1 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow  transition-all"
                       >
                         <i className="fa-regular fa-lock"></i>
-                        <span className="font-semibold hover:!text-[#FF6725] !hover:text-black">
+                        <span className="font-semibold hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black">
                           {t("login")}
                         </span>
                       </Link>

@@ -1,13 +1,13 @@
-import FooterFour from '@/layouts/footers/FooterFour'
 import HeaderOne from '@/layouts/headers/HeaderOne'
 import ContactArea from './ContactArea'
+import FooterOne from '@/layouts/footers/FooterOne'
 
-const Contact = () => {
+const Contact = ({ token }: { token?: string }) => {
    return (
       <>
-         <HeaderOne style={true} />
+         <HeaderOne token={token} style={true} />
          <ContactArea />
-         <FooterFour />
+         <FooterOne />
       </>
    )
 }

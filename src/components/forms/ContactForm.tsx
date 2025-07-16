@@ -1,11 +1,14 @@
 "use client";
 import React, { useRef } from "react";
 import emailjs from "@emailjs/browser";
-import { toast } from "react-toastify";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslations } from "next-intl";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { postData } from "@/libs/server/backendServer";
+import { useState } from "react";
 
 interface FormData {
   user_name: string;
@@ -22,7 +25,7 @@ const schema = yup
   .required();
 
 const ContactForm = () => {
-  const t = useTranslations("endUser.contact");
+  const t = useTranslations("endUser");
   const {
     register,
     handleSubmit,
@@ -32,29 +35,30 @@ const ContactForm = () => {
 
   const form = useRef<HTMLFormElement>(null);
 
-  const sendEmail = (data: FormData) => {
-    if (form.current) {
-      emailjs
-        .sendForm(
-          "service_070078r",
-          "template_lojvsvb",
-          form.current,
-          "mtLgOuG25NnIwGeKm"
-        )
-        .then(
-          (result) => {
-            const notify = () =>
-              toast("Message sent successfully", { position: "top-center" });
-            notify();
-            reset();
-            console.log(result.text);
-          },
-          (error) => {
-            console.log(error.text);
-          }
-        );
-    } else {
-      console.error("Form reference is null");
+  const sendEmail = async () => {
+    try {
+      await postData(
+        "contact-form",
+        {
+          name: form.current?.user_name.value,
+          email: form.current?.user_email.value,
+          message: form.current?.message.value,
+        },
+        {
+          Authorization: `Bearer token`,
+          "Content-Type": "multipart/form-data",
+        }
+      );
+
+      toast.success(t("Subscribed successfully"));
+      reset(); // Reset the form after request
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.msg || "An error occurred");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+      throw error;
     }
   };
 

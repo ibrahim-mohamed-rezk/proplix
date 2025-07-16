@@ -1,9 +1,11 @@
+"use client";
 import Link from "next/link"
 import Image from "next/image"
 import { useTranslations } from "next-intl";
 
 import circleImg from "@/assets/images/icon/icon_39.svg";
 import ContactForm from "@/components/forms/ContactForm";
+
 
 interface DataType {
   id: number;
@@ -14,7 +16,7 @@ interface DataType {
 }
 
 const ContactArea = () => {
-  const t = useTranslations("endUser.contact");
+  const t = useTranslations("endUser");
   const address_data: DataType[] = [
     {
       id: 1,
@@ -34,6 +36,8 @@ const ContactArea = () => {
       address_1: t("livechatUrl"),
     },
   ];
+
+
   return (
     <div className="contact-us border-top mt-130 xl-mt-100 pt-80 lg-pt-60">
       <div className="container">
