@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import footer_data from "@/data/home-data/FooterData";
 
@@ -73,7 +74,7 @@ const FooterOne = ({ style }: any) => {
                     </Link>
                   </div>
                   <p className="mb-60 lg-mb-40 md-mb-20">{t("address")}</p>
-                  <h6>{t("contact")}</h6>
+                  <h6>{t("coontact")}</h6>
                   <Link
                     href="#"
                     className={`email tran3s mb-70 lg-mb-50 ${
@@ -109,7 +110,7 @@ const FooterOne = ({ style }: any) => {
             </div>
 
             <div className="col-lg-8">
-              <div className={`d-flex flex-wrap ${style ? "h-100" : ""}`}>
+              <div className={`d-flex flex-wrap ${style ? "h-100" : ""} mobile-footer-grid`}>
                 {footer_data
                   .filter((items) => items.page === "home_1")
                   .map((item) => (
@@ -143,6 +144,26 @@ const FooterOne = ({ style }: any) => {
           />
         )}
       </div>
+
+      <style jsx>{`
+        @media (max-width: 767px) {
+          .mobile-footer-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            padding: 0 1rem;
+          }
+          
+          .mobile-footer-grid .footer-nav {
+            margin-top: 2rem !important;
+            width: 100%;
+            padding: 1rem;
+            /* background: rgba(0, 0, 0, 0.02); */
+            border-radius: 8px;
+          }
+        }
+      `}</style>
     </div>
   );
 };

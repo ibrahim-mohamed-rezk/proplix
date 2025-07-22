@@ -285,7 +285,7 @@ const DropdownTwo = ({
                     ))}
                   </div>
                 )}
-                {!isGoogleMapsLoaded && (
+                {/* {!isGoogleMapsLoaded && (
                   <div
                     style={{
                       position: "absolute",
@@ -302,7 +302,7 @@ const DropdownTwo = ({
                   >
                     Loading location services...
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>

@@ -673,6 +673,8 @@
     "Agency": "وكالة"
   },
   "endUser": {
+    "no_blogs_found": "لا توجد مدونات",
+    "coontact":"اتصل",
     "Property Overview": "معلومات عامة عن العقار",
     "overview": "نظرة عامة",
     "sale": "بيع",

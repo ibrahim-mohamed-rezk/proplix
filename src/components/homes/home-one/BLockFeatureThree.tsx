@@ -1,6 +1,4 @@
-
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +36,7 @@ export default function BLockFeatureThree() {
   const settings = {
     infinite: areas.length > 1,
     speed: 300,
-    slidesToShow: 4 ,
+    slidesToShow: 4,
     slidesToScroll: 1,
     centerMode: true,
     centerPadding: "0",
@@ -48,24 +46,30 @@ export default function BLockFeatureThree() {
     autoplaySpeed: 3000,
     pauseOnHover: false,
     pauseOnFocus: false,
-    
+        
     responsive: [
       {
         breakpoint: 1200,
         settings: {
           slidesToShow: 3,
+          centerMode: true,
+          centerPadding: "0",
         },
       },
       {
         breakpoint: 992,
         settings: {
           slidesToShow: 2,
+          centerMode: true,
+          centerPadding: "0",
         },
       },
       {
         breakpoint: 500,
         settings: {
           slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "20px", // Add some padding for better mobile appearance
         },
       },
     ],
@@ -92,16 +96,17 @@ export default function BLockFeatureThree() {
         <Slider
           {...settings}
           ref={sliderRef}
-          className="property-location-slider-one "
+          className="property-location-slider-one"
         >
           {areas.map((area) => (
-            <div key={area.id} className="item-first max-w-[315px]">
+            <div key={area.id} className="item-first">
               <div
-                className="location-card-one position-relative z-1 d-flex align-items-end"
+                className="location-card-one position-relative z-1 d-flex align-items-end mx-auto"
                 style={{
                   backgroundImage: `url(${area.image})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
+                  maxWidth: "315px", // Move max-width to inline style
                 }}
               >
                 <div className="content text-center w-100 tran3s">

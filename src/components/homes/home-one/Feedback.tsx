@@ -1,12 +1,9 @@
 "use client";
-
 import React, { useRef } from "react";
 import Image from "next/image";
 import Slider from "react-slick";
 import titleShape from "@/assets/images/shape/title_shape_02.svg";
 import { useTranslations } from "next-intl";
-
-
 
 export default function Feedback({ parteners }: { parteners: any }) {
   const t = useTranslations("endUser");
@@ -25,30 +22,35 @@ export default function Feedback({ parteners }: { parteners: any }) {
     autoplaySpeed: 3000,
     pauseOnHover: false,
     pauseOnFocus: false,
-
+     
     responsive: [
       {
         breakpoint: 1200,
         settings: {
           slidesToShow: 3,
+          centerMode: true,
+          centerPadding: "0",
         },
       },
       {
         breakpoint: 992,
         settings: {
           slidesToShow: 2,
+          centerMode: true,
+          centerPadding: "0",
         },
       },
       {
         breakpoint: 500,
         settings: {
           slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "20px",
         },
       },
     ],
   };
-
-
+    
   const handlePrevClick = () => sliderRef.current?.slickPrev();
   const handleNextClick = () => sliderRef.current?.slickNext();
 
@@ -67,16 +69,17 @@ export default function Feedback({ parteners }: { parteners: any }) {
         <Slider
           {...settings}
           ref={sliderRef}
-          className="property-location-slider-one "
+          className="property-location-slider-one"
         >
           {parteners?.map((partner: any) => (
-            <div key={partner.id} className="item-first max-w-[315px]">
+            <div key={partner.id} className="item-first">
               <div
-                className="location-card-one position-relative z-1 d-flex align-items-end"
+                className="location-card-one position-relative z-1 d-flex align-items-end mx-auto"
                 style={{
                   backgroundImage: `url(${partner.image})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
+                  maxWidth: "315px",
                 }}
               ></div>
             </div>

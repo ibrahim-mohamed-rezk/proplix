@@ -40,7 +40,8 @@ const CommonBanner = ({
       </div>
       <div className="col-lg-6 d-flex justify-content-end PropertyTypes text-lg-end">
         <div className="d-inline-flex flex-column justify-content-start  md-mt-40">
-          <div className="price color-dark fw-500">{property?.price}EGP</div>
+          {/* <div className="price color-dark fw-500">{property?.price}EGP</div> */}
+          <div className="price color-dark fw-500">{property?.price?.toLocaleString()}EGP</div>
           {property?.status.toLowerCase() === "rent" && (
             <div className="est-price fs-20 md-mb-30">
               {t("down_price")}
