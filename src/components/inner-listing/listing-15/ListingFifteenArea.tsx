@@ -236,7 +236,7 @@ const ListingFifteenArea = () => {
       </div>
 
       {/* property type filter */}
-      <div className="listing-type-filter border-0">
+     {!sticky && <div className="listing-type-filter border-0">
         <div className="wrapper">
           <ul className="style-none  d-flex flex-wrap align-items-center justify-content-start ">
             <li className="!m-[0px]">{t(`Select Type`)}</li>
@@ -262,7 +262,7 @@ const ListingFifteenArea = () => {
             ))}
           </ul>
         </div>
-      </div>
+      </div>}
 
       {/* Mobile View Toggle - Only visible on mobile */}
       <div className="d-block d-lg-none mb-3">
@@ -302,7 +302,7 @@ const ListingFifteenArea = () => {
       <div className="row gx-0 relative max-w-[1920px] mx-auto">
         {/* Map Section - Fixed to top on desktop */}
         <div
-          className={`col-xxl-6 col-lg-5 ${
+          className={`col-lg-5 pro-list-map ${
             mobileView === "list" ? "d-none d-lg-block" : "d-block d-lg-block"
           }`}
           style={{
@@ -310,8 +310,7 @@ const ListingFifteenArea = () => {
             top: "88px",
             zIndex: -1,
             alignSelf: "flex-start",
-            minHeight: 300,
-            maxHeight: "calc(100vh - 88px)",
+            height: "calc(100vh - 88px)",
             // Remove !sticky/top-[70px] from className, use style instead
           }}
         >
@@ -320,26 +319,25 @@ const ListingFifteenArea = () => {
             className="h-[100%] w-full prop-map-container"
             style={{
               top: 0,
-              height: "100vh",
-              minHeight: 300,
+              height: "calc(100vh - 88px)",
               position: "relative",
             }}
           >
             <div className="google-map-home" id="contact-google-map">
               <div
                 ref={mapContainer}
-                className="gmap_canvas h-100 w-100"
-                style={{ minHeight: 300 }}
+                className="gmap_canvas w-100"
+                style={{ height: "calc(100vh - 88px)", }}
               />
             </div>
           </div>
         </div>
 
-        {sticky && <div className="col-6"> </div>}
+        {sticky && <div className="col-5 hided-in-mobile"> </div>}
 
         {/* Properties List Section - Scrollable with infinite scroll */}
         <div
-          className={`col-xxl-6 col-lg-7 ${
+          className={` col-lg-7 ${
             mobileView === "map" ? "d-none d-lg-block" : "d-block"
           }`}
         >

@@ -767,6 +767,7 @@
     "Best Seller": "الأكثر مبيعًا",
     "Best Match": "الأكثر تطابقًا",
     "Price Low": "الأقل سعرًا",
+    "Subscribed successfully": "تم الاشتراك بنجاح",
     "Our Partners": "شركائنا",
     "all_agents": "جميع الوكلاء",
     "status": "الحالة",
@@ -813,7 +814,6 @@
     "Blogs": "المقالات",
     "Faq's": "الاسئلة الشائعة",
     "Properties": "العقارات",
-    "contact": {
       "mainTitle": "هل لديك أسئلة؟ لا تتردد في التواصل معنا عبر الرسائل.",
       "helpTitle": "نحن دائمًا سعداء بمساعدتك.",
       "helpEmail": "ask@Proplix.com",
@@ -832,7 +832,6 @@
       "messagePlaceholder": "رسالتك*",
       "messageError": "الرسالة مطلوبة",
       "sendButton": "إرسال الرسالة"
-    }
   },
   "SignupPage": {
     "Create Agent Account": "إنشاء حساب وكيل",

@@ -130,6 +130,9 @@ const PropertiesCard = ({
                   src={item.cover}
                   className="w-full h-[295px] rounded-[25px]"
                   alt={item.title}
+                  // style={{
+                  //   height: "clamp(100px,15.365vw,2095px)",
+                  // }}
                 />
               </Link>
             </div>
@@ -166,11 +169,14 @@ const PropertiesCard = ({
                 alt=""
                 className="lazy-img icon mx-2"
               />
-              <span className="fs-16">{`${item?.bathroom} ${t("bed")}`}</span>
+              <span className="fs-16">{`${item?.bathroom} ${t("bath")}`}</span>
             </li>
           </ul>
           <div className="pl-footer top-border d-flex align-items-center justify-content-between">
-            <strong className="price fw-500 color-[#000]">
+            <strong
+              className="price fw-500 color-[#000]"
+              style={{ fontSize: "clamp(20px,1.458vw,28px)" }}
+            >
               {item.price?.toLocaleString(undefined, {
                 minimumFractionDigits: item.price ? 0 : 2,
                 maximumFractionDigits: 2,

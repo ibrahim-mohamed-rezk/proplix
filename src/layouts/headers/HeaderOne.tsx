@@ -161,7 +161,7 @@ const HeaderOne = ({
                   </button>
                   <div ref={langRef}>
                     <div
-                      className={`absolute z-30 mt-2 w-[clamp(80px,8vw,180px)] border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
+                      className={`absolute rounded-[8px] z-30 mt-2 border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
                         langOpen
                           ? "opacity-100 scale-100 pointer-events-auto"
                           : "opacity-0 scale-95 pointer-events-none"
@@ -172,7 +172,7 @@ const HeaderOne = ({
                           <li key={l}>
                             <button
                               onClick={() => changeLanguage(l)}
-                              className="w-full flex items-center justify-center px-3 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
+                              className="w-full flex items-center gap-[5px] justify-center px-1 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
                             >
                               <Image
                                 src={`/images/${l}.svg`}
@@ -182,11 +182,11 @@ const HeaderOne = ({
                                 className="rounded shadow border border-gray-200"
                               />
                               <span className={`fi fi-${flagMap[l]} mr-2 `} />
-                              <span className="capitalize font-semibold font-['Libre_Baskerville'] text-[clamp(13px,1vw,20px)] w-fit flex-1">
+                              <span className="capitalize font-semibold font-['Libre_Baskerville'] text-start  w-fit flex-1">
                                 {l}
                               </span>
                               {l === locale && (
-                                <Check className="w-4 h-4 text-primary-500" />
+                                <Check className="w-[18px] h-[18px] text-primary-500" />
                               )}
                             </button>
                           </li>
@@ -238,7 +238,7 @@ const HeaderOne = ({
                       )}
                     </div>
                     {/* add listing btn */}
-                    {user?.role !== "customer" && (
+                    {user?.role && user?.role !== "customer" && (
                       <li className="d-none d-md-inline-block ms-3">
                         <Link
                           href="/dashboard/add-property"
@@ -258,10 +258,10 @@ const HeaderOne = ({
                         href="#"
                         data-bs-toggle="modal"
                         data-bs-target="#loginModal"
-                        className="btn-one login-btn hover:text-[#FF6725] !min-w-[100px] flex items-center justify-center gap-1 px-1 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow  transition-all"
+                        className="btn-one login-btn hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black !min-w-[100px] flex items-center justify-center gap-1 px-1 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow  transition-all"
                       >
                         <i className="fa-regular fa-lock"></i>
-                        <span className="font-semibold hover:!text-[#FF6725] !hover:text-black">
+                        <span className="font-semibold hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black">
                           {t("login")}
                         </span>
                       </Link>
@@ -272,7 +272,9 @@ const HeaderOne = ({
                         className="btn-one bg-gradient-to-r from-[#FF6725] to-[#F26A3F] !text-[#fff] flex items-center justify-center gap-1 px-1 py-1 rounded-xl shadow font-semibold hover:scale-105 transition-transform"
                       >
                         <i className="fa-regular fa-lock"></i>
-                        <span className="text-[16px]">{t("signup as agent")}</span>
+                        <span className="text-[16px]">
+                          {t("signup as agent")}
+                        </span>
                       </Link>
                     </li>
                   </ul>
