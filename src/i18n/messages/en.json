@@ -673,6 +673,8 @@
     "Agency": "Agency"
   },
   "endUser": {
+    "List View": "List View",
+    "Map View": "Map View",
     "no_blogs_found": "No Blogs Found",
     "coontact": "Contact",
     "Property Overview": "Property Overview",

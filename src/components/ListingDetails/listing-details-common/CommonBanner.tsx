@@ -38,7 +38,8 @@ const CommonBanner = ({
           </div>
         </div>
       </div>
-      <div className="col-lg-6 d-flex justify-content-end PropertyTypes text-lg-end">
+      {/* <div className="col-lg-6 d-flex justify-content-start lg:justify-content-end PropertyTypes text-lg-end"> */}
+      <div className="col-lg-6 d-flex justify-content-start justify-content-lg-end PropertyTypes text-lg-end">
         <div className="d-inline-flex flex-column justify-content-start  md-mt-40">
           {/* <div className="price color-dark fw-500">{property?.price}EGP</div> */}
           <div className="price color-dark fw-500">{property?.price?.toLocaleString()}EGP</div>
