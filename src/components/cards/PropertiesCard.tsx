@@ -40,47 +40,47 @@ const PropertiesCard = ({
   };
   return (
     <div
-      key={item.id}
+      key={item?.id}
       className="w-full d-flex mb-50 wow fadeInUp"
-      data-wow-delay={item.data_delay_time}
+      data-wow-delay={item?.data_delay_time}
     >
       <div className={`listing-card-one rounded-[25px] w-full `}>
         <div className="img-gallery p-15">
           <div className="position-relative overflow-hidden">
             <div
               className={`tag px-2 ${
-                item.status === "rent"
+                item?.status === "rent"
                   ? "!bg-[#FF6B2C]"
-                  : item.status === "sale"
+                  : item?.status === "sale"
                   ? "!bg-[#00B579]"
                   : "!bg-[#f9fcfb0]"
               } rounded-[25px] w-fit`}
             >
-              {item.status}
+              {item?.status}
             </div>
             <div
               className={`tag !left-[70px] px-2 "!bg-[#FF6B2C]"
                  
               } rounded-[25px] w-fit`}
             >
-              {item.property_type?.title}
+              {item?.property_type?.title}
             </div>
             <button
               onClick={() => {
-                addToFavorites(item.id);
+                addToFavorites(item?.id);
               }}
               className="fav-btn tran3s"
             >
               <i className="fa-light fa-heart"></i>
             </button>
             {/* <div
-                      id={`carousel${item.carousel}`}
+                      id={`carousel${item?.carousel}`}
                       className="carousel slide"
                     >
                       <div className="carousel-indicators">
                         <button
                           type="button"
-                          data-bs-target={`#carousel${item.carousel}`}
+                          data-bs-target={`#carousel${item?.carousel}`}
                           data-bs-slide-to="0"
                           className="active"
                           aria-current="true"
@@ -88,30 +88,30 @@ const PropertiesCard = ({
                         ></button>
                         <button
                           type="button"
-                          data-bs-target={`#carousel${item.carousel}`}
+                          data-bs-target={`#carousel${item?.carousel}`}
                           data-bs-slide-to="1"
                           aria-label="Slide 2"
                         ></button>
                         <button
                           type="button"
-                          data-bs-target={`#carousel${item.carousel}`}
+                          data-bs-target={`#carousel${item?.carousel}`}
                           data-bs-slide-to="2"
                           aria-label="Slide 3"
                         ></button>
                       </div>
                       <div className="carousel-inner">
-                        {item.carousel_thumb?.map((item: any, i: any) => (
+                        {item?.carousel_thumb?.map((item: any, i: any) => (
                            <div
                              key={i}
-                             className={`carousel-item ${item.active}`}
+                             className={`carousel-item ${item?.active}`}
                              data-bs-interval="1000000"
                            >
                              <Link
-                               href={`/properties/${item.slug}`}
+                               href={`/properties/${item?.slug}`}
                                className="d-block"
                              >
                                <img
-                                 src={item.img}
+                                 src={item?.img}
                                  className="w-100"
                                  alt="..."
                                />
@@ -122,14 +122,14 @@ const PropertiesCard = ({
                       </div>
                     </div> */}
             <div
-            //  className={`carousel-item ${item.active}`}
+            //  className={`carousel-item ${item?.active}`}
             //  data-bs-interval="1000000"
             >
-              <Link href={`/properties/${item.slug}`} className="d-block">
+              <Link href={`/properties/${item?.slug}`} className="d-block">
                 <img
-                  src={item.cover}
+                  src={item?.cover}
                   className="w-full h-[295px] rounded-[25px]"
-                  alt={item.title}
+                  alt={item?.title}
                   // style={{
                   //   height: "clamp(100px,15.365vw,2095px)",
                   // }}
@@ -140,12 +140,12 @@ const PropertiesCard = ({
         </div>
         <div className="property-info p-25">
           <Link
-            href={`/properties/${item.slug}`}
+            href={`/properties/${item?.slug}`}
             className="title no-underline line-clamp-1 !text-[#FF6625] tran3s"
           >
-            {item.title}
+            {item?.title}
           </Link>
-          <div className="address">{item.area?.name}</div>
+          <div className="address">{item?.area?.name}</div>
           <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
             <li className="d-flex align-items-center">
               <Image
@@ -177,12 +177,12 @@ const PropertiesCard = ({
               className="price fw-500 color-[#000]"
               style={{ fontSize: "clamp(20px,1.458vw,28px)" }}
             >
-              {item.price?.toLocaleString(undefined, {
-                minimumFractionDigits: item.price ? 0 : 2,
+              {item?.price?.toLocaleString(undefined, {
+                minimumFractionDigits: item?.price ? 0 : 2,
                 maximumFractionDigits: 2,
               })}
-              EGP{item.status === "rent" && "/M"}
-              {/* {item.price && (
+              EGP{item?.status === "rent" && "/M"}
+              {/* {item?.price && (
                          <>
                            /<sub>m</sub>
                          </>
@@ -190,7 +190,7 @@ const PropertiesCard = ({
             </strong>
             <div className="flex items-center justify-center gap-[10px]">
               <a
-                href={`https://wa.me/${item.user.phone}`}
+                href={`https://wa.me/${item?.user?.phone}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -235,7 +235,7 @@ const PropertiesCard = ({
                   </defs>
                 </svg>
               </a>
-              <a href={`tel:${item.user.phone}`}>
+              <a href={`tel:${item?.user?.phone}`}>
                 <svg
                   width="48"
                   height="49"
