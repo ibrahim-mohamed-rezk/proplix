@@ -2,20 +2,35 @@ import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "@/components/forms/LoginForm";
 import { useState } from "react";
+import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 
 import loginIcon_1 from "@/assets/images/icon/google.png";
-import RegisterForm from "@/components/forms/RegisterForm";
 import VerifyPhoneForm from "@/components/forms/VerifyPhoneForm";
 
-const tab_title: string[] = ["Login", "Signup"];
-
 const LoginModal = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const locale = useLocale();
+  const router = useRouter();
   const [phone, setPhone] = useState<string | null>(null);
   const [remember, setRemember] = useState(false);
+  const [showVerifyPhone, setShowVerifyPhone] = useState(false);
 
-  const handleTabClick = (index: number) => {
-    setActiveTab(index);
+  const closeModal = () => {
+    const closeModalBTN = document.getElementById("close-login-modal");
+    if (closeModalBTN) {
+      closeModalBTN.click();
+    }
+  };
+
+  const handleSignupClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+
+    e.preventDefault();
+    closeModal();
+    
+    // Small delay to ensure modal closes before navigation
+    setTimeout(() => {
+      router.push(`/${locale}/signup-agent`);
+    }, 150);
   };
 
   return (
@@ -36,13 +51,11 @@ const LoginModal = () => {
                 aria-label="Close"
                 id="close-login-modal"
               ></button>
-              {activeTab === 3 ? (
+
+              {showVerifyPhone ? (
                 <div className="form-wrapper m-auto">
                   <div className="tab-content mt-30">
-                    <div
-                      className={`tab-pane fade
-                   show active`}
-                    >
+                    <div className="tab-pane fade show active">
                       <div className="text-center mb-20">
                         <h2>Verify your phone Number</h2>
                         <p className="fs-20 color-dark">
@@ -56,55 +69,18 @@ const LoginModal = () => {
                 </div>
               ) : (
                 <div className="form-wrapper m-auto">
-                  <ul className="nav nav-tabs w-100">
-                    {tab_title.map((tab, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleTabClick(index)}
-                        className="nav-item"
-                      >
-                        <button
-                          className={`nav-link ${
-                            activeTab === index ? "active" : ""
-                          }`}
-                        >
-                          {tab}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
                   <div className="tab-content mt-30">
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === 0 ? "show active" : ""
-                      }`}
-                    >
+                    <div className="tab-pane fade show active">
                       <div className="text-center mb-20">
                         <h2>Welcome Back!</h2>
                         <p className="fs-20 color-dark">
                           Still don&apos;t have an account?{" "}
-                          <Link href="#">Sign up</Link>
+                          <Link href={`/${locale}/signup-agent`} onClick={handleSignupClick}>
+                            Sign up
+                          </Link>
                         </p>
                       </div>
                       <LoginForm />
-                    </div>
-
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === 1 ? "show active" : ""
-                      }`}
-                    >
-                      <div className="text-center mb-20">
-                        <h2>Register</h2>
-                        <p className="fs-20 color-dark">
-                          Already have an account? <Link href="#">Login</Link>
-                        </p>
-                      </div>
-                      <RegisterForm
-                        setPhone={setPhone}
-                        setActiveTab={setActiveTab}
-                        setRemember={setRemember}
-                      />
                     </div>
                   </div>
 
@@ -114,7 +90,7 @@ const LoginModal = () => {
                     <div className="line"></div>
                   </div>
                   <div className="row">
-                    <div className="col-sm-6  mx-auto">
+                    <div className="col-sm-6 mx-auto">
                       <Link
                         href="#"
                         className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
@@ -123,15 +99,6 @@ const LoginModal = () => {
                         <span className="ps-3">Signup with Google</span>
                       </Link>
                     </div>
-                    {/* <div className="col-sm-6">
-                      <Link
-                        href="#"
-                        className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
-                      >
-                        <Image src={loginIcon_2} alt="" />
-                        <span className="ps-3">Signup with Facebook</span>
-                      </Link>
-                    </div> */}
                   </div>
                 </div>
               )}

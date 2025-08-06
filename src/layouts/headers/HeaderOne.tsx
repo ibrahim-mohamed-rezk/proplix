@@ -142,7 +142,7 @@ const HeaderOne = ({
                 <div className="relative">
                   <button
                     onClick={() => setLangOpen((o) => !o)}
-                    className="flex btn-one lang items-center shadow border border-primary-200 rounded-[clamp(12px,.5vw,24px)] font-['Gordita']  justify-center gap-[8px] transition-all duration-200 focus:outline-none"
+                    className="flex btn-one  items-center  rounded-[clamp(12px,1vw,34px)] font-['Gordita']  justify-center gap-[8px] transition-all duration-200 focus:outline-none"
                   >
                     <span
                       className={`fi fi-${flagMap[locale]} !fill-[#FF6725] mr-1`}
@@ -199,6 +199,20 @@ const HeaderOne = ({
                 {/* auth buttons or user icon */}
                 {token ? (
                   <div className="d-flex align-items-center auth-btns-container gap-2">
+                    
+                    {/* add listing btn */}
+                    {user?.role && user?.role !== "customer" && (
+                      <li className="d-none d-md-inline-block ms-3">
+                        <Link
+                          href="/dashboard/add-property"
+                          className="btn-two add-listing bg-gradient-to-r from-[#FF6725] to-[#F26A3F] text-white font-bold  rounded-xl hover:scale-105 transition-transform"
+                          target="_blank"
+                        >
+                          <span>{t("Add Listing")}</span>{" "}
+                          <i className="fa-thin reverse fa-arrow-up-right"></i>
+                        </Link>
+                      </li>
+                    )}
                     <div className="position-relative me-[10px]">
                       {/* user icon  */}
                       <div
@@ -237,19 +251,6 @@ const HeaderOne = ({
                         </div>
                       )}
                     </div>
-                    {/* add listing btn */}
-                    {user?.role && user?.role !== "customer" && (
-                      <li className="d-none d-md-inline-block ms-3">
-                        <Link
-                          href="/dashboard/add-property"
-                          className="btn-two add-listing bg-gradient-to-r from-[#FF6725] to-[#F26A3F] text-white font-bold px-5 py-2 rounded-xl shadow hover:scale-105 transition-transform"
-                          target="_blank"
-                        >
-                          <span>{t("Add Listing")}</span>{" "}
-                          <i className="fa-thin reverse fa-arrow-up-right"></i>
-                        </Link>
-                      </li>
-                    )}
                   </div>
                 ) : (
                   <ul className="d-flex gap-2 align-items-center style-none">
@@ -258,7 +259,7 @@ const HeaderOne = ({
                         href="#"
                         data-bs-toggle="modal"
                         data-bs-target="#loginModal"
-                        className="btn-one login-btn hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black !min-w-[100px] flex items-center justify-center gap-1 px-1 py-1 rounded-xl bg-white text-primary-700 border border-primary-200 shadow  transition-all"
+                        className="btn-one login-btn hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black !min-w-[100px] flex items-center justify-center gap-1  py-1 rounded-xl bg-white text-primary-700 border border-primary-200   transition-all"
                       >
                         <i className="fa-regular fa-lock"></i>
                         <span className="font-semibold hover:!text-[#FF6725] !hover:text-black focus:!text-[#FF6725] !focus:text-black">
@@ -266,7 +267,7 @@ const HeaderOne = ({
                         </span>
                       </Link>
                     </li>
-                    <li className="hidden lggin-btn-descktop">
+                    {/* <li className="hidden lggin-btn-descktop">
                       <Link
                         href="/signup-agent"
                         className="btn-one bg-gradient-to-r from-[#FF6725] to-[#F26A3F] !text-[#fff] flex items-center justify-center gap-1 px-1 py-1 rounded-xl shadow font-semibold hover:scale-105 transition-transform"
@@ -276,7 +277,7 @@ const HeaderOne = ({
                           {t("signup as agent")}
                         </span>
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 )}
               </div>

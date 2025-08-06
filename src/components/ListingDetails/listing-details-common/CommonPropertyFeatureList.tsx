@@ -78,7 +78,9 @@ const CommonPropertyFeatureList = ({
         ),
     },
   ];
+//  console.log(property_feature_list);
 
+ 
   return (
     <div className="accordion" id="accordionTwo">
       {property_feature_list.map((item) => (

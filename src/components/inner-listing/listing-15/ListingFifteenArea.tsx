@@ -60,8 +60,10 @@ const ListingFifteenArea = () => {
       const response = await getData(
         "properties",
         { ...filters, page, per_page: 10 }, // Matching API default per_page
+        
         { lang: locale }
       );
+      console.log(response)
 
       const newProperties = response.data.data.properties;
       const pagination = response.data.data.pagination;
@@ -178,91 +180,113 @@ const ListingFifteenArea = () => {
 
   return (
     <div className="property-listing-eight pt-150 xl-pt-120">
-      {/* dropdown filters */}
-      <div className="search-wrapper-three layout-two position-relative">
-        <div className="bg-wrapper rounded-0 border-0">
-          <DropdownSeven
-            handleBathroomChange={(value) => {
-              setFilters({
-                ...filters,
-                bathrooms: value === "all" ? null : value,
-              });
-            }}
-            handleAreaChange={(value) => {
-              setFilters({
-                ...filters,
-                area_id: value === "all" ? null : value,
-              });
-            }}
-            handleBedroomChange={(value) => {
-              setFilters({
-                ...filters,
-                bedrooms: value === "all" ? null : value,
-              });
-            }}
-            handleSearchChange={() => {}}
-            handleAgentChange={(value) => {
-              if (value === "all") {
-                setFilters({ ...filters, user_id: null });
-              } else {
-                setFilters({ ...filters, user_id: value });
-              }
-            }}
-            handlePriceChange={() => {}}
-            maxPrice={0}
-            priceValue={0}
-            handleResetFilter={handleResetFilter}
-            selectedAmenities={[]}
-            handleAmenityChange={() => {}}
-            filters={filters}
-            handleLocationChange={(location) => {
-              setFilters({ ...filters, location: location.description });
-              setLocationData(location);
-            }}
-            handleStatusChange={handleStatusChange}
-            handlePriceDropChange={(value) => {
-              if (value === "all") {
-                setFilters({ ...filters, price: null, down_price: null });
-              } else {
-                setFilters({
-                  ...filters,
-                  price: value.split("-")[0],
-                  down_price: value.split("-")[1],
-                });
-              }
-            }}
-          />
+     {/* dropdown filters */}
+<div className="search-wrapper-three layout-two position-relative mb-2">
+  <div className="bg-wrapper rounded-3 border border-light bg-white p-2">
+    <DropdownSeven
+      handleBathroomChange={(value) => {
+        setFilters({
+          ...filters,
+          bathrooms: value === "all" ? null : value,
+        });
+      }}
+      handleAreaChange={(value) => {
+        setFilters({
+          ...filters,
+          area_id: value === "all" ? null : value,
+        });
+      }}
+      handleBedroomChange={(value) => {
+        setFilters({
+          ...filters,
+          bedrooms: value === "all" ? null : value,
+        });
+      }}
+      handleSearchChange={() => {}}
+      handleAgentChange={(value) => {
+        if (value === "all") {
+          setFilters({ ...filters, user_id: null });
+        } else {
+          setFilters({ ...filters, user_id: value });
+        }
+      }}
+      handlePriceChange={() => {}}
+      maxPrice={0}
+      priceValue={0}
+      handleResetFilter={handleResetFilter}
+      selectedAmenities={[]}
+      handleAmenityChange={() => {}}
+      filters={filters}
+      handleLocationChange={(location) => {
+        setFilters({ ...filters, location: location.description });
+        setLocationData(location);
+      }}
+      handleStatusChange={handleStatusChange}
+      handlePriceDropChange={(value) => {
+        if (value === "all") {
+          setFilters({ ...filters, price: null, down_price: null });
+        } else {
+          setFilters({
+            ...filters,
+            price: value.split("-")[0],
+            down_price: value.split("-")[1],
+          });
+        }
+      }}
+    />
+  </div>
+</div>
+
+{/* property type filter */}
+{!sticky && (
+  <div className="listing-type-filter border-0 mb-2">
+    <div className="wrapper">
+      <div className="card border-0 rounded-3 bg-gradient-light">
+        <div className="card-body p-2">
+          <div className="row align-items-center">
+            <div className="col-12">
+              <ul className="nav nav-pills flex-wrap justify-content-start align-items-center gap-1 mb-0">
+                <li className="nav-item me-2">
+                  <span className="badge bg-primary bg-opacity-10 text-primary px-2 py-1 fw-semibold border border-primary border-opacity-25">
+                    {t(`Select Type`)}
+                  </span>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    href="#"
+                    className={`nav-link px-2 py-1 rounded-pill border transition-all duration-300 fw-medium ${
+                      filters.type_id === null
+                        ? "active bg-primary text-white border-primary"
+                        : "text-dark bg-white border-light hover:bg-light hover:border-primary hover:text-primary"
+                    }`}
+                    onClick={() => setFilters({ ...filters, type_id: null })}
+                  >
+                    {t("all")}
+                  </Link>
+                </li>
+                {types?.map((select: { id: string | number; title: string }) => (
+                  <li key={select.id} className="nav-item">
+                    <Link
+                      href="#"
+                      className={`nav-link px-2 py-1 rounded-pill border transition-all duration-300 fw-medium ${
+                        filters.type_id === select.id
+                          ? "active bg-primary text-white border-primary transform scale-105"
+                          : "text-dark bg-white border-light hover:bg-light hover:border-primary hover:text-primary hover:transform hover:translateY-1"
+                      }`}
+                      onClick={() => setFilters({ ...filters, type_id: select.id })}
+                    >
+                      {select.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* property type filter */}
-     {!sticky && <div className="listing-type-filter border-0">
-        <div className="wrapper">
-          <ul className="style-none  d-flex flex-wrap align-items-center justify-content-start ">
-            <li className="!m-[0px]">{t(`Select Type`)}</li>
-            <li>
-              <Link
-                href="#"
-                className={filters.type_id === null ? "active" : ""}
-                onClick={() => setFilters({ ...filters, type_id: null })}
-              >
-                {t("all")}
-              </Link>
-            </li>
-            {types?.map((select: { id: string | number; title: string }) => (
-              <li key={select.id}>
-                <Link
-                  href="#"
-                  className={filters.type_id === select.id ? "active" : ""}
-                  onClick={() => setFilters({ ...filters, type_id: select.id })}
-                >
-                  {select.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>}
+    </div>
+  </div>
+)}
 
       {/* Mobile View Toggle - Only visible on mobile */}
       <div className="d-block d-lg-none mb-3">
