@@ -5,11 +5,11 @@ import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { UserTypes } from "@/libs/types/types";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Check, ChevronDown } from "lucide-react";
+import { RotateCw } from "lucide-react";
 
 const HeaderOne = ({
   style,
@@ -25,8 +25,6 @@ const HeaderOne = ({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef(null);
   const [user, setUser] = useState<UserTypes | null>(null);
 
   const logout = async () => {
@@ -62,7 +60,6 @@ const HeaderOne = ({
     const url = paramsString ? `${pathname}?${paramsString}` : pathname;
 
     router.replace(url, { locale: l });
-    setLangOpen(false);
   };
 
   return (
@@ -138,11 +135,19 @@ const HeaderOne = ({
               </div>
 
               <div className="right-widget flex gap-2 items-center justify-center ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
-                {/* language switcher */}
+                {/* language switcher - click to cycle */}
                 <div className="relative">
                   <button
-                    onClick={() => setLangOpen((o) => !o)}
-                    className="flex btn-one  items-center  rounded-[clamp(12px,1vw,34px)] font-['Gordita']  justify-center gap-[8px] transition-all duration-200 focus:outline-none"
+                    onClick={() => {
+                      const currentIndex = routing.locales.indexOf(
+                        locale as "en" | "ar"
+                      );
+                      const nextIndex =
+                        (currentIndex + 1) % routing.locales.length;
+                      const nextLocale = routing.locales[nextIndex];
+                      changeLanguage(nextLocale);
+                    }}
+                    className="flex px-5  items-center rounded-[clamp(12px,1vw,34px)] font-['Gordita'] justify-center gap-[8px] transition-all duration-200 focus:outline-none hover:scale-105 active:scale-95"
                   >
                     <span
                       className={`fi fi-${flagMap[locale]} !fill-[#FF6725] mr-1`}
@@ -152,54 +157,18 @@ const HeaderOne = ({
                       alt="Flag"
                       width={30}
                       height={20}
-                      className="rounded shadow-sm border border-gray-200"
+                      className=" shadow-sm border border-gray-200"
                     />
-                    <span className="font-['Gordita'] capitalize  text-[#FF6725] font-bold text-[18px] tracking-wider">
+                    <span className="font-['Gordita'] capitalize text-[#FF6725] font-bold text-[18px] tracking-wider">
                       {locale}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-[18px] text-[#FF6725]" />
+                    {/* <RotateCw className="w-4 h-4 text-[18px] text-[#FF6725]" /> */}
                   </button>
-                  <div ref={langRef}>
-                    <div
-                      className={`absolute rounded-[8px] z-30 mt-2 border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
-                        langOpen
-                          ? "opacity-100 scale-100 pointer-events-auto"
-                          : "opacity-0 scale-95 pointer-events-none"
-                      }`}
-                    >
-                      <ul className="divide-y !m-[0px] !p-[0px] divide-gray-100">
-                        {routing.locales.map((l) => (
-                          <li key={l}>
-                            <button
-                              onClick={() => changeLanguage(l)}
-                              className="w-full flex items-center gap-[5px] justify-center px-1 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
-                            >
-                              <Image
-                                src={`/images/${l}.svg`}
-                                alt="Flag"
-                                width={30}
-                                height={20}
-                                className="rounded shadow border border-gray-200"
-                              />
-                              <span className={`fi fi-${flagMap[l]} mr-2 `} />
-                              <span className="capitalize font-semibold font-['Libre_Baskerville'] text-start  w-fit flex-1">
-                                {l}
-                              </span>
-                              {l === locale && (
-                                <Check className="w-[18px] h-[18px] text-primary-500" />
-                              )}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
                 </div>
 
                 {/* auth buttons or user icon */}
                 {token ? (
                   <div className="d-flex align-items-center auth-btns-container gap-2">
-                    
                     {/* add listing btn */}
                     {user?.role && user?.role !== "customer" && (
                       <li className="d-none d-md-inline-block ms-3">

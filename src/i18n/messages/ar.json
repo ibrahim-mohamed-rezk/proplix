@@ -380,6 +380,10 @@
     "noDataAvailable": "لا توجد بيانات متاحة"
   },
   "Amenities": {
+    "Manage Amenities": "إدارة المرفقات",
+    "No Changes": "لا يوجد تغييرات",
+    "Select amenities for this property:": "اختر المرفقات لهذا العقار:",
+    "Manage Property Amenities": "إدارة المرفقات للعقار",
     "Amenities": "المرفقات",
     "title(EN)": "عنوان (إنجليزي)",
     "title(AR)": "عنوان (عربي)",

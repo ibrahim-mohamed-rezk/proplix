@@ -380,6 +380,10 @@
     "failedToFetchStatistics": "Failed to fetch statistics"
   },
   "Amenities": {
+    "Manage Amenities": "Manage Amenities",
+    "No Changes": "No Changes",
+    "Select amenities for this property:": "Select amenities for this property:",
+    "Manage Property Amenities": "Manage Property Amenities",
     "Amenities": "Amenities",
     "title(EN)": "Title (EN)",
     "title(AR)": "Title (AR)",

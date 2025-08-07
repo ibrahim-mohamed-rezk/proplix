@@ -71,59 +71,30 @@ const DashboardHeaderTwo = ({ title }: any) => {
             </div>
             {/* Language Switcher */}
             <div className="relative me-3 flex-shrink-0">
-              <button
-                onClick={() => setLangOpen((o) => !o)}
-                className="flex items-center border border-transparent hover:border-primary-500 hover:shadow-lg rounded-[clamp(12px,1vw,24px)] font-['Libre_Baskerville'] text-[clamp(15px,1.1vw,22px)] font-semibold py-[clamp(5px,0.6vw,8px)] px-[clamp(5px,1vw,8px)] justify-center gap-[8px] text-black transition-all duration-200 focus:outline-none"
-              >
-                <span className={`fi fi-${flagMap[locale]} mr-1`} />
-                <Image
-                  src={`/images/${locale}.svg`}
-                  alt="Flag"
-                  width={30}
-                  height={20}
-                  className="rounded shadow-sm border border-gray-200"
-                />
-                <span className="uppercase text-[#222] font-bold font-['Libre_Baskerville'] text-[18px] tracking-wider">
-                  {locale}
-                </span>
-                <ChevronDown className="w-4 h-4 text-[18px] text-[#222]" />
-              </button>
-              <div ref={langRef}>
-                <div
-                  className={`absolute z-30 mt-2 w-[clamp(80px,8vw,180px)] border border-gray-200 bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl transform origin-top-left transition-all duration-200 ${
-                    langOpen
-                      ? "opacity-100 scale-100 pointer-events-auto"
-                      : "opacity-0 scale-95 pointer-events-none"
-                  }`}
-                >
-                  <ul className="divide-y !m-[0px] !p-[0px] divide-gray-100">
-                    {locales.map((l) => (
-                      <li key={l}>
-                        <button
-                          onClick={() => changeLanguage(l)}
-                          className="w-full flex items-center justify-center px-3 py-2 hover:bg-primary-50 hover:text-primary-700 transition-colors rounded-2xl"
-                        >
-                          <Image
-                            src={`/images/${l}.svg`}
-                            alt="Flag"
-                            width={30}
-                            height={20}
-                            className="rounded shadow border border-gray-200"
-                          />
-                          <span className={`fi fi-${flagMap[l]} mr-2 `} />
-                          <span className="capitalize font-semibold font-['Libre_Baskerville'] text-[clamp(13px,1vw,20px)] w-fit flex-1">
-                            {l}
-                          </span>
-                          {l === locale && (
-                            <Check className="w-4 h-4 text-primary-500" />
-                          )}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
+  <button
+    onClick={() => {
+      const currentIndex = locales.indexOf(locale);
+      const nextIndex = (currentIndex + 1) % locales.length;
+      const nextLocale = locales[nextIndex];
+      changeLanguage(nextLocale);
+    }}
+    className="flex items-center   hover:shadow-lg rounded-[clamp(12px,1vw,24px)] font-['Libre_Baskerville'] text-[clamp(15px,1.1vw,22px)] font-semibold py-[clamp(5px,0.6vw,8px)] px-[clamp(5px,1vw,8px)] justify-center gap-[8px] text-black transition-all duration-200 focus:outline-none"
+  >
+    <span className={`fi fi-${flagMap[locale]} mr-1`} />
+    <Image
+      src={`/images/${locale}.svg`}
+      alt="Flag"
+      width={30}
+      height={20}
+      className="rounded shadow-sm "
+    />
+    <span className="uppercase text-[#222] font-bold font-['Libre_Baskerville'] text-[18px] tracking-wider">
+      {locale}
+    </span>
+    {/* Optional: You can keep the chevron or replace with a cycle icon */}
+    {/* <ChevronDown className="w-4 h-4 text-[18px] text-[#222]" /> */}
+  </button>
+</div>
             
             <div className="d-none d-md-block me-3 flex-shrink-0">
               <Link
