@@ -1,7 +1,9 @@
 "use client";
 
+import { postData } from "@/libs/server/backendServer";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const ScheduleForm = ({ property }: { property?: any }) => {
   const t = useTranslations("endUser");
@@ -10,11 +12,29 @@ const ScheduleForm = ({ property }: { property?: any }) => {
     email: "",
     phone: "",
     message: t("message") + " " + property?.title,
+    property_id: property?.id,
   });
-  console.log("property", property);
+
+  const handleSubmit = async () => {
+    try {
+      await postData("contact-form", formData, {
+        "Content-Type": "application/json",
+      });
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: t("message") + " " + property?.title,
+        property_id: property?.id,
+      });
+      toast.success("Message sent successfully");
+    } catch (error: any) {
+      toast.error(error.response.data.msg || "An error occurred");
+    }
+  };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()}> 
+    <div>
       <div className="input-box-three mb-25">
         <div className="label">Your Name*</div>
         <input
@@ -33,16 +53,18 @@ const ScheduleForm = ({ property }: { property?: any }) => {
           className="type-input"
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           value={formData.email}
+          required
         />
       </div>
       <div className="input-box-three mb-25">
         <div className="label">Your Phone*</div>
         <input
-          type="tel"
+          type="number"
           placeholder="Your phone number"
           className="type-input"
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           value={formData.phone}
+          required
         />
       </div>
       <div className="input-box-three mb-15">
@@ -54,10 +76,13 @@ const ScheduleForm = ({ property }: { property?: any }) => {
           value={formData.message}
         >{`${formData.message}`}</textarea>
       </div>
-      <button className="btn-nine text-uppercase rounded-3 w-100 mb-10">
+      <button
+        onClick={handleSubmit}
+        className="btn-nine text-uppercase rounded-3 w-100 mb-10"
+      >
         INQUIry
       </button>
-    </form>
+    </div>
   );
 };
 

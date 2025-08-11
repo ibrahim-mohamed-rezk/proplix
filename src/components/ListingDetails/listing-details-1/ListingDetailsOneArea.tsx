@@ -62,9 +62,9 @@ const ListingDetailsOneArea = ({
             <div className="property-amenities bg-white shadow4 p-40 mb-50">
               <CommonAmenities property={property} />
             </div>
-            <div className="property-video-tour mb-50">
+            {/* <div className="property-video-tour mb-50">
               <CommonPropertyVideoTour />
-            </div>
+            </div> */}
             <CommonPropertyFloorPlan property={property} style={false} />
             {/* <div className="property-nearby bg-white shadow4 p-40 mb-50">
               <CommonNearbyList />

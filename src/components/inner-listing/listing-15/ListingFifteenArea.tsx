@@ -37,7 +37,7 @@ const ListingFifteenArea = () => {
   const [types, setTypes] = useState([]);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
   const observer = useRef<IntersectionObserver | null>(null);
 
   // Mobile view state
@@ -47,6 +47,158 @@ const ListingFifteenArea = () => {
   useEffect(() => {
     localStorage.setItem("filters", JSON.stringify(filters));
   }, [filters]);
+
+  // Function to clear all existing markers
+  const clearMarkers = () => {
+    markers.current.forEach((marker) => marker.remove());
+    markers.current = [];
+  };
+
+  // Function to generate random coordinates around a center point (for testing/demo)
+  const generateRandomCoordinates = (
+    centerLat: number,
+    centerLng: number,
+    radiusInKm: number = 10
+  ) => {
+    const radiusInDegrees = radiusInKm / 111; // Approximate conversion
+    const randomLat = centerLat + (Math.random() - 0.5) * radiusInDegrees * 2;
+    const randomLng = centerLng + (Math.random() - 0.5) * radiusInDegrees * 2;
+    return { lat: randomLat, lng: randomLng };
+  };
+
+  // Function to add property markers to the map
+  const addPropertyMarkers = (propertiesToMap: any[]) => {
+    if (!map.current) return;
+
+    console.log("Adding markers for properties:", propertiesToMap.length);
+
+    // Clear existing markers
+    clearMarkers();
+
+    // Track valid coordinates for bounds calculation
+    const validCoordinates: [number, number][] = [];
+
+    // Default center for Egypt (Cairo area)
+    const defaultCenter = { lat: 30.0444, lng: 31.2357 };
+
+    propertiesToMap.forEach((property, index) => {
+      let lat = null;
+      let lng = null;
+
+      // Try to get coordinates from property_locations
+      if (
+        property.property_locations &&
+        property.property_locations.length > 0
+      ) {
+        const location = property.property_locations[0];
+        if (location.latitude && location.longitude) {
+          lat = parseFloat(location.latitude);
+          lng = parseFloat(location.longitude);
+        }
+      }
+
+      // If no valid coordinates, generate random ones for demo purposes
+      // In production, you should either skip properties without coordinates
+      // or get real coordinates from your backend
+      if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+        // Generate random coordinates around Cairo for demonstration
+        const randomCoords = generateRandomCoordinates(
+          defaultCenter.lat,
+          defaultCenter.lng,
+          20
+        );
+        lat = randomCoords.lat;
+        lng = randomCoords.lng;
+
+        console.log(
+          `Generated demo coordinates for property ${property.id}: ${lat}, ${lng}`
+        );
+      }
+
+      // Create popup content with property details
+      const popupContent = `
+        <div style="padding: 10px; max-width: 200px;">
+          <img src="${property.cover}" alt="${
+        property.title
+      }" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display='none'">
+          <h6 style="margin: 0 0 4px 0; font-size: 14px; font-weight: bold;">${
+            property.title
+          }</h6>
+          <p style="margin: 0; font-size: 12px; color: #666;">
+            ${property.area?.name || "Unknown Area"}
+          </p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: bold; color: #FF6625;">
+            ${new Intl.NumberFormat(locale).format(property.price)} ${
+        property.status === "rent" ? "/ month" : ""
+      }
+          </p>
+          <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 11px; color: #888;">
+            ${property.bedroom ? `<span>🛏️ ${property.bedroom}</span>` : ""}
+            ${property.bathroom ? `<span>🚿 ${property.bathroom}</span>` : ""}
+            ${property.sqt ? `<span>📐 ${property.sqt} sqt</span>` : ""}
+          </div>
+        </div>
+      `;
+
+      // Create popup
+      const popup = new mapboxgl.Popup({
+        offset: 25,
+        closeButton: true,
+        closeOnClick: false,
+        maxWidth: "250px",
+      }).setHTML(popupContent);
+
+      // Create marker with custom color based on status
+      const markerColor = property.status === "sale" ? "#FF6625" : "#4A90E2";
+
+      try {
+        const marker = new mapboxgl.Marker({
+          color: markerColor,
+          scale: 0.8,
+        })
+          .setLngLat([lng, lat])
+          .setPopup(popup)
+          .addTo(map.current as mapboxgl.Map);
+
+        markers.current.push(marker);
+        validCoordinates.push([lng, lat]);
+
+        console.log(
+          `Added marker for property ${property.id} at ${lat}, ${lng}`
+        );
+      } catch (error) {
+        console.error(
+          `Error adding marker for property ${property.id}:`,
+          error
+        );
+      }
+    });
+
+    console.log(`Successfully added ${validCoordinates.length} markers`);
+
+    // If we have valid coordinates, fit the map to show all markers
+    if (validCoordinates.length > 0) {
+      if (validCoordinates.length === 1) {
+        // Single marker - center on it
+        map.current.flyTo({
+          center: validCoordinates[0],
+          zoom: 14,
+        });
+      } else {
+        // Multiple markers - fit bounds
+        const bounds = new mapboxgl.LngLatBounds();
+        validCoordinates.forEach((coord) => {
+          bounds.extend(coord);
+        });
+
+        map.current.fitBounds(bounds, {
+          padding: { top: 50, bottom: 50, left: 50, right: 50 },
+          maxZoom: 15,
+          duration: 1000,
+        });
+      }
+    }
+  };
 
   // Fetch properties function
   const fetchProperties = async (page: number = 1, append: boolean = false) => {
@@ -59,11 +211,10 @@ const ListingFifteenArea = () => {
     try {
       const response = await getData(
         "properties",
-        { ...filters, page, per_page: 10 }, // Matching API default per_page
-        
+        { ...filters, page, per_page: 10 },
         { lang: locale }
       );
-      console.log(response)
+      console.log(response);
 
       const newProperties = response.data.data.properties;
       const pagination = response.data.data.pagination;
@@ -91,6 +242,16 @@ const ListingFifteenArea = () => {
     setHasMore(true);
     fetchProperties(1, false);
   }, [locale, filters]);
+
+  // Update map markers when properties change
+  useEffect(() => {
+    if (properties.length > 0 && map.current) {
+      // Wait a bit for map to be fully initialized
+      setTimeout(() => {
+        addPropertyMarkers(properties);
+      }, 500);
+    }
+  }, [properties, locale]);
 
   // Infinite scroll callback
   const lastPropertyElementRef = useCallback(
@@ -133,40 +294,61 @@ const ListingFifteenArea = () => {
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // initialize map only once
+
     mapboxgl.accessToken =
       process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ||
       "pk.eyJ1IjoicmFzaGFkbnVzaGFkIiwiYSI6ImNseGo1c3E1dDBjeWgybHFlOWp2b3Bsb3UifQ.eG9yV25a_w9Jp-3weVnmPA";
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v12",
       center: locationData?.coordinates
         ? [locationData.coordinates.lng, locationData.coordinates.lat]
-        : [-105.54557276330914, 39.29302101722867], // Default center
-      zoom: 12,
+        : [31.2357, 30.0444], // Default to Egypt coordinates based on user location
+      zoom: 10,
     });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+    // Add fullscreen control
+    map.current.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
+    // When map is loaded, add markers if properties exist
+    map.current.on("load", () => {
+      console.log("Map loaded successfully");
+      if (properties.length > 0) {
+        addPropertyMarkers(properties);
+      }
+    });
+
+    // Also try to add markers after style loads (backup)
+    map.current.on("style.load", () => {
+      console.log("Map style loaded");
+      if (properties.length > 0) {
+        setTimeout(() => {
+          addPropertyMarkers(properties);
+        }, 100);
+      }
+    });
+
     return () => {
       if (map.current) {
+        clearMarkers();
         map.current.remove();
         map.current = null;
       }
     };
   }, [mobileView]); // Re-initialize map when view changes
 
+  // Handle location filter changes
   useEffect(() => {
     if (!map.current) return;
     if (locationData?.coordinates) {
-      // Remove previous marker
-      if (marker.current) {
-        marker.current.remove();
-      }
-      marker.current = new mapboxgl.Marker({ color: "red" })
-        .setLngLat([locationData.coordinates.lng, locationData.coordinates.lat])
-        .addTo(map.current);
-      map.current.setCenter([
-        locationData.coordinates.lng,
-        locationData.coordinates.lat,
-      ]);
-      map.current.setZoom(12);
+      map.current.flyTo({
+        center: [locationData.coordinates.lng, locationData.coordinates.lat],
+        zoom: 13,
+      });
     }
   }, [locationData]);
 
@@ -180,113 +362,119 @@ const ListingFifteenArea = () => {
 
   return (
     <div className="property-listing-eight pt-150 xl-pt-120">
-     {/* dropdown filters */}
-<div className="search-wrapper-three layout-two position-relative mb-2">
-  <div className="bg-wrapper rounded-3 border border-light bg-white p-2">
-    <DropdownSeven
-      handleBathroomChange={(value) => {
-        setFilters({
-          ...filters,
-          bathrooms: value === "all" ? null : value,
-        });
-      }}
-      handleAreaChange={(value) => {
-        setFilters({
-          ...filters,
-          area_id: value === "all" ? null : value,
-        });
-      }}
-      handleBedroomChange={(value) => {
-        setFilters({
-          ...filters,
-          bedrooms: value === "all" ? null : value,
-        });
-      }}
-      handleSearchChange={() => {}}
-      handleAgentChange={(value) => {
-        if (value === "all") {
-          setFilters({ ...filters, user_id: null });
-        } else {
-          setFilters({ ...filters, user_id: value });
-        }
-      }}
-      handlePriceChange={() => {}}
-      maxPrice={0}
-      priceValue={0}
-      handleResetFilter={handleResetFilter}
-      selectedAmenities={[]}
-      handleAmenityChange={() => {}}
-      filters={filters}
-      handleLocationChange={(location) => {
-        setFilters({ ...filters, location: location.description });
-        setLocationData(location);
-      }}
-      handleStatusChange={handleStatusChange}
-      handlePriceDropChange={(value) => {
-        if (value === "all") {
-          setFilters({ ...filters, price: null, down_price: null });
-        } else {
-          setFilters({
-            ...filters,
-            price: value.split("-")[0],
-            down_price: value.split("-")[1],
-          });
-        }
-      }}
-    />
-  </div>
-</div>
+      {/* dropdown filters */}
+      <div className="search-wrapper-three layout-two position-relative mb-2">
+        <div className="bg-wrapper rounded-3 border border-light bg-white p-2">
+          <DropdownSeven
+            handleBathroomChange={(value) => {
+              setFilters({
+                ...filters,
+                bathrooms: value === "all" ? null : value,
+              });
+            }}
+            handleAreaChange={(value) => {
+              setFilters({
+                ...filters,
+                area_id: value === "all" ? null : value,
+              });
+            }}
+            handleBedroomChange={(value) => {
+              setFilters({
+                ...filters,
+                bedrooms: value === "all" ? null : value,
+              });
+            }}
+            handleSearchChange={() => {}}
+            handleAgentChange={(value) => {
+              if (value === "all") {
+                setFilters({ ...filters, user_id: null });
+              } else {
+                setFilters({ ...filters, user_id: value });
+              }
+            }}
+            handlePriceChange={() => {}}
+            maxPrice={0}
+            priceValue={0}
+            handleResetFilter={handleResetFilter}
+            selectedAmenities={[]}
+            handleAmenityChange={() => {}}
+            filters={filters}
+            handleLocationChange={(location) => {
+              setFilters({ ...filters, location: location.description });
+              setLocationData(location);
+            }}
+            handleStatusChange={handleStatusChange}
+            handlePriceDropChange={(value) => {
+              if (value === "all") {
+                setFilters({ ...filters, price: null, down_price: null });
+              } else {
+                setFilters({
+                  ...filters,
+                  price: value.split("-")[0],
+                  down_price: value.split("-")[1],
+                });
+              }
+            }}
+          />
+        </div>
+      </div>
 
-{/* property type filter */}
-{!sticky && (
-  <div className="listing-type-filter border-0 mb-2">
-    <div className="wrapper">
-      <div className="card border-0 rounded-3 bg-gradient-light">
-        <div className="card-body p-2">
-          <div className="row align-items-center">
-            <div className="col-12">
-              <ul className="nav nav-pills flex-wrap justify-content-start align-items-center gap-1 mb-0">
-                <li className="nav-item me-2">
-                  <span className="badge bg-primary bg-opacity-10 text-primary px-2 py-1 fw-semibold border border-primary border-opacity-25">
-                    {t(`Select Type`)}
-                  </span>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    href="#"
-                    className={`nav-link px-2 py-1 rounded-pill border transition-all duration-300 fw-medium ${
-                      filters.type_id === null
-                        ? "active bg-primary text-white border-primary"
-                        : "text-dark bg-white border-light hover:bg-light hover:border-primary hover:text-primary"
-                    }`}
-                    onClick={() => setFilters({ ...filters, type_id: null })}
-                  >
-                    {t("all")}
-                  </Link>
-                </li>
-                {types?.map((select: { id: string | number; title: string }) => (
-                  <li key={select.id} className="nav-item">
-                    <Link
-                      href="#"
-                      className={`nav-link px-2 py-1 rounded-pill border transition-all duration-300 fw-medium ${
-                        filters.type_id === select.id
-                          ? "active bg-primary text-white border-primary transform scale-105"
-                          : "text-dark bg-white border-light hover:bg-light hover:border-primary hover:text-primary hover:transform hover:translateY-1"
-                      }`}
-                      onClick={() => setFilters({ ...filters, type_id: select.id })}
-                    >
-                      {select.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+      {/* property type filter */}
+      {!sticky && (
+        <div className="listing-type-filter border-0 mb-2">
+          <div className="wrapper">
+            <div className="card border-0 rounded-3 bg-gradient-light">
+              <div className="card-body p-2">
+                <div className="row align-items-center">
+                  <div className="col-12">
+                    <ul className="nav nav-pills flex-wrap justify-content-start align-items-center gap-1 mb-0">
+                      <li className="nav-item me-2">
+                        <span className="badge bg-primary bg-opacity-10 text-primary px-2 py-1 fw-semibold border border-primary border-opacity-25">
+                          {t(`Select Type`)}
+                        </span>
+                      </li>
+                      <li className="nav-item">
+                        <Link
+                          href="#"
+                          className={`nav-link px-2 py-1 rounded-pill border transition-all duration-300 fw-medium ${
+                            filters.type_id === null
+                              ? "active bg-primary text-white border-primary"
+                              : "text-dark bg-white border-light hover:bg-light hover:border-primary hover:text-primary"
+                          }`}
+                          onClick={() =>
+                            setFilters({ ...filters, type_id: null })
+                          }
+                        >
+                          {t("all")}
+                        </Link>
+                      </li>
+                      {types?.map(
+                        (select: { id: string | number; title: string }) => (
+                          <li key={select.id} className="nav-item">
+                            <Link
+                              href="#"
+                              className={`nav-link px-2 py-1 rounded-pill border transition-all duration-300 fw-medium ${
+                                filters.type_id === select.id
+                                  ? "active bg-primary text-white border-primary transform scale-105"
+                                  : "text-dark bg-white border-light hover:bg-light hover:border-primary hover:text-primary hover:transform hover:translateY-1"
+                              }`}
+                              onClick={() =>
+                                setFilters({ ...filters, type_id: select.id })
+                              }
+                            >
+                              {select.title}
+                            </Link>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {/* Mobile View Toggle - Only visible on mobile */}
       <div className="d-block d-lg-none mb-3">
@@ -335,7 +523,6 @@ const ListingFifteenArea = () => {
             zIndex: -1,
             alignSelf: "flex-start",
             height: "calc(100vh - 88px)",
-            // Remove !sticky/top-[70px] from className, use style instead
           }}
         >
           <div
@@ -351,7 +538,7 @@ const ListingFifteenArea = () => {
               <div
                 ref={mapContainer}
                 className="gmap_canvas w-100"
-                style={{ height: "calc(100vh - 88px)", }}
+                style={{ height: "calc(100vh - 88px)" }}
               />
             </div>
           </div>

@@ -678,6 +678,7 @@
   },
   "endUser": {
     "List View": "عرض قائمة",
+    "no_features_found": "لا توجد خصائص",
     "Map View": "عرض الخريطة",
     "no_blogs_found": "لا توجد مدونات",
     "coontact":"اتصل",
@@ -782,7 +783,7 @@
     "message": "اهلا انا مهتم ب ",
     "all": "الكل",
     "Select Type": "حدد النوع",
-    "search_location_placeholder": "ابحث عن موقع في مصر...",
+    "search_location_placeholder": "ابحث عن موقع ...",
     "loading_location_services": "جاري تحميل خدمات الموقع...",
     "price_range": "نطاق السعر",
     "any": "الكل",

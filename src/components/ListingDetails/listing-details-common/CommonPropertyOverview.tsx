@@ -17,38 +17,48 @@ interface DataType {
 const CommonPropertyOverview = ({ property }: { property: PropertyTypes }) => {
   const t = useTranslations("endUser");
 
-  const property_overview_data: DataType[] = [
-    {
+  const property_overview_data: DataType[] = [];
+
+  if (property?.sqt) {
+    property_overview_data.push({
       id: 1,
       icon: icon_1,
       title: `${t("sqft")} . ${property?.sqt}`,
       value: property?.sqt
-    },
-    {
+    });
+  }
+  if (property?.bedroom) {
+    property_overview_data.push({
       id: 2,
       icon: icon_2,
       title: `${t("bed")} . ${property?.bedroom}`,
       value: property?.bedroom
-    },
-    {
+    });
+  }
+  if (property?.bathroom) {
+    property_overview_data.push({
       id: 3,
       icon: icon_3,
       title: `${t("bath")} . ${property?.bathroom}`,
       value: property?.bathroom
-    },
-    {
+    });
+  }
+  if (property?.kitichen) {
+    property_overview_data.push({
       id: 4,
       icon: icon_4,
       title: `${t("Kitchen")} . ${property?.kitichen}`,
       value: property?.kitichen
-    },
-    {
+    });
+  }
+  if (property?.property_type?.title) {
+    property_overview_data.push({
       id: 5,
       icon: icon_5,
       title: `${t("type")} . ${property?.property_type?.title}`,
       value: property?.property_type?.title
-    },
-  ];
+    });
+  }
 
   // Filter out items with undefined, null, or empty values
   const filteredData = property_overview_data.filter(item => 

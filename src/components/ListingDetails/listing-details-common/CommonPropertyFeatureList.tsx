@@ -9,78 +9,44 @@ const CommonPropertyFeatureList = ({
   const t = useTranslations("endUser");
   const locale = useLocale();
 
-  const property_feature_list: DataType[] = [
-    {
-      id: 1,
-      title: t("property_feature"),
-      feature_list: property?.features
-        .map((feature) => {
-          if (feature.type === "property_feature") {
-            return {
-              title: feature.key,
-              count: feature.value,
-            };
-          }
-          return null;
-        })
-        .filter(
-          (item): item is { title: string; count: string } => item !== null
-        ),
-    },
-    {
-      id: 2,
-      title: t("utility_detail"),
-      feature_list: property?.features?.map((feature) => {
-          if (feature.type === "utility_detail") {
-            return {
-              title: feature.key,
-              count: feature.value,
-            };
-          }
-          return null;
-        })
-        .filter(
-          (item): item is { title: string; count: string } => item !== null
-        ),
-    },
-    {
-      id: 3,
-      title: t("outdoor_feature"),
-      feature_list: property?.features
-        .map((feature) => {
-          if (feature.type === "outdoor_feature") {
-            return {
-              title: feature.key,
-              count: feature.value,
-            };
-          }
-          return null;
-        })
-        .filter(
-          (item): item is { title: string; count: string } => item !== null
-        ),
-    },
-    {
-      id: 3,
-      title: t("indoor_feature"),
-      feature_list: property?.features
-        .map((feature) => {
-          if (feature.type === "indoor_feature") {
-            return {
-              title: feature.key,
-              count: feature.value,
-            };
-          }
-          return null;
-        })
-        .filter(
-          (item): item is { title: string; count: string } => item !== null
-        ),
-    },
-  ];
-//  console.log(property_feature_list);
+  const property_feature_list: DataType[] = [];
 
- 
+  const featureTypes = [
+    { id: 1, type: "property_feature", title: t("property_feature") },
+    { id: 2, type: "utility_detail", title: t("utility_detail") },
+    { id: 3, type: "outdoor_feature", title: t("outdoor_feature") },
+    { id: 4, type: "indoor_feature", title: t("indoor_feature") },
+  ];
+
+  featureTypes.forEach(({ id, type, title }) => {
+    const feature_list =
+      property?.features
+        ?.filter((feature) => feature.type === type)
+        .map((feature) => ({
+          title: feature.key,
+          count: feature.value,
+        })) || [];
+
+    if (feature_list.length > 0) {
+      property_feature_list.push({
+        id,
+        title,
+        feature_list,
+      });
+    }
+  });
+
+  // If there are no features, show a message
+  if (property_feature_list.length === 0) {
+    return (
+      <div className="accordion" id="accordionTwo">
+        <div className="text-center py-4 text-muted">
+          {t("no_features_found") || "No features found for this property."}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="accordion" id="accordionTwo">
       {property_feature_list.map((item) => (

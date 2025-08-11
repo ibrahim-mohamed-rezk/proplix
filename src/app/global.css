@@ -93,3 +93,15 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
     top: -30px !important;
   }
 }
+
+.list-style-two .aminity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.list-style-two .aminity:before {
+  content: none;
+  color: none;
+  display: none;
+}

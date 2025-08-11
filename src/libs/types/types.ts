@@ -127,6 +127,7 @@ export interface PropertyTypes {
   };
 
   amenities: {
+    image: string;
     id: number;
     property_listing_id: number;
     created_at: string;

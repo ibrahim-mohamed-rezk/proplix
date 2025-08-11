@@ -678,6 +678,7 @@
   },
   "endUser": {
     "List View": "List View",
+    "no_features_found": "No features found",
     "Map View": "Map View",
     "no_blogs_found": "No Blogs Found",
     "coontact": "Contact",
@@ -784,7 +785,7 @@
     "Switch To List View": "Switch To List View",
     "all": "All",
     "Select Type": "Select Type",
-    "search_location_placeholder": "Search for a location in Egypt...",
+    "search_location_placeholder": "Search for a location...",
     "loading_location_services": "Loading location services...",
     "loading": "Loading...",
     "price_range": "Price Range",

@@ -1,20 +1,47 @@
-import Link from "next/link"
-
-const category_list: string[] = ["Digital (3)", "Marketing (4)", "Design (2)", "WordPress (8)", "Plugin (5)", "Developer (3)", "Account (7)",]
+import { Link, useRouter } from "@/i18n/routing";
+import { getData } from "@/libs/server/backendServer";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
 
 const Category = () => {
-   Category
+  const locale = useLocale();
+  const [types, setTypes] = useState([]);
+  const router = useRouter();
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const response = await getData(
+          `types`,
+          {},
+          {
+            lang: locale,
+          }
+        );
+        setTypes(response.data.data);
+      } catch (error) {
+        console.error("Error fetching types:", error);
+      }
+    };
+    fetchTypes();
+  }, [locale]);
 
-   return (
-      <div className="categories bg-white bg-wrapper mb-30">
-         <h5 className="mb-20">Category</h5>
-         <ul className="style-none">
-            {category_list.map((category, i) => (
-               <li key={i}><Link href="#">{category}</Link></li>
-            ))}
-         </ul>
-      </div>
-   )
-}
+  const filter = (id: any) => {
+    localStorage.setItem("type", id);
+    router.push("/blogs");
+  };
 
-export default Category
+  return (
+    <div className="categories bg-white bg-wrapper mb-30">
+      <h5 className="mb-20">Category</h5>
+      <ul className="style-none">
+        {types.map((category: any, i) => (
+          <li key={i}>
+            <span onClick={()=> filter(category.title)}>{category.title}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Category;

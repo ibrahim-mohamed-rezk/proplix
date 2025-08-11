@@ -17,7 +17,6 @@ import Property from "./Property";
 
 const HomeOne = async ({ locale }: { locale: string }) => {
   const token = (await cookies()).get("token")?.value;
-  const user = JSON.parse((await cookies()).get("user")?.value || "{}");
   const feachData = async () => {
     try {
       const response = await getData(

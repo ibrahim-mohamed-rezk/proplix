@@ -8,7 +8,7 @@ const SidebarInfo = ({ property }: { property?: PropertyTypes }) => {
    return (
      <>
        <img
-         src={property?.user.avatar || ""}
+         src={property?.user.avatar || "/images/user.png"}
          alt="user"
          className="lazy-img rounded-circle ms-auto me-auto mt-3 avatar"
        />

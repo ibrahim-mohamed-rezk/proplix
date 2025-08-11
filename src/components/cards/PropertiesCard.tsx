@@ -38,6 +38,7 @@ const PropertiesCard = ({
       throw error;
     }
   };
+
   return (
     <div
       key={item?.id}
@@ -177,16 +178,8 @@ const PropertiesCard = ({
               className="price fw-500 color-[#000]"
               style={{ fontSize: "clamp(20px,1.458vw,28px)" }}
             >
-              {item?.price?.toLocaleString(undefined, {
-                minimumFractionDigits: item?.price ? 0 : 2,
-                maximumFractionDigits: 2,
-              })}
+              {Number(item?.price).toLocaleString()}
               EGP{item?.status === "rent" && "/M"}
-              {/* {item?.price && (
-                         <>
-                           /<sub>m</sub>
-                         </>
-                       )} */}
             </strong>
             <div className="flex items-center justify-center gap-[10px]">
               <a
