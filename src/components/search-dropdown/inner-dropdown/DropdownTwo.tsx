@@ -216,20 +216,19 @@ const DropdownTwo = ({
                 {showLocationSuggestions && locationSuggestions.length > 0 && (
                   <div
                     ref={locationSuggestionsRef}
-                    className="location-suggestions"
+                    className="location-suggestions hide-scrollbar"
                     style={{
                       position: "absolute",
                       top: "100%",
                       left: 0,
                       right: 0,
                       backgroundColor: "#fff",
-                      border: "1px solid #e0e0e0",
-                      borderTop: "none",
+                      border: "1px solid rgba(0, 0, 0, 0.05)",
                       borderRadius: "0 0 4px 4px",
                       maxHeight: "200px",
                       overflowY: "auto",
                       zIndex: 1000,
-                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      boxShadow: "0 13px 35px -12px rgba(35, 35, 35, 0.1)",
                     }}
                   >
                     {locationSuggestions.map((suggestion, idx) => (
@@ -334,7 +333,7 @@ const DropdownTwo = ({
             <div className="input-box-one border-left">
               <div className="label">{t("price_range")}</div>
               <NiceSelect
-                className="nice-select location"
+                className="nice-select"
                 options={[
                   {
                     text: t("all"),

@@ -43,7 +43,9 @@
       "rent": "Rent",
       "Residentialrent": "Residential Rent",
       "Commercialrent": "Commercial Rent"
-    }
+    },
+    "sell": "Buy",
+    "rent": "Rent"
   },
   "header": {
     "home": "Home",
@@ -362,6 +364,8 @@
     "totalProperties": "Total Properties",
     "totalCustomers": "Total Customers",
     "totalAgents": "Total Agents",
+    "sell": "Buy",
+    "rent": "Rent",
     "averagePrice": "Average Price",
     "statusOverview": "Status Overview",
     "accepted": "Accepted",

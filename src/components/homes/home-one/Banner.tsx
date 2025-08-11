@@ -139,7 +139,7 @@ const Banner = () => {
                         : "text-neutral-950"
                     } text-base font-medium font-['Gordita'] leading-normal`}
                   >
-                    Sell
+                    {t("sell")}
                   </div>
                 </div>
                 <div
@@ -159,7 +159,7 @@ const Banner = () => {
                         : "text-neutral-950"
                     } text-base font-medium font-['Gordita'] leading-normal`}
                   >
-                    Rent
+                    {t("rent")}
                   </div>
                 </div>
               </div>

@@ -105,3 +105,13 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   color: none;
   display: none;
 }
+
+/* For modern browsers */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

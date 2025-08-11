@@ -11,7 +11,9 @@
       "rent": "إيجار",
       "Residentialrent": "إيجار سكني",
       "Commercialrent": "إيجار تجاري"
-    }
+    },
+    "sell": "بيع",
+    "rent": "إيجار"
   },
   "dashboard": {
     "Listing": "القوائم",
@@ -345,6 +347,8 @@
   },
   "Home": {
     "totalProperties": "إجمالي العقارات",
+    "sell": "بيع",
+    "rent": "إيجار",
     "totalCustomers": "إجمالي العملاء",
     "totalAgents": "إجمالي الوكلاء",
     "averagePrice": "متوسط السعر",
