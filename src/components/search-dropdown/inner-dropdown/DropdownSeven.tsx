@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { LocationData } from "@/libs/types/types";
 import { useLocale, useTranslations } from "next-intl";
 import { getData } from "@/libs/server/backendServer";
+import { Link } from "@/i18n/routing";
 
 // Extend Window interface to include Google Maps
 declare global {
@@ -660,7 +661,8 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
               />
             </div>
           </div>
-          <div className="col-xl-2 col-sm-4">
+
+          {/* <div className="col-xl-2 col-sm-4">
             <div className="input-box-one border-left">
               <div className="label">{t("area")}</div>
               <NiceSelect
@@ -680,7 +682,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                 placeholder=""
               />
             </div>
-          </div>
+          </div> */}
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("bed")}</div>
@@ -719,8 +721,60 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
               />
             </div>
           </div>
+          <div className="col-xl-2 col-sm-4">
+            <div className="input-box-one border-left">
+              <div className="label">{t("area")}</div>
+              <NiceSelect
+                className="nice-select fw-normal"
+                options={[
+                  { value: "all", text: t("any") },
+                  ...areas?.map((area: any) => ({
+                    value: area.id,
+                    text: area.name,
+                  })),
+                ]}
+                defaultCurrent={0}
+                onChange={(event) =>
+                  handleAreaChange && handleAreaChange(event.target.value)
+                }
+                name="area"
+                placeholder=""
+              />
+            </div>
+          </div>
+          <div className="col-xl-1 col-sm-4 col-6">
+            <div className="input-box-one md-mt-10">
+              <div className="d-flex align-items-center justify-content-center justify-content-lg-end">
+                <Link
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#advanceFilterModal"
+                  className="search-modal-btn sm rounded-circle tran3s text-uppercase fw-500 d-inline-flex align-items-center justify-content-center me-3"
+                >
+                  <i className="fa-light fa-sliders-up"></i>
+                </Link>
+                {/* <button className="fw-500 text-uppercase tran3s search-btn w-auto m0">
+                  Search
+                </button> */}
+              </div>
+            </div>
+          </div>
         </div>
       </form>
+
+      <ListingDropdownModal
+        handleSearchChange={handleSearchChange}
+        handleBedroomChange={handleBedroomChange}
+        handleBathroomChange={handleBathroomChange}
+        handlePriceChange={handlePriceChange}
+        maxPrice={maxPrice}
+        priceValue={priceValue}
+        handleResetFilter={handleResetFilter}
+        selectedAmenities={selectedAmenities}
+        handleAmenityChange={handleAmenityChange}
+        handleLocationChange={handleLocationChange}
+        handleStatusChange={handleStatusChange}
+      />
     </>
   );
 };

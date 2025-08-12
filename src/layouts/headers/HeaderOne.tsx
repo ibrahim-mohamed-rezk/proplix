@@ -147,18 +147,18 @@ const HeaderOne = ({
                       const nextLocale = routing.locales[nextIndex];
                       changeLanguage(nextLocale);
                     }}
-                    className="flex px-5  items-center rounded-[clamp(12px,1vw,34px)] font-['Gordita'] justify-center gap-[8px] transition-all duration-200 focus:outline-none hover:scale-105 active:scale-95"
+                    className="flex px-2 items-center rounded-[clamp(12px,1vw,34px)] font-['Gordita'] justify-center gap-[8px] transition-all duration-200 focus:outline-none hover:scale-105 active:scale-95"
                   >
                     <span
                       className={`fi fi-${flagMap[locale]} !fill-[#FF6725] mr-1`}
                     />
-                    <Image
+                    {/* <Image
                       src={`/images/${locale}.svg`}
                       alt="Flag"
                       width={30}
                       height={20}
                       className=" shadow-sm border border-gray-200"
-                    />
+                    /> */}
                     <span className="font-['Gordita'] capitalize text-[#FF6725] font-bold text-[18px] tracking-wider">
                       {locale}
                     </span>
@@ -182,7 +182,7 @@ const HeaderOne = ({
                         </Link>
                       </li>
                     )}
-                    <div className="position-relative me-[10px]">
+                    <div className="position-relative ps-4 me-[10px]">
                       {/* user icon  */}
                       <div
                         onClick={() => setShowDropdown(!showDropdown)}
