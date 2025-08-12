@@ -34,7 +34,7 @@ const CommonBanner = ({
             </div>
           </div>
           <div className="address mt-15">
-            <i className="bi bi-geo-alt"></i> {property?.area.name}
+            <i className="bi bi-geo-alt"></i> {property?.area?.name}
           </div>
         </div>
       </div>
