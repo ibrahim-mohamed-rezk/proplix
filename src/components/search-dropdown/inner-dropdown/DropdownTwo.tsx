@@ -212,7 +212,24 @@ const DropdownTwo = ({
                     setShowLocationSuggestions(true)
                   }
                   autoComplete="off"
+                  style={{
+                    paddingRight: "38px", // add space for the icon
+                  }}
                 />
+                {/* Search icon at end of input */}
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    pointerEvents: "none",
+                    color: "#999",
+                    fontSize: "18px",
+                  }}
+                >
+                  <i className="fa-light fa-magnifying-glass"></i>
+                </span>
                 {showLocationSuggestions && locationSuggestions.length > 0 && (
                   <div
                     ref={locationSuggestionsRef}
@@ -224,8 +241,8 @@ const DropdownTwo = ({
                       right: 0,
                       backgroundColor: "#fff",
                       border: "1px solid rgba(0, 0, 0, 0.05)",
-                      borderRadius: "0 0 4px 4px",
-                      maxHeight: "200px",
+                      borderRadius: "10px",
+                      maxHeight: "220px",
                       overflowY: "auto",
                       zIndex: 1000,
                       boxShadow: "0 13px 35px -12px rgba(35, 35, 35, 0.1)",
@@ -241,35 +258,46 @@ const DropdownTwo = ({
                         style={{
                           padding: "12px 15px",
                           cursor: "pointer",
-                          borderBottom:
-                            idx < locationSuggestions.length - 1
-                              ? "1px solid #f0f0f0"
-                              : "none",
                           fontSize: "14px",
-                          transition: "background-color 0.2s",
+                          transition: "background-color 0.2s, color 0.2s",
                           display: "flex",
                           alignItems: "center",
                         }}
-                        onMouseEnter={(e) =>
-                          ((e.target as HTMLElement).style.backgroundColor =
-                            "#f8f9fa")
-                        }
-                        onMouseLeave={(e) =>
-                          ((e.target as HTMLElement).style.backgroundColor =
-                            "#fff")
-                        }
+                        onMouseEnter={(e) => {
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = "#ff672508";
+                          // Make all text inside orange on hover
+                          Array.from(e.currentTarget.querySelectorAll("div, i")).forEach((el) => {
+                            (el as HTMLElement).style.color = "#FF6725";
+                          });
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = "#fff";
+                          // Restore text color
+                          const mainText = e.currentTarget.querySelector(".main-text");
+                          if (mainText) (mainText as HTMLElement).style.color = "#333";
+                          const secondaryText = e.currentTarget.querySelector(".secondary-text");
+                          if (secondaryText) (secondaryText as HTMLElement).style.color = "#666";
+                          const icon = e.currentTarget.querySelector("i");
+                          if (icon) (icon as HTMLElement).style.color = "#666";
+                        }}
                       >
                         <i
                           className="fa-light fa-location-dot"
                           style={{ marginRight: "8px", color: "#666" }}
                         ></i>
                         <div>
-                          <div style={{ fontWeight: "500", color: "#333" }}>
+                          <div
+                            className="main-text"
+                            style={{ fontWeight: "500", color: "#333" }}
+                          >
                             {suggestion.structured_formatting?.main_text ||
                               suggestion.description}
                           </div>
                           {suggestion.structured_formatting?.secondary_text && (
                             <div
+                              className="secondary-text"
                               style={{
                                 fontSize: "12px",
                                 color: "#666",
