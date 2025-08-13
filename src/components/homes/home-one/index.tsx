@@ -1,7 +1,7 @@
 import FooterOne from "@/layouts/footers/FooterOne";
 import HeaderOne from "@/layouts/headers/HeaderOne";
 import Banner from "./Banner";
-import Feedback from "./Feedback";
+// import Feedback from "./Feedback";
 import BLockFeatureOne from "./BLockFeatureOne";
 // import BLockFeatureTwo from "./BLockFeatureTwo";
 import BLockFeatureThree from "./BLockFeatureThree";
@@ -41,7 +41,7 @@ const HomeOne = async ({ locale }: { locale: string }) => {
       <BLockFeatureOne />
       {/* <BLockFeatureTwo /> */}
       {/* location */}
-      <BLockFeatureThree />
+      {/* <BLockFeatureThree /> ==> areas component */}
       <Property
         token={token}
         listings={homeData?.data?.property_listings}

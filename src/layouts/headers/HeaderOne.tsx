@@ -160,7 +160,7 @@ const HeaderOne = ({
                       className=" shadow-sm border border-gray-200"
                     /> */}
                     <span className="font-['Gordita'] capitalize text-[#FF6725] font-bold text-[18px] tracking-wider">
-                      {locale}
+                      {locale === "ar" ? "English" : "العربية"}
                     </span>
                     {/* <RotateCw className="w-4 h-4 text-[18px] text-[#FF6725]" /> */}
                   </button>
@@ -174,7 +174,7 @@ const HeaderOne = ({
                       <li className="d-none d-md-inline-block ms-3">
                         <Link
                           href="/dashboard/add-property"
-                          className="btn-two add-listing bg-gradient-to-r from-[#FF6725] to-[#F26A3F] text-white font-bold  rounded-xl hover:scale-105 transition-transform"
+                          className="btn-two listing-btn add-listing bg-gradient-to-r from-[#FF6725] to-[#F26A3F] text-white font-bold  rounded-xl hover:scale-105 transition-transform "
                           target="_blank"
                         >
                           <span>{t("Add Listing")}</span>{" "}

@@ -115,3 +115,8 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+
+.listing-btn:hover{
+      background: #FF6725 !important;
+}
