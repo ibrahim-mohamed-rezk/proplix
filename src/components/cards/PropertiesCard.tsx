@@ -62,7 +62,7 @@ const PropertiesCard = ({
             <div
               className={`tag !left-[70px] px-2 "!bg-[#FF6B2C]"
                  
-              } rounded-[25px] w-fit`}
+              } rounded-[25px] !w-fit`}
             >
               {item?.property_type?.title}
             </div>

@@ -54,8 +54,9 @@ const CommonBanner = ({
             <a
               href={`tel:${property?.user.phone}`}
               target="_blank"
-              className="flex-1 bg-[#FF6625] rounded-[8px] flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-xl shadow-lg"
+              className="flex-1 flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-[8px] shadow-lg bg-[#FF6625] min-h-[48px] min-w-[120px]"
               type="button"
+              style={{ minWidth: 0 }}
             >
               <svg
                 width="24"
@@ -69,7 +70,6 @@ const CommonBanner = ({
                   fill="white"
                 />
               </svg>
-
               <span className="text-white text-lg font-semibold font-['Gordita'] leading-normal tracking-wide">
                 Call
               </span>
@@ -77,8 +77,9 @@ const CommonBanner = ({
             <a
               href={`https://wa.me/${property?.user.phone}`}
               target="_blank"
-              className="bg-[#00B266] rounded-[8px] flex-1 flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-xl shadow-lg"
+              className="flex-1 flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-[8px] shadow-lg bg-[#00B266] min-h-[48px] min-w-[120px]"
               type="button"
+              style={{ minWidth: 0 }}
             >
               <svg
                 width="24"
@@ -87,7 +88,7 @@ const CommonBanner = ({
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <g clip-path="url(#clip0_301_4597)">
+                <g clipPath="url(#clip0_301_4597)">
                   <path
                     d="M0 24L1.69627 17.8403C0.647564 16.0323 0.0974211 13.9848 0.103152 11.8916C0.103152 5.3327 5.46704 0 12.0516 0C15.2493 0 18.2521 1.23764 20.5043 3.48479C22.7622 5.73194 24.0057 8.72053 24 11.8973C24 18.4563 18.6361 23.789 12.0458 23.789H12.0401C10.0401 23.789 8.07449 23.2871 6.32664 22.3403L0 24ZM6.63037 20.1901L6.9914 20.4068C8.51575 21.308 10.2636 21.7814 12.0458 21.7871H12.0516C17.5243 21.7871 21.9828 17.3555 21.9828 11.903C21.9828 9.26236 20.9513 6.78137 19.0773 4.91065C17.2034 3.03992 14.7049 2.01331 12.0516 2.01331C6.57879 2.00761 2.12034 6.43917 2.12034 11.8916C2.12034 13.7567 2.64183 15.5761 3.63897 17.1502L3.87392 17.5266L2.87106 21.1711L6.63037 20.1901Z"
                     fill="white"
@@ -101,8 +102,8 @@ const CommonBanner = ({
                     fill="white"
                   />
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M9.06576 6.91745C8.84226 6.42125 8.60731 6.40984 8.39527 6.40414C8.22335 6.39844 8.02278 6.39844 7.82221 6.39844C7.62163 6.39844 7.30072 6.47258 7.02564 6.76916C6.75057 7.06574 5.98267 7.78437 5.98267 9.25015C5.98267 10.7102 7.0543 12.1247 7.2033 12.3243C7.35229 12.5239 9.27206 15.6209 12.3036 16.8129C14.8251 17.8053 15.3408 17.6057 15.8852 17.5543C16.4296 17.503 17.6503 16.8357 17.9024 16.1399C18.1488 15.4441 18.1488 14.8509 18.0743 14.7254C17.9998 14.6 17.7993 14.5258 17.5013 14.3775C17.2033 14.2292 15.7362 13.5106 15.4612 13.4079C15.1861 13.311 14.9855 13.2597 14.7907 13.5562C14.5901 13.8528 14.017 14.5201 13.8451 14.7197C13.6732 14.9194 13.4956 14.9422 13.1976 14.7939C12.8996 14.6456 11.9368 14.3319 10.7964 13.3167C9.90816 12.5296 9.30645 11.5543 9.13453 11.2578C8.96261 10.9612 9.11733 10.8015 9.26633 10.6532C9.39814 10.522 9.56432 10.3053 9.71332 10.1342C9.86232 9.96308 9.91389 9.8376 10.0113 9.63798C10.1087 9.43836 10.0629 9.26726 9.98839 9.11897C9.91389 8.97638 9.32937 7.5049 9.06576 6.91745Z"
                     fill="white"
                   />

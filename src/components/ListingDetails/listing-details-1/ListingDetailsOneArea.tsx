@@ -21,14 +21,13 @@ import CommonBanner from "../listing-details-common/CommonBanner";
 const ListingDetailsOneArea = ({
   property,
   similar,
-  token
+  token,
 }: {
   property: PropertyTypes;
-    similar: PropertyTypes[];
-    token: string
+  similar: PropertyTypes[];
+  token: string;
 }) => {
   const t = useTranslations("endUser");
-
 
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
@@ -59,13 +58,17 @@ const ListingDetailsOneArea = ({
                 <CommonPropertyFeatureList property={property} />
               </div>
             </div>
-            <div className="property-amenities bg-white shadow4 p-40 mb-50">
-              <CommonAmenities property={property} />
-            </div>
+            {property?.amenities?.length > 0 && (
+              <div className="property-amenities bg-white shadow4 p-40 mb-50">
+                <CommonAmenities property={property} />
+              </div>
+            )}
             {/* <div className="property-video-tour mb-50">
               <CommonPropertyVideoTour />
             </div> */}
-            <CommonPropertyFloorPlan property={property} style={false} />
+            {property?.property_floor_plans?.length > 0 && (
+              <CommonPropertyFloorPlan property={property} style={false} />
+            )}
             {/* <div className="property-nearby bg-white shadow4 p-40 mb-50">
               <CommonNearbyList />
             </div> */}
@@ -75,7 +78,7 @@ const ListingDetailsOneArea = ({
             <div className="property-location mb-50">
               <CommonLocation property={property} />
             </div>
-            <CommonSimilarProperty token={token} similar={similar} />
+            {similar?.length > 0 && <CommonSimilarProperty token={token} similar={similar} />}
 
             {/* <div className="review-panel-one bg-white shadow4 p-40 mb-50">
               <div className="position-relative z-1">
