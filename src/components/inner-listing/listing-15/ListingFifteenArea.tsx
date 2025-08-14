@@ -371,72 +371,73 @@ const ListingFifteenArea = () => {
       <div className="search-wrapper-three swth !border-none  layout-two position-relative mb-2">
         <div className="bg-wrapper rounded-3 border border-light bg-white p-2">
           <DropdownSeven
-            handleBathroomChange={(value) => {
+            handleBathroomChange={(value: string) => {
               setFilters({
                 ...filters,
                 bathrooms: value === "all" ? null : value,
               });
             }}
-            handleTypeChange={(value) => {
+            handleTypeChange={(value: string) => {
               setFilters({
                 ...filters,
                 type_id: value === "all" ? null : value,
               });
             }}
-            handleBedroomChange={(value) => {
+            handleBedroomChange={(value: string) => {
               setFilters({
                 ...filters,
                 bedrooms: value === "all" ? null : value,
               });
             }}
-            handleSearchChange={() => {}}
-            handleAgentChange={(value) => {
+            handleSearchChange={(_: unknown) => {}}
+            handleAgentChange={(value: string) => {
               if (value === "all") {
                 setFilters({ ...filters, user_id: null });
               } else {
                 setFilters({ ...filters, user_id: value });
               }
             }}
-            handlePriceChange={() => {}}
+            handlePriceChange={(_: unknown) => {}}
             maxPrice={0}
             priceValue={0}
             handleResetFilter={handleResetFilter}
-            handleAmenitiesChange={(amenities) => {
+            handleAmenitiesChange={(amenities: number[]) => {
               setFilters({
                 ...filters,
                 amenities: amenities?.length ? amenities : [],
               });
             }}
             filters={filters}
-            handleLocationChange={(location) => {
+            handleLocationChange={(location: LocationData) => {
               setFilters({ ...filters, location: location.description });
               setLocationData(location);
             }}
             handleStatusChange={handleStatusChange}
-            handlePriceDropChange={(value) => {
+            handlePriceDropChange={(value: string) => {
               if (value === "all") {
                 setFilters({ ...filters, price: null, down_price: null });
               } else {
+                const [price, down_price] = value.split("-");
                 setFilters({
                   ...filters,
-                  price: value.split("-")[0],
-                  down_price: value.split("-")[1],
+                  price,
+                  down_price,
                 });
               }
             }}
-            handlePaymentMethodChange={(paymentMethod) => {
+            handlePaymentMethodChange={(paymentMethod: string) => {
               setFilters({
                 ...filters,
                 payment_method: paymentMethod || null,
               });
             }}
-            handleFurnishingChange={(furnishing) => {
+            handleFurnishingChange={(furnishing: string) => {
               setFilters({
                 ...filters,
                 furnishing: furnishing || null,
               });
             }}
-            handleSizeChange={(size) => {
+            handleSizeChange={(size: string) => {
               setFilters({
                 ...filters,
                 size: size || null,
