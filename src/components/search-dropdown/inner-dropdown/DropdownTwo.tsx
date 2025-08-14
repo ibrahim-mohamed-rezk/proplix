@@ -228,7 +228,7 @@ const DropdownTwo = ({
                     fontSize: "18px",
                   }}
                 >
-                  <i className="fa-light fa-magnifying-glass"></i>
+                  <i className="fa-light fa-location-dot"></i>
                 </span>
                 {showLocationSuggestions && locationSuggestions.length > 0 && (
                   <div

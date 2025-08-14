@@ -9,8 +9,10 @@ const CommonAmenities = ({ property }: { property?: PropertyTypes }) => {
       <p className="fs-20 lh-lg pb-25">{t("property_features_description")}</p>
       <ul className="style-none d-flex flex-wrap justify-content-between list-style-two">
         {property?.amenities?.map((list) => (
-          <li className="aminity" key={list.id}>
-            <img src={list.image} alt={list.title} width={20} height={20} />
+          <li className="aminity" style={{
+            fontWeight: 400
+          }} key={list.id}>
+            <img src={list.image} alt={list.title} width={25} height={25} />
             {list.title}
           </li>
         ))}
