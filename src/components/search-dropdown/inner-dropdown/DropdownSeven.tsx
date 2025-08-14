@@ -57,7 +57,7 @@ interface DropdownSevenProps {
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: any) => void;
   handleAgentChange?: (value: any) => void;
-  handleAreaChange?: (value: any) => void;
+  handleTypeChange?: (value: any) => void;
   filters?: any;
   // New props for mobile toggle
   showMap?: boolean;
@@ -70,7 +70,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   handleBedroomChange,
   handleLocationChange,
   handlePriceDropChange,
-  handleAreaChange,
+  handleTypeChange,
   handleStatusChange,
   handleAgentChange,
   handleSearchChange,
@@ -114,6 +114,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   const t = useTranslations("endUser");
   const locale = useLocale();
   const [areas, setAreas] = useState<any[]>([]);
+  const [types, setTypes] = useState<any[]>([]);
 
   // Initialize Google Places services (supporting both old and new APIs)
   const autocompleteService =
@@ -135,7 +136,13 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
     setAreas(response.data.data);
   };
 
+  const fetchAgents = async () => {
+    const response = await getData("types", {}, { lang: locale });
+    setTypes(response.data.data);
+  };
+
   useEffect(() => {
+    fetchAgents();
     fetchAreas();
   }, []);
 
@@ -493,47 +500,55 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           top: 100%;
           left: 0;
           right: 0;
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          max-height: 200px;
-          overflow-y: auto;
+          background: #fff;
+          border-radius: 10px;
+          box-shadow: 0 13px 35px -12px rgba(35, 35, 35, 0.1);
           z-index: 1000;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-          margin-top: 4px;
+          margin-top: 0;
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          padding: 0;
+          min-width: 100%;
+          max-height: 220px;
+          overflow-y: auto;
+          font-size: 15px;
         }
-
         .suggestion-item {
-          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          padding: 12px 15px;
           cursor: pointer;
-          transition: background-color 0.2s ease;
-          border-bottom: 1px solid #f1f5f9;
+          font-size: 14px;
+          transition: background-color 0.2s, color 0.2s;
+          border-bottom: none;
         }
-
         .suggestion-item:last-child {
           border-bottom: none;
         }
-
-        .suggestion-item:hover {
-          background: #f8fafc;
+        .suggestion-item:hover, .suggestion-item.active {
+          background-color: #ff672508;
         }
-
+        .suggestion-item:hover .main-text,
+        .suggestion-item:hover .secondary-text,
+        .suggestion-item:hover i {
+          color: #FF6725 !important;
+        }
         .suggestion-item .main-text {
           font-weight: 500;
-          color: #374151;
-          font-size: 14px;
+          color: #333;
+          font-size: 15px;
         }
-
         .suggestion-item .secondary-text {
           font-size: 12px;
-          color: #6b7280;
+          color: #666;
           margin-top: 2px;
         }
-
+        .suggestion-item i {
+          margin-right: 8px;
+          color: #666;
+        }
         .location-input-container {
           position: relative;
         }
-
         .location-input {
           border: none;
           background: none;
@@ -542,13 +557,11 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           color: inherit;
           outline: none;
         }
-
         .location-input:disabled {
           background: transparent;
           color: #9ca3af;
           cursor: not-allowed;
         }
-
         .loading-indicator {
           position: absolute;
           right: 16px;
@@ -564,11 +577,15 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           <div className="col-xl-3 col-sm-6">
             <div className="input-box-one border-left">
               <div className="label">{t("location")}</div>
-              <div className="location-input-container">
+              <div
+                className="location-input-container"
+                style={{ position: "relative" }}
+              >
                 <input
                   ref={locationInputRef}
                   type="text"
                   className="location-input nice-select fw-normal"
+                  style={{ paddingRight: 32 }}
                   placeholder={
                     isGoogleMapsLoaded
                       ? t("search_location_placeholder")
@@ -580,7 +597,21 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                     suggestions.length > 0 && setShowSuggestions(true)
                   }
                   disabled={!isGoogleMapsLoaded}
+                  autoComplete="off"
                 />
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#6b7280",
+                    pointerEvents: "none",
+                    zIndex: 2,
+                  }}
+                >
+                  <i className="fa-solid fa-location-dot"></i>
+                </span>
 
                 {/* Loading indicator */}
                 {!isGoogleMapsLoaded && (
@@ -591,22 +622,28 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
                 {showSuggestions &&
                   suggestions.length > 0 &&
                   isGoogleMapsLoaded && (
-                    <div ref={suggestionsRef} className="location-suggestions">
+                    <div
+                      ref={suggestionsRef}
+                      className="location-suggestions hide-scrollbar"
+                    >
                       {suggestions.map((suggestion, index) => (
                         <div
                           key={suggestion.place_id || index}
                           className="suggestion-item"
                           onClick={() => handleSuggestionSelect(suggestion)}
                         >
-                          <div className="main-text">
-                            {suggestion.structured_formatting?.main_text ||
-                              suggestion.description}
-                          </div>
-                          {suggestion.structured_formatting?.secondary_text && (
-                            <div className="secondary-text">
-                              {suggestion.structured_formatting.secondary_text}
+                          <i className="fa-regular fa-location-dot" style={{ color: "#6b7280", fontSize: 16 }}></i>
+                          <div>
+                            <div className="main-text">
+                              {suggestion.structured_formatting?.main_text ||
+                                suggestion.description}
                             </div>
-                          )}
+                            {suggestion.structured_formatting?.secondary_text && (
+                              <div className="secondary-text">
+                                {suggestion.structured_formatting.secondary_text}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -667,27 +704,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
             </div>
           </div>
 
-          {/* <div className="col-xl-2 col-sm-4">
-            <div className="input-box-one border-left">
-              <div className="label">{t("area")}</div>
-              <NiceSelect
-                className="nice-select fw-normal"
-                options={[
-                  { value: "all", text: t("any") },
-                  ...areas?.map((area: any) => ({
-                    value: area.id,
-                    text: area.name,
-                  })),
-                ]}
-                defaultCurrent={0}
-                onChange={(event) =>
-                  handleAreaChange && handleAreaChange(event.target.value)
-                }
-                name="area"
-                placeholder=""
-              />
-            </div>
-          </div> */}
+          {/* Area filter removed in favor of Type filter */}
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("bed")}</div>
@@ -728,21 +745,21 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
           </div>
           <div className="col-xl-2 col-sm-4">
             <div className="input-box-one border-left">
-              <div className="label">{t("area")}</div>
+              <div className="label">{t("type")}</div>
               <NiceSelect
                 className="nice-select fw-normal"
                 options={[
                   { value: "all", text: t("any") },
-                  ...areas?.map((area: any) => ({
+                  ...types?.map((area: any) => ({
                     value: area.id,
-                    text: area.name,
+                    text: area.title,
                   })),
                 ]}
                 defaultCurrent={0}
                 onChange={(event) =>
-                  handleAreaChange && handleAreaChange(event.target.value)
+                  handleTypeChange && handleTypeChange(event.target.value)
                 }
-                name="area"
+                name="type"
                 placeholder=""
               />
             </div>

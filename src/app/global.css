@@ -126,3 +126,9 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
         width: 48% !important;
     }
 }
+
+.search-wrapper-three.swth{
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  
+}

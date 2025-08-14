@@ -368,7 +368,7 @@ const ListingFifteenArea = () => {
   return (
     <div className="property-listing-eight pt-150 xl-pt-120">
       {/* dropdown filters */}
-      <div className="search-wrapper-three layout-two position-relative mb-2">
+      <div className="search-wrapper-three swth !border-none  layout-two position-relative mb-2">
         <div className="bg-wrapper rounded-3 border border-light bg-white p-2">
           <DropdownSeven
             handleBathroomChange={(value) => {
@@ -377,10 +377,10 @@ const ListingFifteenArea = () => {
                 bathrooms: value === "all" ? null : value,
               });
             }}
-            handleAreaChange={(value) => {
+            handleTypeChange={(value) => {
               setFilters({
                 ...filters,
-                area_id: value === "all" ? null : value,
+                type_id: value === "all" ? null : value,
               });
             }}
             handleBedroomChange={(value) => {
