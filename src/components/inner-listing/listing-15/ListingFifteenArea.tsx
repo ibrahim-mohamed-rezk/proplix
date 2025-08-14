@@ -420,7 +420,7 @@ const ListingFifteenArea = () => {
       </div>
 
       {/* property type filter */}
-      {!sticky && (
+      {/* {!sticky && (
         <div className="listing-type-filter border-0 mb-2">
           <div className="wrapper">
             <div className="card border-0 rounded-3 bg-gradient-light">
@@ -474,7 +474,7 @@ const ListingFifteenArea = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Mobile View Toggle - Only visible on mobile */}
       <div className="d-block d-lg-none mb-3">

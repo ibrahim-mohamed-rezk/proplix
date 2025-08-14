@@ -17,6 +17,7 @@ import CommonLocation from "../listing-details-common/CommonLocation";
 import { PropertyTypes } from "@/libs/types/types";
 import { useTranslations } from "next-intl";
 import CommonBanner from "../listing-details-common/CommonBanner";
+import { useState } from "react";
 
 const ListingDetailsOneArea = ({
   property,
@@ -28,6 +29,7 @@ const ListingDetailsOneArea = ({
   token: string;
 }) => {
   const t = useTranslations("endUser");
+  const [featuresContent, setFeaturesContent] = useState(true);
 
   return (
     <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
@@ -49,15 +51,15 @@ const ListingDetailsOneArea = ({
                 dangerouslySetInnerHTML={{ __html: property?.description }}
               />
             </div>
-            <div className="property-feature-accordion bg-white shadow4 p-40 mb-50">
+            {featuresContent && <div className="property-feature-accordion bg-white shadow4 p-40 mb-50">
               <h4 className="mb-20">{t("Property Features")}</h4>
               <p className="fs-20 lh-lg">
                 {t("property_features_description")}
               </p>
-              <div className="accordion-style-two mt-45">
-                <CommonPropertyFeatureList property={property} />
-              </div>
-            </div>
+              {<div className="accordion-style-two mt-45">
+                <CommonPropertyFeatureList setFeaturesContent={setFeaturesContent} property={property} />
+              </div>}
+            </div>}
             {property?.amenities?.length > 0 && (
               <div className="property-amenities bg-white shadow4 p-40 mb-50">
                 <CommonAmenities property={property} />

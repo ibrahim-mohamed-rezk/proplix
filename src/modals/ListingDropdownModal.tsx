@@ -1,27 +1,43 @@
 import { getData } from "@/libs/server/backendServer";
-import NiceSelect from "@/ui/NiceSelect";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 const ListingDropdownModal = ({
   handlePriceChange,
-  handleAgentChange,
+  handleAmenitiesChange,
   handleDown_priceChange,
   handleResetFilter,
   filters,
 }: any) => {
   const t = useTranslations("properties");
-  const [agents, setAgents] = useState([]);
+  const [amenities, setAmenities] = useState([]);
+  const [selectedAmenities, setSelectedAmenities] = useState<number[]>(
+    filters?.amenities || []
+  );
   const locale = useLocale();
 
-  // fetch agents form api
+  // fetch amenities from api
   useEffect(() => {
-    const fetchAgents = async () => {
-      const response = await getData("agents", {}, { lang: locale });
-      setAgents(response.data.data);
+    const fetchAmenities = async () => {
+      const response = await getData("amenities", {}, { lang: locale });
+      setAmenities(response.data.data);
     };
-    fetchAgents();
-  }, []);
+    fetchAmenities();
+  }, [locale]);
+
+  // Update selected amenities when filters change
+  useEffect(() => {
+    setSelectedAmenities(filters?.amenities || []);
+  }, [filters?.amenities]);
+
+  const handleAmenityToggle = (amenityId: number) => {
+    const updatedAmenities = selectedAmenities.includes(amenityId)
+      ? selectedAmenities.filter((id) => id !== amenityId)
+      : [...selectedAmenities, amenityId];
+
+    setSelectedAmenities(updatedAmenities);
+    handleAmenitiesChange(updatedAmenities);
+  };
 
   return (
     <div
@@ -71,33 +87,10 @@ const ListingDropdownModal = ({
                               </div>
                             </div>
                           </div>
-
-                          {/* agents  */}
-                          <div className="col-12">
-                            <div className="input-box-one w-full">
-                              <div className="label">{t("by_agent")}</div>
-                              <NiceSelect
-                                className="nice-select w-full"
-                                options={[
-                                  {
-                                    text: t("all agents"),
-                                    value: "all",
-                                  },
-                                  ...agents?.map((agent: any) => ({
-                                    value: agent.id,
-                                    text: agent.name,
-                                  })),
-                                ]}
-                                defaultCurrent={filters?.agent || "all"}
-                                onChange={handleAgentChange}
-                                name=""
-                                placeholder=""
-                              />
-                            </div>
-                          </div>
                         </div>
+
                         <div className="col-6">
-                          {/* donwn price */}
+                          {/* down price */}
                           <div className="w-full">
                             <h6 className="block-title fw-bold mt-45 mb-20">
                               {t("down_price")}
@@ -117,6 +110,85 @@ const ListingDropdownModal = ({
                             </div>
                           </div>
                         </div>
+
+                        {/* amenities */}
+                        <div className="col-12">
+                          <div className="w-full mt-30">
+                            <h6 className="block-title fw-bold mb-20">
+                              {t("amenities")}
+                            </h6>
+                            <div className="amenities-list">
+                              <div className="d-flex flex-wrap gap-2">
+                                {amenities?.map((amenity: any) => (
+                                  <button
+                                    key={amenity.id}
+                                    type="button"
+                                    onClick={() =>
+                                      handleAmenityToggle(amenity.id)
+                                    }
+                                    className="amenity-tag"
+                                    style={{
+                                      padding: "8px 16px",
+                                      border: "1px solid #ddd",
+                                      borderRadius: "25px",
+                                      background: selectedAmenities.includes(
+                                        amenity.id
+                                      )
+                                        ? "#FF6B35"
+                                        : "white",
+                                      color: selectedAmenities.includes(
+                                        amenity.id
+                                      )
+                                        ? "white"
+                                        : "#333",
+                                      cursor: "pointer",
+                                      transition: "all 0.3s ease",
+                                      fontSize: "14px",
+                                      fontWeight: selectedAmenities.includes(
+                                        amenity.id
+                                      )
+                                        ? "500"
+                                        : "normal",
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: "6px",
+                                      userSelect: "none",
+                                      outline: "none",
+                                      position: "relative",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      if (
+                                        !selectedAmenities.includes(amenity.id)
+                                      ) {
+                                        e.currentTarget.style.borderColor =
+                                          "#FF6B35";
+                                        e.currentTarget.style.color = "#FF6B35";
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (
+                                        !selectedAmenities.includes(amenity.id)
+                                      ) {
+                                        e.currentTarget.style.borderColor =
+                                          "#ddd";
+                                        e.currentTarget.style.color = "#333";
+                                      }
+                                    }}
+                                  >
+                                    {amenity.title}
+                                    {selectedAmenities.includes(amenity.id) && (
+                                      <i
+                                        className="fa-solid fa-check"
+                                        style={{ fontSize: "12px" }}
+                                      ></i>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* search */}
                         <div className="col-12">
                           <button
@@ -136,6 +208,7 @@ const ListingDropdownModal = ({
                               onClick={handleResetFilter}
                               style={{ cursor: "pointer" }}
                               className="tran3s"
+                              type="button"
                             >
                               <i className="fa-regular fa-arrows-rotate"></i>
                               <span>{t("reset_filter")}</span>

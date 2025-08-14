@@ -3,8 +3,10 @@ import { useLocale, useTranslations } from "next-intl";
 
 const CommonPropertyFeatureList = ({
   property,
+  setFeaturesContent,
 }: {
   property?: PropertyTypes;
+  setFeaturesContent?: any;
 }) => {
   const t = useTranslations("endUser");
   const locale = useLocale();
@@ -38,6 +40,7 @@ const CommonPropertyFeatureList = ({
 
   // If there are no features, show a message
   if (property_feature_list.length === 0) {
+    setFeaturesContent(false)
     return (
       <div className="accordion" id="accordionTwo">
         <div className="text-center py-4 text-muted">
@@ -54,7 +57,9 @@ const CommonPropertyFeatureList = ({
           <h2 className="accordion-header">
             <button
               className={`accordion-button ${
-                locale === "ar" ? "after:mr-auto noMl" : "after:ml-auto after:mr-[0px]"
+                locale === "ar"
+                  ? "after:mr-auto noMl"
+                  : "after:ml-auto after:mr-[0px]"
               } ${item.id === 1 ? "" : "collapsed"}`}
               type="button"
               data-bs-toggle="collapse"
