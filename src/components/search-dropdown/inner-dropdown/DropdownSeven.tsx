@@ -40,32 +40,8 @@ interface GooglePlacePrediction {
   };
 }
 
-interface DropdownSevenProps {
-  handleBathroomChange: (event: any) => void;
-  handleBedroomChange: (event: any) => void;
-  handleSearchChange: (event: any) => void;
-  handlePriceChange: (value: any) => void;
-  maxPrice: any;
-  priceValue: any;
-  handleResetFilter: () => void;
-  // Advanced filter handlers
-  handleAmenitiesChange: (amenities: number[]) => void;
-  handlePaymentMethodChange: (paymentMethod: string) => void;
-  handleFurnishingChange: (furnishing: string) => void;
-  handleSizeChange: (size: string) => void;
-  handleLocationChange: (location: LocationData | any) => void;
-  handleStatusChange: (event: any) => void;
-  handlePriceDropChange: (value: any) => void;
-  handleAgentChange?: (value: any) => void;
-  handleTypeChange?: (value: any) => void;
-  filters?: any;
-  // New props for mobile toggle
-  showMap?: boolean;
-  onToggleView?: (showMap: boolean) => void;
-  isMobile?: boolean;
-}
 
-const DropdownSeven: React.FC<DropdownSevenProps> = ({
+const DropdownSeven = ({
   handleBathroomChange,
   handleBedroomChange,
   handleLocationChange,
@@ -86,7 +62,7 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   showMap = false,
   onToggleView,
   isMobile = false,
-}) => {
+}:any) => {
   // Get default location from localStorage filters.location
   const getDefaultLocationQuery = () => {
     if (typeof window !== "undefined") {
