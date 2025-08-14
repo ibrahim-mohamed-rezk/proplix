@@ -48,8 +48,11 @@ interface DropdownSevenProps {
   maxPrice: any;
   priceValue: any;
   handleResetFilter: () => void;
-  selectedAmenities: string[];
-  handleAmenityChange: () => void;
+  // Advanced filter handlers
+  handleAmenitiesChange: (amenities: number[]) => void;
+  handlePaymentMethodChange: (paymentMethod: string) => void;
+  handleFurnishingChange: (furnishing: string) => void;
+  handleSizeChange: (size: string) => void;
   handleLocationChange: (location: LocationData | any) => void;
   handleStatusChange: (event: any) => void;
   handlePriceDropChange: (value: any) => void;
@@ -75,8 +78,10 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
   maxPrice,
   priceValue,
   handleResetFilter,
-  selectedAmenities,
-  handleAmenityChange,
+  handleAmenitiesChange,
+  handlePaymentMethodChange,
+  handleFurnishingChange,
+  handleSizeChange,
   filters,
   showMap = false,
   onToggleView,
@@ -763,17 +768,12 @@ const DropdownSeven: React.FC<DropdownSevenProps> = ({
       </form>
 
       <ListingDropdownModal
-        handleSearchChange={handleSearchChange}
-        handleBedroomChange={handleBedroomChange}
-        handleBathroomChange={handleBathroomChange}
-        handlePriceChange={handlePriceChange}
-        maxPrice={maxPrice}
-        priceValue={priceValue}
+        handleAmenitiesChange={handleAmenitiesChange}
+        handlePaymentMethodChange={handlePaymentMethodChange}
+        handleFurnishingChange={handleFurnishingChange}
+        handleSizeChange={handleSizeChange}
         handleResetFilter={handleResetFilter}
-        selectedAmenities={selectedAmenities}
-        handleAmenityChange={handleAmenityChange}
-        handleLocationChange={handleLocationChange}
-        handleStatusChange={handleStatusChange}
+        filters={filters}
       />
     </>
   );

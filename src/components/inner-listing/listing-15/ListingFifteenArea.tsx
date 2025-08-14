@@ -21,9 +21,10 @@ const ListingFifteenArea = () => {
   const t = useTranslations("endUser");
   const { sticky } = UseSticky();
   const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [filters, setFilters] = useState<{
-    [key: string]: string | number | null;
-  }>(() => {
+  type Filters = {
+    [key: string]: string | number | number[] | null;
+  };
+  const [filters, setFilters] = useState<Filters>(() => {
     const storedFilters = localStorage.getItem("filters");
     return storedFilters
       ? JSON.parse(storedFilters)
@@ -275,6 +276,10 @@ const ListingFifteenArea = () => {
       status: "sale",
       price: null,
       down_price: null,
+      amenities: [],
+      payment_method: null,
+      furnishing: null,
+      size: null,
       type_id: null,
     };
     setFilters(defaultFilters);
@@ -396,8 +401,12 @@ const ListingFifteenArea = () => {
             maxPrice={0}
             priceValue={0}
             handleResetFilter={handleResetFilter}
-            selectedAmenities={[]}
-            handleAmenityChange={() => {}}
+            handleAmenitiesChange={(amenities) => {
+              setFilters({
+                ...filters,
+                amenities: amenities?.length ? amenities : [],
+              });
+            }}
             filters={filters}
             handleLocationChange={(location) => {
               setFilters({ ...filters, location: location.description });
@@ -414,6 +423,24 @@ const ListingFifteenArea = () => {
                   down_price: value.split("-")[1],
                 });
               }
+            }}
+            handlePaymentMethodChange={(paymentMethod) => {
+              setFilters({
+                ...filters,
+                payment_method: paymentMethod || null,
+              });
+            }}
+            handleFurnishingChange={(furnishing) => {
+              setFilters({
+                ...filters,
+                furnishing: furnishing || null,
+              });
+            }}
+            handleSizeChange={(size) => {
+              setFilters({
+                ...filters,
+                size: size || null,
+              });
             }}
           />
         </div>

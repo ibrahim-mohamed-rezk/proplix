@@ -27,15 +27,15 @@ const CommonBanner = ({
               {t(property?.status as string)}
             </div>
             <div
-              className={`list-type !w-fit px-[8px] !border-none rounded-[23px] text-uppercase me-3 !bg-[#FF6625]
+              className={`list-type !w-fit px-[8px] !border-none rounded-[23px] text-uppercase my-3 !bg-[#FF6625]
             }`}
             >
               {property?.property_type?.title as string}
             </div>
           </div>
-          <div className="address mt-15">
+          {/* <div className="address mt-15">
             <i className="bi bi-geo-alt"></i> {property?.area?.name}
-          </div>
+          </div> */}
         </div>
       </div>
       {/* <div className="col-lg-6 d-flex justify-content-start lg:justify-content-end PropertyTypes text-lg-end"> */}
