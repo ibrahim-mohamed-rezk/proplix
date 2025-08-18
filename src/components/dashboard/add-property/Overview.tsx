@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import GoogleLocationInput from "@/components/common/GoogleLocationInput";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
+
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
 import { useRouter } from "@/i18n/routing";
@@ -19,6 +20,8 @@ import {
   Camera,
   Check,
   X,
+  CreditCard,
+  Coins
 } from "lucide-react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
@@ -37,6 +40,10 @@ type FormInputs = {
   status: string;
   type: string;
   immediate_delivery: string;
+  payment_method: string;
+  paid_months?: string;
+  furnishing: string;
+  mortgage?: string;
 
   // English fields
   title_en: string;
@@ -99,10 +106,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   const t = useTranslations("properties");
   const router = useRouter();
   const locale = useLocale();
-  const {
+   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    control,
+    watch,
   } = useForm<FormInputs>();
 
   const [descriptionEn, setDescriptionEn] = useState<string>("");
@@ -119,6 +129,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     english: true,
     images: true,
   });
+  const paymentMethod = useWatch({ control, name: "payment_method" }) || "cash";
 
   // State for dropdown options
   const [propertyTypes, setPropertyTypes] = useState<SelectOption[]>([]);
@@ -209,26 +220,19 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     fetchDropdownData();
   }, []);
+  
+  useEffect(() => {
+    setValue("payment_method", "cash");
+  }, [setValue]);
 
   const onSubmit = async (data: FormInputs) => {
-    // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
-    if (!token) {
-      showToast(t("auth_token_not_found"), "error");
-      return;
-    }
-
-    if (!imagePreview) {
-      showToast(t("please_select_an_image"), "error");
-      return;
-    }
 
     const formData = new FormData();
 
+    // General fields
     formData.append("type_id", data.type_id);
-    formData.append("area_id", data.area_id);
-    // formData.append("user_id", data.userId);
+    // formData.append("area_id", data.area_id);
     formData.append("price", data.price);
-    formData.append("down_price", data.down_price);
     formData.append("sqt", data.sqt);
     formData.append("bedroom", data.bedroom);
     formData.append("bathroom", data.bathroom);
@@ -236,9 +240,22 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     formData.append("status", data.status);
     formData.append("type", data.type);
     formData.append("immediate_delivery", data.immediate_delivery);
+    formData.append("furnishing", data.furnishing);
+    formData.append("payment_method", data.payment_method);
 
-    // Send location data as separate fields instead of JSON string
-    if (locationData) {
+    // Conditional fields (installment)
+    if (data.payment_method === "installment") {
+      if (data.down_price) formData.append("down_price", data.down_price);
+      if (data.paid_months) formData.append("paid_months", data.paid_months);
+    }
+
+    // Mortgage (optional)
+    if (data.mortgage) {
+      formData.append("mortgage", data.mortgage);
+    }
+
+    // Location
+   if (locationData) {
       formData.append("location", locationData.description);
       formData.append("location_place_id", locationData.placeId);
 
@@ -254,26 +271,26 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       }
     }
 
+    // English
     formData.append("title[en]", data.title_en);
     formData.append("description[en]", descriptionEn);
     formData.append("keywords[en]", data.keywords_en);
     formData.append("slug[en]", data.slug_en);
 
+    // Arabic
     formData.append("title[ar]", data.title_ar);
     formData.append("description[ar]", descriptionAr);
     formData.append("keywords[ar]", data.keywords_ar);
     formData.append("slug[ar]", data.slug_ar);
 
+    // Cover image
+if (imagePreview && imagePreview.file) {
     formData.append("cover", imagePreview.file);
-
+  }
     try {
-      const response = await postData(
-        "agent/property_listings",
-        formData,
-        new AxiosHeaders({ Authorization: `Bearer ${token}` })
-      );
+      const response = await postData("agent/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
       showToast(t("property_added_successfully"), "success");
-      router.push(`/properties/edit-property/${response?.data?.id}`);
+      router.push(`/properties/view/${response?.data?.id}`);
     } catch (error) {
       console.error("Failed to create property:", error);
       showToast(t("failed_to_add_property"), "error");
@@ -628,21 +645,65 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 description={t("property_pricing_payment_info")}
               />
               {expandedSections.pricing && (
-                <div
-                  className="section-content p-4"
-                  style={{ borderTop: "1px solid #f8f9fa" }}
-                >
-                  <div className="row g-4">
-                    <div className="col-md-6">
-                      <InputField
-                        label={t("price")}
-                        name="price"
-                        type="number"
-                        required
-                        placeholder={t("enter_property_price")}
-                      />
+              <div className="p-4 row g-4">
+                <div className="col-12 col-md-6">
+                  <InputField
+                    label={t("price")}
+                    name="price"
+                    type="number"
+                    required
+                    placeholder={t("enter_property_price")}
+                  />
+                </div>
+
+                {/* Payment Method Toggle */}
+                <div className="col-12 col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label fw-medium text-dark">
+                      {t("payment_method")}
+                      <span className="text-danger ms-1">*</span>
+                    </label>
+                    <div className="btn-group w-100 shadow-sm" role="group">
+                      <button
+                        type="button"
+                        onClick={() => setValue("payment_method", "cash")}
+                        className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                          paymentMethod === "cash"
+                            ? "btn-primary text-white"
+                            : "btn-outline-secondary"
+                        }`}
+                        style={paymentMethod === "cash" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
+                      >
+                        <Coins className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
+                        {t("cash")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setValue("payment_method", "installment")}
+                        className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                          paymentMethod === "installment"
+                            ? "btn-primary text-white"
+                            : "btn-outline-secondary"
+                        }`}
+                        style={paymentMethod === "installment" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
+                      >
+                        <CreditCard className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
+                        {t("installment")}
+                      </button>
                     </div>
-                    <div className="col-md-6">
+                    {errors.payment_method && (
+                      <div className="text-danger small d-flex align-items-center mt-1">
+                        <span className="bg-danger rounded-circle me-2" style={{width: "4px", height: "4px"}}></span>
+                        {t("field_required")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Down Payment & Paid Months (only if installment) */}
+                {paymentMethod === "installment" && (
+                  <>
+                    <div className="col-12 col-md-6">
                       <InputField
                         label={t("down_price")}
                         name="down_price"
@@ -651,9 +712,79 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         placeholder={t("enter_down_payment_amount")}
                       />
                     </div>
+                    <div className="col-12 col-md-6">
+                      <InputField
+                        label={t("number_of_months")}
+                        name="paid_months"
+                        type="number"
+                        required
+                        placeholder={t("enter_number_of_installment_months")}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Mortgage Input */}
+                <div className="col-12">
+                  <div className="mb-3" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+                    <label className="form-label fw-medium text-dark">
+                      {t("mortgage")}
+                    </label>
+                    <div className="d-flex align-items-center justify-content-between p-3 bg-light rounded border">
+                      <div className="d-flex align-items-center gap-3">
+                        <div className="p-2 bg-white rounded shadow-sm">
+                          <Home className="w-4 h-4" style={{width: "1rem", height: "1rem", color: "#F26A3F"}} />
+                        </div>
+                        <div>
+                          <p className="small fw-medium text-dark mb-0">
+                            {t("mortgage_available")}
+                          </p>
+                          <p className="small text-muted mb-0">
+                            {t("mortgage_placeholder")}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentValue = watch("mortgage") === "yes";
+                          setValue("mortgage", currentValue ? "no" : "yes");
+                        }}
+                        className="btn p-0 border-0"
+                        style={{
+                          width: "3rem",
+                          height: "1.75rem",
+                          borderRadius: "1rem",
+                          backgroundColor: watch("mortgage") === "yes" ? "#F26A3F" : "#6c757d",
+                          position: "relative",
+                          transition: "all 0.3s ease"
+                        }}
+                      >
+                        <span
+                          className="position-absolute bg-white rounded-circle shadow-sm"
+                          style={{
+                            width: "1.25rem",
+                            height: "1.25rem",
+                            top: "0.25rem",
+                            left: watch("mortgage") === "yes" 
+                              ? (locale === 'ar' ? "0.25rem" : "1.5rem")
+                              : (locale === 'ar' ? "1.5rem" : "0.25rem"),
+                            transition: "all 0.3s ease",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}
+                        >
+                          {watch("mortgage") === "yes" && (
+                            <Check className="w-3 h-3" style={{width: "0.75rem", height: "0.75rem", color: "#F26A3F"}} />
+                          )}
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
 
             {/* Room Configuration */}
@@ -763,6 +894,20 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         ]}
                         placeholder={t("select_option")}
                       />
+                      <InputField
+                // vaues is ==>'all-furnished','unfurnished','partly-furnished'
+                  label={t("furnishing")}
+                  name="furnishing"
+                  type="select"
+                  required
+                  options={[
+                    { value: "all-furnished", label: t("furnished") },
+                    { value: "unfurnished", label: t("unfurnished") },
+                    { value: "partly-furnished", label: t("partly_furnished") },
+
+                  ]}
+                  placeholder={t("select_furnishing")}
+                />
                     </div>
                   </div>
                 </div>
