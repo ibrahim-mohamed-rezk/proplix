@@ -713,7 +713,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                     )}
 
                     {/* Mortgage Input */}
-                    <div className="col-12">
+                    {/* <div className="col-12">
                       <div
                         className="mb-3"
                         dir={locale === "ar" ? "rtl" : "ltr"}
@@ -795,7 +795,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 )}
               </div>

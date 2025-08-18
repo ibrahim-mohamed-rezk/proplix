@@ -725,7 +725,7 @@ if (imagePreview && imagePreview.file) {
                 )}
 
                 {/* Mortgage Input */}
-                <div className="col-12">
+                {/* <div className="col-12">
                   <div className="mb-3" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                     <label className="form-label fw-medium text-dark">
                       {t("mortgage")}
@@ -782,7 +782,7 @@ if (imagePreview && imagePreview.file) {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
             </div>
