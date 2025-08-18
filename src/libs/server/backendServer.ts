@@ -2,7 +2,8 @@ import axios from "axios";
 
 // Create an Axios instance
 const backendServer = axios.create({
-  baseURL: "https://darkgrey-chough-759221.hostingersite.com/api/v1/",
+  baseURL: "https://proplix.shop/api/v1/",
+
   headers: {
     "Content-Type": "multipart/form-data",
   },
