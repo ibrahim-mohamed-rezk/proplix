@@ -9,6 +9,7 @@ import Image from "next/image";
 import { postData } from "@/libs/server/backendServer";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
 
 const PropertiesCard = ({
   item,
@@ -18,18 +19,74 @@ const PropertiesCard = ({
   token: string;
 }) => {
   const t = useTranslations("endUser");
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Check if property is in favorites when component mounts
+  useEffect(() => {
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+    setIsFavorite(favorites.includes(item?.id.toString()));
+  }, [item?.id]);
+
   const addToFavorites = async (id: string | number) => {
     try {
-      const response = await postData(
-        "favourite/toggle",
-        { property_id: id },
-        {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        }
-      );
-      return response.data;
+      // Get current favorites from localStorage
+      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      const propertyId = id.toString();
+
+      let updatedFavorites;
+      let isNowFavorite;
+
+      if (favorites.includes(propertyId)) {
+        // Remove from favorites
+        updatedFavorites = favorites.filter(
+          (favId: string) => favId !== propertyId
+        );
+        isNowFavorite = false;
+        toast.success("Removed from favorites");
+      } else {
+        // Add to favorites
+        updatedFavorites = [...favorites, propertyId];
+        isNowFavorite = true;
+        toast.success("Added to favorites");
+      }
+
+      // Update localStorage
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+      setIsFavorite(isNowFavorite);
+
+      // Make API call
+      // const response = await postData(
+      //   "favourite/toggle",
+      //   { property_id: id },
+      //   {
+      //     Authorization: `Bearer ${token}`,
+      //     "Content-Type": "multipart/form-data",
+      //   }
+      // );
+      // return response.data;
     } catch (error) {
+      // Revert localStorage change on API error
+      const currentFavorites = JSON.parse(
+        localStorage.getItem("favorites") || "[]"
+      );
+      const propertyId = id.toString();
+
+      if (isFavorite) {
+        // If it was favorite but API failed, add it back
+        if (!currentFavorites.includes(propertyId)) {
+          currentFavorites.push(propertyId);
+          localStorage.setItem("favorites", JSON.stringify(currentFavorites));
+          setIsFavorite(true);
+        }
+      } else {
+        // If it wasn't favorite but API failed, remove it
+        const revertedFavorites = currentFavorites.filter(
+          (favId: string) => favId !== propertyId
+        );
+        localStorage.setItem("favorites", JSON.stringify(revertedFavorites));
+        setIsFavorite(false);
+      } 
+
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data?.msg || "An error occurred");
       } else {
@@ -72,7 +129,15 @@ const PropertiesCard = ({
               }}
               className="fav-btn tran3s"
             >
-              <i className="fa-light fa-heart"></i>
+              <i
+                className={`fa-light fa-heart ${
+                  isFavorite ? "text-orange-500" : ""
+                }`}
+                style={{
+                  color: isFavorite ? "#FF6625" : undefined,
+                  fontSize: "18px",
+                }}
+              ></i>
             </button>
             {/* <div
                       id={`carousel${item?.carousel}`}
