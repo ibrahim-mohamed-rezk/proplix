@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   PropertyData,
@@ -26,15 +25,24 @@ import {
   Camera,
   CreditCard,
   Coins,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import defaultAvatar from "@/assets/images/loader.gif";
 import GoogleLocationInput from "@/components/common/GoogleLocationInput";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, useController } from "react-hook-form";
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
 import { useLocale } from "next-intl";
 import { toast } from "react-toastify";
 import RichTextEditor from "@/components/RichTextEditor";
+
+// Extend the FormInputs type to include the new fields
+interface FormInputsExtended extends FormInputs {
+  landing_space: string;
+  starting_day: string;
+}
 
 interface MainTabProps {
   token: string;
@@ -59,7 +67,7 @@ export const MainTab: React.FC<MainTabProps> = ({
     setValue,
     control,
     watch,
-  } = useForm<FormInputs>();
+  } = useForm<FormInputsExtended>();
 
   const [descriptionEn, setDescriptionEn] = useState<string>("");
   const [descriptionAr, setDescriptionAr] = useState<string>("");
@@ -100,7 +108,6 @@ export const MainTab: React.FC<MainTabProps> = ({
   useEffect(() => {
     if (property?.data && isEditing) {
       const data = property.data;
-
       // Set basic fields
       setValue("type_id", data.type?.id?.toString() || "");
       setValue("area_id", data.area?.id?.toString() || "");
@@ -116,6 +123,9 @@ export const MainTab: React.FC<MainTabProps> = ({
       setValue("paid_months", data.paid_months?.toString() || "");
       setValue("furnishing", data.furnishing || "");
       setValue("mortgage", data.mortgage || "no");
+      // Set new fields
+      setValue("landing_space", data.landing_space?.toString() || "");
+      setValue("starting_day", data.starting_day || "");
 
       // Set English fields
       setValue("title_en", data.descriptions?.en?.title || "");
@@ -129,8 +139,7 @@ export const MainTab: React.FC<MainTabProps> = ({
       setValue("slug_ar", data.descriptions?.ar?.slug || "");
       setDescriptionAr(data.descriptions?.ar?.description || "");
 
-      // Set existing cover image - Note: PropertyData doesn't have a cover field in your types
-      // You might need to add it or use the first image from property_listing_images
+      // Set existing cover image
       if (
         data.property_listing_images &&
         data.property_listing_images.length > 0
@@ -166,15 +175,12 @@ export const MainTab: React.FC<MainTabProps> = ({
 
   const handleImageSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-
     if (imagePreview && !imagePreview.isExisting) {
       URL.revokeObjectURL(imagePreview.url);
     }
-
     const file = files[0];
     const url = URL.createObjectURL(file);
     const id = `${Date.now()}-${Math.random()}`;
-
     setImagePreview({ file, url, id });
   };
 
@@ -196,7 +202,6 @@ export const MainTab: React.FC<MainTabProps> = ({
   useEffect(() => {
     const fetchDropdownData = async () => {
       if (!token || !isEditing) return;
-
       try {
         const [typesResponse, areasResponse] = await Promise.all([
           getData(
@@ -210,7 +215,6 @@ export const MainTab: React.FC<MainTabProps> = ({
             new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
           ),
         ]);
-
         if (typesResponse.status) setPropertyTypes(typesResponse.data.data);
         if (areasResponse.status) setAreas(areasResponse.data.data);
       } catch (error) {
@@ -218,159 +222,408 @@ export const MainTab: React.FC<MainTabProps> = ({
         showToast(t("error_fetching_dropdown_data"), "error");
       }
     };
-
     fetchDropdownData();
   }, [token, locale, t, isEditing]);
 
-  const onSubmit = async (data: FormInputs) => {
-    const formData = new FormData();
-
-    // General fields
-    formData.append("_method", "PUT");
-
-    formData.append("type_id", data.type_id);
-    formData.append("price", data.price);
-    formData.append("sqt", data.sqt);
-    formData.append("bedroom", data.bedroom);
-    formData.append("bathroom", data.bathroom);
-    formData.append("kitichen", data.kitchen);
-    formData.append("status", data.status);
-    formData.append("immediate_delivery", data.immediate_delivery);
-    formData.append("furnishing", data.furnishing);
-    formData.append("payment_method", data.payment_method);
-
-    // Conditional fields (installment)
-    if (data.payment_method === "installment") {
-      if (data.down_price) formData.append("down_price", data.down_price);
-      if (data.paid_months) formData.append("paid_months", data.paid_months);
-    }
-
-    // Mortgage (optional)
-    if (data.mortgage) {
-      formData.append("mortgage", data.mortgage);
-    }
-
-    // Location
-    if (locationData) {
-      formData.append("location", locationData.description);
-      formData.append("location_place_id", locationData.placeId);
-
-      if (locationData.coordinates) {
-        formData.append(
-          "location_lat",
-          locationData.coordinates.lat.toString()
-        );
-        formData.append(
-          "location_lng",
-          locationData.coordinates.lng.toString()
-        );
-      }
-    }
-
-    // English
-    formData.append("title[en]", data.title_en);
-    formData.append("description[en]", descriptionEn);
-    formData.append("keywords[en]", data.keywords_en);
-    formData.append("slug[en]", data.slug_en);
-
-    // Arabic
-    formData.append("title[ar]", data.title_ar);
-    formData.append("description[ar]", descriptionAr);
-    formData.append("keywords[ar]", data.keywords_ar);
-    formData.append("slug[ar]", data.slug_ar);
-
-    // Cover image (only if new image selected)
-    if (imagePreview && imagePreview.file) {
-      formData.append("cover", imagePreview.file);
-    }
-
-    try {
-      const response = await postData(
-        `agent/property_listings/${property.data.id}`,
-        formData,
-        new AxiosHeaders({ Authorization: `Bearer ${token}` })
-      );
-
-      showToast(t("property_updated_successfully"), "success");
-      setIsEditing(false);
-      window.location.reload();
-    } catch (error) {
-      console.error("Failed to update property:", error);
-      showToast(t("failed_to_update_property"), "error");
-    }
+  // Format number with spaces as thousand separators
+  const formatNumberWithSpaces = (value: string): string => {
+    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
 
-  const SectionHeader = ({
-    title,
-    icon,
-    sectionKey,
-    description,
+  // Formatted Number Input Component
+  const FormattedNumberInput = ({
+    label,
+    name,
+    required = false,
+    placeholder = "",
   }: {
-    title: string;
-    icon: React.ReactNode;
-    sectionKey: keyof typeof expandedSections;
-    description?: string;
-  }) => (
-    <div
-      className="section-header d-flex justify-content-between align-items-center p-4 cursor-pointer border-0"
-      onClick={() => toggleSection(sectionKey)}
-      style={{
-        background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-        transition: "all 0.3s ease",
-        borderRadius: "0.75rem 0.75rem 0 0",
-      }}
-    >
-      <div className="d-flex align-items-center gap-4">
-        <div
-          className="icon-container d-flex align-items-center justify-content-center me-3"
+    label: string;
+    name: keyof FormInputsExtended;
+    required?: boolean;
+    placeholder?: string;
+  }) => {
+    const { field } = useController({ name, control });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const digits = value.replace(/\D/g, "");
+      field.onChange(digits ? Number(digits) : "");
+    };
+
+    const displayValue = field.value
+      ? Number(field.value).toLocaleString("en").replace(/,/g, " ")
+      : "";
+
+    return (
+      <div className="mb-4">
+        <label className="form-label fw-medium text-dark mb-2">
+          {label}
+          {required && <span className="text-danger ms-1">*</span>}
+        </label>
+        <input
+          type="text"
+          value={displayValue}
+          onChange={handleChange}
+          placeholder={placeholder}
+          className="form-control premium-input"
           style={{
-            width: "48px",
-            height: "48px",
-            background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-            transition: "transform 0.3s ease",
-          }}
-        >
-          {icon}
-        </div>
-        <div>
-          <h3 className="h5 mb-1 fw-semibold text-dark">{title}</h3>
-          {description && (
-            <p className="small text-muted mb-0 opacity-75">{description}</p>
-          )}
-        </div>
-      </div>
-      <div className="d-flex align-items-center">
-        <div
-          className="status-indicator me-3"
-          style={{
-            width: "8px",
-            height: "8px",
-            borderRadius: "50%",
-            backgroundColor: expandedSections[sectionKey]
-              ? "#198754"
-              : "#6c757d",
+            border: "2px solid #e9ecef",
+            borderRadius: "0.75rem",
+            padding: "0.75rem 1rem",
+            fontSize: "0.95rem",
             transition: "all 0.3s ease",
-            boxShadow: expandedSections[sectionKey]
-              ? "0 0 8px rgba(25,135,84,0.3)"
-              : "none",
+            background: "#ffffff",
           }}
-        ></div>
-        <div
-          className="chevron-icon"
-          style={{
-            transition: "transform 0.3s ease",
-            transform: expandedSections[sectionKey]
-              ? "rotate(180deg)"
-              : "rotate(0deg)",
-          }}
-        >
-          <ChevronDown className="w-5 h-5 text-muted" />
-        </div>
+          inputMode="numeric"
+          pattern="[0-9 ]*"
+          dir="ltr"
+        />
+        {errors[name] && (
+          <div className="error-message text-danger small mt-2 d-flex align-items-center">
+            <div
+              className="error-dot me-2"
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                backgroundColor: "#dc3545",
+              }}
+            ></div>
+            {t("field_required")}
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
+
+  // Date Input Component (Calendar opens ABOVE)
+  const DateInput = ({
+    label,
+    name,
+    required = false,
+  }: {
+    label: string;
+    name: keyof FormInputsExtended;
+    required?: boolean;
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const calendarRef = useRef<HTMLDivElement>(null);
+
+    const fieldValue = watch(name);
+
+    useEffect(() => {
+      if (fieldValue) {
+        setSelectedDate(new Date(fieldValue));
+      }
+    }, [fieldValue]);
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          calendarRef.current &&
+          !calendarRef.current.contains(event.target as Node)
+        ) {
+          setIsOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const formatDate = (date: Date): string => {
+      return date.toISOString().split("T")[0]; // YYYY-MM-DD
+    };
+
+    const formatDisplayDate = (date: Date): string => {
+      return date.toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    };
+
+    const handleDateSelect = (date: Date) => {
+      setSelectedDate(date);
+      setValue(name, formatDate(date));
+      setIsOpen(false);
+    };
+
+    const getDaysInMonth = (date: Date): Date[] => {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const days: Date[] = [];
+
+      const firstDayOfWeek = firstDay.getDay();
+      for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        days.push(new Date(year, month, -i));
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        days.push(new Date(year, month, day));
+      }
+
+      const totalDays = Math.ceil(days.length / 7) * 7;
+      const remainingDays = totalDays - days.length;
+      for (let day = 1; day <= remainingDays; day++) {
+        days.push(new Date(year, month + 1, day));
+      }
+
+      return days;
+    };
+
+    const navigateMonth = (direction: "prev" | "next") => {
+      setCurrentMonth((prev) => {
+        const newMonth = new Date(prev);
+        if (direction === "prev") newMonth.setMonth(prev.getMonth() - 1);
+        else newMonth.setMonth(prev.getMonth() + 1);
+        return newMonth;
+      });
+    };
+
+    const isToday = (date: Date): boolean => {
+      const today = new Date();
+      return date.toDateString() === today.toDateString();
+    };
+
+    const isSelected = (date: Date): boolean => {
+      return selectedDate
+        ? date.toDateString() === selectedDate.toDateString()
+        : false;
+    };
+
+    const isCurrentMonth = (date: Date): boolean => {
+      return date.getMonth() === currentMonth.getMonth();
+    };
+
+    const monthNames =
+      locale === "ar"
+        ? [
+            "يناير",
+            "فبراير",
+            "مارس",
+            "أبريل",
+            "مايو",
+            "يونيو",
+            "يوليو",
+            "أغسطس",
+            "سبتمبر",
+            "أكتوبر",
+            "نوفمبر",
+            "ديسمبر",
+          ]
+        : [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+
+    const dayNames =
+      locale === "ar"
+        ? ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"]
+        : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    return (
+      <div className="mb-4" ref={calendarRef}>
+        <label className="form-label fw-medium text-dark mb-2">
+          {label}
+          {required && <span className="text-danger ms-1">*</span>}
+        </label>
+        <div className="relative">
+          <input
+            {...register(name, { required })}
+            type="text"
+            readOnly
+            value={selectedDate ? formatDisplayDate(selectedDate) : ""}
+            onClick={() => setIsOpen(!isOpen)}
+            placeholder={t("select_date")}
+            className="form-control premium-input"
+            style={{
+              border: "2px solid #e9ecef",
+              borderRadius: "0.75rem",
+              padding: "0.75rem 1rem",
+              fontSize: "0.95rem",
+              background: "#ffffff",
+              paddingRight: "2.5rem",
+            }}
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="position-absolute"
+            style={{
+              right: "0.75rem",
+              top: "50%",
+              transform: "translateY(-50%)",
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
+          >
+            <Calendar className="w-5 h-5 text-muted" />
+          </button>
+        </div>
+
+        {isOpen && (
+          <div
+            className="position-absolute bg-white border border-slate-300 rounded-lg shadow-lg p-4 min-w-[300px] z-[1000]"
+            style={{
+              boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+              borderRadius: "0.75rem",
+              border: "1px solid #e9ecef",
+              top: "-5vw", // Opens above
+              left: 0,
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <button
+                type="button"
+                onClick={() => navigateMonth("prev")}
+                className="btn p-2"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <h3 className="h6 mb-0 fw-semibold text-dark">
+                {monthNames[currentMonth.getMonth()]}{" "}
+                {currentMonth.getFullYear()}
+              </h3>
+              <button
+                type="button"
+                onClick={() => navigateMonth("next")}
+                className="btn p-2"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div
+              className="d-grid"
+              style={{
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gap: "0.25rem",
+                marginBottom: "0.5rem",
+              }}
+            >
+              {dayNames.map((day) => (
+                <div
+                  key={day}
+                  className="text-center text-xs fw-medium text-muted py-2"
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div
+              className="d-grid"
+              style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem" }}
+            >
+              {getDaysInMonth(currentMonth).map((date, index) => {
+                const isCurrentMonthDay = isCurrentMonth(date);
+                const isSelectedDay = isSelected(date);
+                const isTodayDay = isToday(date);
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleDateSelect(date)}
+                    className={`btn text-sm rounded-lg transition-all duration-200 ${
+                      isSelectedDay
+                        ? "bg-[#F26A3F] text-white"
+                        : isCurrentMonthDay
+                        ? "text-dark hover:bg-light"
+                        : "text-muted"
+                    } ${
+                      isTodayDay && !isSelectedDay
+                        ? "border border-[#F26A3F]"
+                        : ""
+                    }`}
+                    disabled={!isCurrentMonthDay}
+                    style={{
+                      width: "2rem",
+                      height: "2rem",
+                      padding: "0",
+                      fontSize: "0.875rem",
+                      ...(isSelectedDay && {
+                        boxShadow: "0 0 0 3px rgba(242, 106, 63, 0.25)",
+                        transform: "scale(1.05)",
+                      }),
+                    }}
+                  >
+                    {date.getDate()}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              className="d-flex justify-content-between mt-4 pt-4 border-top"
+              style={{ borderColor: "#e9ecef" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  handleDateSelect(today);
+                  setCurrentMonth(today);
+                }}
+                className="btn btn-link p-0"
+                style={{
+                  color: "#F26A3F",
+                  textDecoration: "none",
+                  fontSize: "0.875rem",
+                }}
+              >
+                {t("today")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="btn btn-link p-0"
+                style={{
+                  color: "#6c757d",
+                  textDecoration: "none",
+                  fontSize: "0.875rem",
+                }}
+              >
+                {t("close")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {errors[name] && (
+          <div className="error-message text-danger small mt-2 d-flex align-items-center">
+            <div
+              className="error-dot me-2"
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                backgroundColor: "#dc3545",
+              }}
+            ></div>
+            {t("field_required")}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const InputField = ({
     label,
@@ -404,7 +657,6 @@ export const MainTab: React.FC<MainTabProps> = ({
             borderRadius: "0.75rem",
             padding: "0.75rem 1rem",
             fontSize: "0.95rem",
-            transition: "all 0.3s ease",
             background: "#ffffff",
           }}
         >
@@ -427,7 +679,6 @@ export const MainTab: React.FC<MainTabProps> = ({
             borderRadius: "0.75rem",
             padding: "0.75rem 1rem",
             fontSize: "0.95rem",
-            transition: "all 0.3s ease",
             background: "#ffffff",
           }}
         />
@@ -449,7 +700,152 @@ export const MainTab: React.FC<MainTabProps> = ({
     </div>
   );
 
-  // If in edit mode, render the edit form
+  // Section Header Component
+  const SectionHeader = ({
+    title,
+    icon,
+    sectionKey,
+    description,
+  }: {
+    title: string;
+    icon: React.ReactNode;
+    sectionKey: keyof typeof expandedSections;
+    description?: string;
+  }) => (
+    <div
+      className="section-header d-flex justify-content-between align-items-center p-4 cursor-pointer border-0"
+      onClick={() => toggleSection(sectionKey)}
+      style={{
+        background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+        borderRadius: "0.75rem 0.75rem 0 0",
+      }}
+    >
+      <div className="d-flex align-items-center gap-4">
+        <div
+          className="icon-container d-flex align-items-center justify-content-center me-3"
+          style={{
+            width: "48px",
+            height: "48px",
+            background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+          }}
+        >
+          {icon}
+        </div>
+        <div>
+          <h3 className="h5 mb-1 fw-semibold text-dark">{title}</h3>
+          {description && (
+            <p className="small text-muted mb-0 opacity-75">{description}</p>
+          )}
+        </div>
+      </div>
+      <div className="d-flex align-items-center">
+        <div
+          className="status-indicator me-3"
+          style={{
+            width: "8px",
+            height: "8px",
+            borderRadius: "50%",
+            backgroundColor: expandedSections[sectionKey]
+              ? "#198754"
+              : "#6c757d",
+          }}
+        ></div>
+        <div
+          className="chevron-icon"
+          style={{
+            transition: "transform 0.3s ease",
+            transform: expandedSections[sectionKey]
+              ? "rotate(180deg)"
+              : "rotate(0deg)",
+          }}
+        >
+          <ChevronDown className="w-5 h-5 text-muted" />
+        </div>
+      </div>
+    </div>
+  );
+
+  const onSubmit = async (data: FormInputsExtended) => {
+    const formData = new FormData();
+    formData.append("_method", "PUT");
+    formData.append("type_id", data.type_id);
+    formData.append("price", data.price);
+    formData.append("sqt", data.sqt);
+    formData.append("bedroom", data.bedroom);
+    formData.append("bathroom", data.bathroom);
+    formData.append("kitichen", data.kitchen);
+    formData.append("status", data.status);
+    formData.append("immediate_delivery", data.immediate_delivery);
+    formData.append("furnishing", data.furnishing);
+    formData.append("payment_method", data.payment_method);
+
+    if (data.payment_method === "installment") {
+      if (data.down_price) formData.append("down_price", data.down_price);
+      if (data.paid_months) formData.append("paid_months", data.paid_months);
+    }
+    if (data.mortgage) formData.append("mortgage", data.mortgage);
+    if (data.landing_space)
+      formData.append("landing_space", data.landing_space);
+    if (data.starting_day) formData.append("starting_day", data.starting_day);
+
+    if (locationData) {
+      formData.append("location", locationData.description);
+      formData.append("location_place_id", locationData.placeId);
+      if (locationData.coordinates) {
+        formData.append(
+          "location_lat",
+          locationData.coordinates.lat.toString()
+        );
+        formData.append(
+          "location_lng",
+          locationData.coordinates.lng.toString()
+        );
+      }
+    }
+
+    formData.append("title[en]", data.title_en);
+    formData.append("description[en]", descriptionEn);
+    formData.append("keywords[en]", data.keywords_en);
+    formData.append("slug[en]", data.slug_en);
+    formData.append("title[ar]", data.title_ar);
+    formData.append("description[ar]", descriptionAr);
+    formData.append("keywords[ar]", data.keywords_ar);
+    formData.append("slug[ar]", data.slug_ar);
+
+    if (imagePreview && imagePreview.file) {
+      formData.append("cover", imagePreview.file);
+    }
+
+    try {
+      await postData(
+        `agent/property_listings/${property.data.id}`,
+        formData,
+        new AxiosHeaders({ Authorization: `Bearer ${token}` })
+      );
+      showToast(t("property_updated_successfully"), "success");
+      setIsEditing(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to update property:", error);
+      showToast(t("failed_to_update_property"), "error");
+    }
+  };
+  const getFurnishingLabel = (value: string | undefined | null): string => {
+    if (!value) return "-";
+    switch (value) {
+      case "all-furnished":
+        return t("furnished");
+      case "unfurnished":
+        return t("unfurnished");
+      case "partly-furnished":
+        return t("partly_furnished");
+      default:
+        return value;
+    }
+  };
+  // Edit Mode
   if (isEditing) {
     return (
       <>
@@ -459,7 +855,6 @@ export const MainTab: React.FC<MainTabProps> = ({
             box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1) !important;
             outline: none !important;
           }
-
           .section-header:hover {
             background: linear-gradient(
               135deg,
@@ -467,72 +862,44 @@ export const MainTab: React.FC<MainTabProps> = ({
               #e2e6ea 100%
             ) !important;
           }
-
           .section-header:hover .icon-container {
             transform: translateY(-2px) !important;
           }
-
-          .section-content {
-            animation: slideDown 0.3s ease-out;
-          }
-
-          @keyframes slideDown {
-            from {
-              opacity: 0;
-              transform: translateY(-10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
           .form-section {
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
             border: 1px solid #e9ecef;
           }
-
           .form-section:hover {
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             transform: translateY(-2px);
           }
-
           .upload-area {
             border: 2px dashed #dee2e6;
-            transition: all 0.3s ease;
             background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
           }
-
           .upload-area:hover {
             border-color: #0d6efd;
             background: linear-gradient(135deg, #f0f7ff 0%, #e7f3ff 100%);
           }
-
           .btn-premium {
             background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
             border: none;
             border-radius: 0.75rem;
             padding: 0.75rem 2rem;
             font-weight: 600;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
           }
-
           .btn-premium:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
           }
-
           .btn-outline-premium {
             border: 2px solid #6c757d;
             border-radius: 0.75rem;
             padding: 0.75rem 2rem;
             font-weight: 600;
-            transition: all 0.3s ease;
             background: transparent;
           }
-
           .btn-outline-premium:hover {
             background: #6c757d;
             color: white;
@@ -606,8 +973,8 @@ export const MainTab: React.FC<MainTabProps> = ({
                 )}
               </div>
 
-              {/* Pricing Information */}
-              <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              {/* Pricing */}
+              <div className="form-section bg-white rounded-4 mb-4">
                 <SectionHeader
                   title={t("pricing_financial_details")}
                   icon={<DollarSign className="w-5 h-5 text-success" />}
@@ -617,16 +984,13 @@ export const MainTab: React.FC<MainTabProps> = ({
                 {expandedSections.pricing && (
                   <div className="p-4 row g-4">
                     <div className="col-12 col-md-6">
-                      <InputField
+                      <FormattedNumberInput
                         label={t("price")}
                         name="price"
-                        type="number"
                         required
                         placeholder={t("enter_property_price")}
                       />
                     </div>
-
-                    {/* Payment Method Toggle */}
                     <div className="col-12 col-md-6">
                       <div className="mb-3">
                         <label className="form-label fw-medium text-dark">
@@ -651,11 +1015,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                                 : {}
                             }
                           >
-                            <Coins
-                              className="w-4 h-4"
-                              style={{ width: "1rem", height: "1rem" }}
-                            />
-                            {t("cash")}
+                            <Coins className="w-4 h-4" /> {t("cash")}
                           </button>
                           <button
                             type="button"
@@ -676,24 +1036,18 @@ export const MainTab: React.FC<MainTabProps> = ({
                                 : {}
                             }
                           >
-                            <CreditCard
-                              className="w-4 h-4"
-                              style={{ width: "1rem", height: "1rem" }}
-                            />
+                            <CreditCard className="w-4 h-4" />{" "}
                             {t("installment")}
                           </button>
                         </div>
                       </div>
                     </div>
-
-                    {/* Down Payment & Paid Months (only if installment) */}
                     {paymentMethod === "installment" && (
                       <>
                         <div className="col-12 col-md-6">
-                          <InputField
+                          <FormattedNumberInput
                             label={t("down_price")}
                             name="down_price"
-                            type="number"
                             required
                             placeholder={t("enter_down_payment_amount")}
                           />
@@ -711,97 +1065,12 @@ export const MainTab: React.FC<MainTabProps> = ({
                         </div>
                       </>
                     )}
-
-                    {/* Mortgage Input */}
-                    {/* <div className="col-12">
-                      <div
-                        className="mb-3"
-                        dir={locale === "ar" ? "rtl" : "ltr"}
-                      >
-                        <label className="form-label fw-medium text-dark">
-                          {t("mortgage")}
-                        </label>
-                        <div className="d-flex align-items-center justify-content-between p-3 bg-light rounded border">
-                          <div className="d-flex align-items-center gap-3">
-                            <div className="p-2 bg-white rounded shadow-sm">
-                              <Home
-                                className="w-4 h-4"
-                                style={{
-                                  width: "1rem",
-                                  height: "1rem",
-                                  color: "#F26A3F",
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <p className="small fw-medium text-dark mb-0">
-                                {t("mortgage_available")}
-                              </p>
-                              <p className="small text-muted mb-0">
-                                {t("mortgage_placeholder")}
-                              </p>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const currentValue = watch("mortgage") === "yes";
-                              setValue("mortgage", currentValue ? "no" : "yes");
-                            }}
-                            className="btn p-0 border-0"
-                            style={{
-                              width: "3rem",
-                              height: "1.75rem",
-                              borderRadius: "1rem",
-                              backgroundColor:
-                                watch("mortgage") === "yes"
-                                  ? "#F26A3F"
-                                  : "#6c757d",
-                              position: "relative",
-                              transition: "all 0.3s ease",
-                            }}
-                          >
-                            <span
-                              className="position-absolute bg-white rounded-circle shadow-sm"
-                              style={{
-                                width: "1.25rem",
-                                height: "1.25rem",
-                                top: "0.25rem",
-                                left:
-                                  watch("mortgage") === "yes"
-                                    ? locale === "ar"
-                                      ? "0.25rem"
-                                      : "1.5rem"
-                                    : locale === "ar"
-                                    ? "1.5rem"
-                                    : "0.25rem",
-                                transition: "all 0.3s ease",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              {watch("mortgage") === "yes" && (
-                                <Check
-                                  className="w-3 h-3"
-                                  style={{
-                                    width: "0.75rem",
-                                    height: "0.75rem",
-                                    color: "#F26A3F",
-                                  }}
-                                />
-                              )}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    </div> */}
                   </div>
                 )}
               </div>
 
               {/* Room Configuration */}
-              <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <div className="form-section bg-white rounded-4 mb-4">
                 <SectionHeader
                   title={t("room_configuration")}
                   icon={<Home className="w-5 h-5 text-warning" />}
@@ -815,10 +1084,9 @@ export const MainTab: React.FC<MainTabProps> = ({
                   >
                     <div className="row g-4">
                       <div className="col-md-6 col-lg-3">
-                        <InputField
+                        <FormattedNumberInput
                           label={t("square_meters")}
                           name="sqt"
-                          type="number"
                           required
                           placeholder={t("property_size")}
                         />
@@ -850,13 +1118,21 @@ export const MainTab: React.FC<MainTabProps> = ({
                           placeholder={t("number_of_kitchens")}
                         />
                       </div>
+                      <div className="col-md-6 col-lg-3">
+                        <FormattedNumberInput
+                          label={t("landing_space")}
+                          name="landing_space"
+                          required
+                          placeholder={t("enter_landing_space")}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Property Details */}
-              <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              {/* Details */}
+              <div className="form-section bg-white rounded-4 mb-4">
                 <SectionHeader
                   title={t("property_details")}
                   icon={<FileText className="w-5 h-5 text-info" />}
@@ -910,6 +1186,13 @@ export const MainTab: React.FC<MainTabProps> = ({
                             },
                           ]}
                           placeholder={t("select_furnishing")}
+                        />
+                      </div>
+                      <div className="col-md-6 col-lg-4">
+                        <DateInput
+                          label={t("starting_day")}
+                          name="starting_day"
+                          required
                         />
                       </div>
                     </div>
@@ -1034,7 +1317,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                 )}
               </div>
 
-              {/* Single Image Upload */}
+              {/* Image Upload */}
               <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
                 <SectionHeader
                   title={t("property_image")}
@@ -1055,7 +1338,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                             style={{
                               border: "2px solid #0d6efd",
                               fontWeight: "600",
-                              transition: "all 0.3s ease",
                             }}
                           >
                             {t("click_to_upload_image")}
@@ -1099,7 +1381,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                                 width: "40px",
                                 height: "40px",
                                 boxShadow: "0 4px 15px rgba(220,53,69,0.3)",
-                                transition: "all 0.3s ease",
                               }}
                             >
                               <X className="w-4 h-4" />
@@ -1151,8 +1432,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                   type="submit"
                   className="btn btn-premium text-white d-flex align-items-center gap-2"
                 >
-                  <Save className="w-5 h-5" />
-                  {t("update_property")}
+                  <Save className="w-5 h-5" /> {t("update_property")}
                 </button>
               </div>
             </form>
@@ -1162,78 +1442,67 @@ export const MainTab: React.FC<MainTabProps> = ({
     );
   }
 
-  // View mode - original MainTab display
+  // View Mode
   return (
     <div className="mb-4">
       {/* Property Header with Edit Button */}
-      <div className="d-flex justify-content-between">
-        <div className="d-flex justify-content-between container w-100 mb-4">
-          <div>
-            <div className="d-flex align-items-center gap-3 mb-3">
-              <h4 className="font-weight-bold text-dark mb-0">
-                {t("property_title")}: {property?.data?.descriptions?.en?.title}
-              </h4>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"
-                style={{
-                  borderRadius: "0.5rem",
-                  padding: "0.5rem 1rem",
-                  transition: "all 0.3s ease",
-                  border: "2px solid #0d6efd",
-                }}
-              >
-                <Edit2
-                  className="w-4 h-4"
-                  style={{ width: "1rem", height: "1rem" }}
-                />
-                {t("edit")}
-              </button>
-            </div>
-
-            {/* Status Badges */}
-            <div className="d-flex align-items-center gap-3 flex-wrap justify-content-center">
-              {property?.data?.area && (
-                <p className="mb-0 text-muted d-flex align-items-center gap-2">
-                  {t("area")}:
-                  <span className="badge bg-light text-dark rounded-4-3 p-2 shadow-sm">
-                    {property?.data?.area?.description?.en?.name}
-                  </span>
-                </p>
-              )}
-              <span className="text-muted d-flex align-items-center gap-2">
-                {t("approval_status")}:
-                <span className="badge bg-primary bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
-                  {property?.data?.approval_status}
-                </span>
-              </span>
-
-              <span className="text-muted d-flex align-items-center gap-2">
-                {t("status")}:
-                <span className="badge bg-success bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
-                  {property?.data?.status}
-                </span>
-              </span>
-            </div>
+      <div className="d-flex justify-content-between container w-100 mb-4">
+        <div>
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <h4 className="font-weight-bold text-dark mb-0">
+              {t("property_title")}: {property?.data?.descriptions?.en?.title}
+            </h4>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"
+              style={{
+                borderRadius: "0.5rem",
+                padding: "0.5rem 1rem",
+                border: "2px solid #0d6efd",
+              }}
+            >
+              <Edit2 className="w-4 h-4" /> {t("edit")}
+            </button>
           </div>
-
-          <div className="d-flex flex-column flex-md-row align-items-center justify-content-center text-center">
-            {/* Price and Status Section */}
-            <div className="d-flex flex-column align-items-center gap-4">
-              {/* Price Section */}
-              <div className="text-center">
-                <div className="h5 font-weight-bold text-primary">
-                  EGP {property?.data?.price?.toLocaleString()}
-                </div>
-                {property?.data?.down_price && (
-                  <div className="text-muted small">
-                    {t("down_price")}: EGP{" "}
-                    {property?.data?.down_price?.toLocaleString()}
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* Status Badges */}
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            {property?.data?.area && (
+              <p className="mb-0 text-muted d-flex align-items-center gap-2">
+                {t("area")}:{" "}
+                <span className="badge bg-light text-dark rounded-4-3 p-2 shadow-sm">
+                  {property?.data?.area?.description?.en?.name}
+                </span>
+              </p>
+            )}
+            <span className="text-muted d-flex align-items-center gap-2">
+              {t("approval_status")}:{" "}
+              <span className="badge bg-primary bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
+                {property?.data?.approval_status}
+              </span>
+            </span>
+            <span className="text-muted d-flex align-items-center gap-2">
+              {t("status")}:{" "}
+              <span className="badge bg-success bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
+                {property?.data?.status}
+              </span>
+            </span>
           </div>
+        </div>
+        <div className="d-flex flex-column align-items-center text-center">
+          <div className="h5 font-weight-bold text-primary">
+            EGP{" "}
+            {property?.data?.price
+              ?.toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+          </div>
+          {property?.data?.down_price && (
+            <div className="text-muted small">
+              {t("down_price")}: EGP{" "}
+              {property?.data?.down_price
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+            </div>
+          )}
         </div>
       </div>
 
@@ -1257,12 +1526,53 @@ export const MainTab: React.FC<MainTabProps> = ({
         <div className="col-12 col-md-6 col-lg-3 mb-3">
           <ReadOnlyField
             label={t("sqt")}
-            value={`${property?.data?.sqt} sq ft`}
+            value={`${property?.data?.sqt
+              ?.toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, " ")} sq ft`}
+          />
+        </div>
+        <div className="col-12 col-md-6 col-lg-3 mb-3">
+          <ReadOnlyField
+            label={t("landing_space")}
+            value={`${property?.data?.landing_space
+              ?.toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, " ")} sq ft`}
           />
         </div>
       </div>
 
-      {/* Payment Method Display */}
+      {/* Property Details */}
+      <div className="row mb-4">
+        <div className="col-12 col-md-6 col-lg-3 mb-3">
+          <ReadOnlyField label={t("status")} value={property?.data?.status} />
+        </div>
+        <div className="col-12 col-md-6 col-lg-3 mb-3">
+          <ReadOnlyField
+            label={t("immediate_delivery")}
+            value={
+              property?.data?.immediate_delivery === "yes" ? t("yes") : t("no")
+            }
+          />
+        </div>
+        <div className="col-12 col-md-6 col-lg-3 mb-3">
+          <ReadOnlyField
+            label={t("furnishing")}
+            value={getFurnishingLabel(property?.data?.furnishing)}
+          />
+        </div>
+        <div className="col-12 col-md-6 col-lg-3 mb-3">
+          <ReadOnlyField
+            label={t("starting_day")}
+            value={
+              property?.data?.starting_day
+                ? new Date(property?.data?.starting_day).toLocaleDateString()
+                : "-"
+            }
+          />
+        </div>
+      </div>
+
+      {/* Payment Method */}
       {property?.data?.payment_method && (
         <div className="row mb-4">
           <div className="col-12 col-md-6 col-lg-3 mb-3">
@@ -1296,22 +1606,6 @@ export const MainTab: React.FC<MainTabProps> = ({
               />
             </div>
           )}
-          {property?.data?.furnishing && (
-            <div className="col-12 col-md-6 col-lg-3 mb-3">
-              <ReadOnlyField
-                label={t("furnishing")}
-                value={
-                  property?.data?.furnishing === "all-furnished"
-                    ? t("furnished")
-                    : property?.data?.furnishing === "unfurnished"
-                    ? t("unfurnished")
-                    : property?.data?.furnishing === "partly-furnished"
-                    ? t("partly_furnished")
-                    : property?.data?.furnishing
-                }
-              />
-            </div>
-          )}
         </div>
       )}
 
@@ -1328,7 +1622,7 @@ export const MainTab: React.FC<MainTabProps> = ({
         />
       </div>
 
-      {/* Property Statistics */}
+      {/* Statistics */}
       <div className="mb-4">
         <h3 className="h5 font-weight-semibold text-dark mb-3">
           {t("property_statistics")}
@@ -1345,7 +1639,7 @@ export const MainTab: React.FC<MainTabProps> = ({
         </div>
       </div>
 
-      {/* Location Information */}
+      {/* Location */}
       {property?.data?.property_locations &&
         property?.data?.property_locations.length > 0 && (
           <div className="mb-4">
@@ -1358,77 +1652,10 @@ export const MainTab: React.FC<MainTabProps> = ({
                   <strong>{t("address")} </strong>
                   {property?.data?.property_locations[0]?.location}
                 </div>
-                {/* {property?.data?.property_locations[0]?.location_lat &&
-                  property?.data?.property_locations[0]?.location_lng && (
-                    <div className="text-muted small mt-2">
-                      <strong>{t("coordinates")}: </strong>
-                      {property?.data?.property_locations[0]?.location_lat.toFixed(
-                        6
-                      )}
-                      ,{" "}
-                      {property?.data?.property_locations[0]?.location_lng.toFixed(
-                        6
-                      )}
-                    </div>
-                  )} */}
               </div>
             </div>
           </div>
         )}
-
-      {/* Features */}
-      {property?.data?.features && property?.data?.features.length > 0 && (
-        <div className="mb-4">
-          <h3 className="h5 font-weight-semibold text-dark mb-3">
-            {t("features")}
-          </h3>
-          <div className="row">
-            {property?.data?.features.map((feature, index) => (
-              <div className="col-md-6 col-lg-4 mb-2" key={index}>
-                <div className="border rounded p-3 bg-light">
-                  <strong>
-                    {feature.key_translations?.en || feature.key}:
-                  </strong>{" "}
-                  {feature.value_translations?.en || feature.value}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Amenities */}
-      {property?.data?.amenities && property?.data?.amenities.length > 0 && (
-        <div className="mb-4">
-          <h3 className="h5 font-weight-semibold text-dark mb-3">
-            {t("amenities")}
-          </h3>
-          <div className="row">
-            {property?.data?.amenities.map((amenity, index) => (
-              <div className="col-md-6 col-lg-4 mb-3" key={index}>
-                <div className="card shadow-sm border-muted rounded">
-                  <div className="card-body d-flex align-items-center gap-3">
-                    {amenity.image && (
-                      <Image
-                        src={amenity.image}
-                        alt={amenity.descriptions?.en?.title || amenity.title}
-                        width={40}
-                        height={40}
-                        className="rounded"
-                      />
-                    )}
-                    <div>
-                      {amenity.descriptions?.en?.title || amenity.title}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Owner Information */}
       <div className="mb-4">
         <h3 className="h5 font-weight-semibold text-dark mb-3">
           {t("owner_information")}
@@ -1455,7 +1682,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                 {property?.data?.user?.phone ? (
                   <div className="text-muted py-2">
                     {t("phone")}: {property?.data?.user?.phone}
-
                   </div>
                 ) : (
                   <div className="text-muted font-weight-bold">

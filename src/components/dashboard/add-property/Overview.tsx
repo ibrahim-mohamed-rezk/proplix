@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import GoogleLocationInput from "@/components/common/GoogleLocationInput";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, useController } from "react-hook-form";
 
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
@@ -21,7 +21,10 @@ import {
   Check,
   X,
   CreditCard,
-  Coins
+  Coins,
+  Calendar,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
@@ -56,6 +59,10 @@ type FormInputs = {
   description_ar: string;
   keywords_ar: string;
   slug_ar: string;
+  
+  // New fields
+  landing_space: string; // New field in Room Configuration
+  starting_day: string; // New field in Property Details
 };
 
 type SelectOption = {
@@ -106,7 +113,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   const t = useTranslations("properties");
   const router = useRouter();
   const locale = useLocale();
-   const {
+  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -149,7 +156,88 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       toast.info(message);
     }
   };
-
+ const InputField = ({
+    label,
+    name,
+    type = "text",
+    required = false,
+    options = [],
+    dir = "ltr",
+    placeholder = "",
+    onChange,
+    value,
+  }: {
+    label: string;
+    name: keyof FormInputs;
+    type?: string;
+    required?: boolean;
+    options?: { value: string; label: string }[];
+    dir?: string;
+    placeholder?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    value?: string;
+  }) => (
+    <div className="mb-4">
+      <label className="form-label fw-medium text-dark mb-2">
+        {label}
+        {required && <span className="text-danger ms-1">*</span>}
+      </label>
+      {type === "select" ? (
+        <select
+          {...register(name, { required })}
+          className="form-select premium-input"
+          dir={dir}
+          style={{
+            border: "2px solid #e9ecef",
+            borderRadius: "0.75rem",
+            padding: "0.75rem 1rem",
+            fontSize: "0.95rem",
+            transition: "all 0.3s ease",
+            background: "#ffffff",
+          }}
+        >
+          <option value="">{placeholder || `${t("select")} ${label}`}</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          {...register(name, { required })}
+          type={type}
+          className="form-control premium-input"
+          dir={dir}
+          placeholder={placeholder}
+          style={{
+            border: "2px solid #e9ecef",
+            borderRadius: "0.75rem",
+            padding: "0.75rem 1rem",
+            fontSize: "0.95rem",
+            transition: "all 0.3s ease",
+            background: "#ffffff",
+          }}
+          onChange={onChange}
+          value={value}
+        />
+      )}
+      {errors[name] && (
+        <div className="error-message text-danger small mt-2 d-flex align-items-center">
+          <div
+            className="error-dot me-2"
+            style={{
+              width: "4px",
+              height: "4px",
+              borderRadius: "50%",
+              backgroundColor: "#dc3545",
+            }}
+          ></div>
+          {t("field_required")}
+        </div>
+      )}
+    </div>
+  );
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -213,7 +301,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
         if (areasResponse.status) setAreas(areasResponse.data.data);
         // setAgents(agentsResponse);
       } catch (error) {
-        console.error("Error fetching dropdown data:", error);
+        console.error("Error fetching dropdown ", error);
         showToast(t("error_fetching_dropdown_data"), "error");
       }
     };
@@ -226,7 +314,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   }, [setValue]);
 
   const onSubmit = async (data: FormInputs) => {
-
     const formData = new FormData();
 
     // General fields
@@ -254,8 +341,18 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       formData.append("mortgage", data.mortgage);
     }
 
+    // New field - landing space
+    if (data.landing_space) {
+      formData.append("landing_space", data.landing_space);
+    }
+
+    // New field - starting day
+    if (data.starting_day) {
+      formData.append("starting_day", data.starting_day);
+    }
+
     // Location
-   if (locationData) {
+    if (locationData) {
       formData.append("location", locationData.description);
       formData.append("location_place_id", locationData.placeId);
 
@@ -284,9 +381,9 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     formData.append("slug[ar]", data.slug_ar);
 
     // Cover image
-if (imagePreview && imagePreview.file) {
-    formData.append("cover", imagePreview.file);
-  }
+    if (imagePreview && imagePreview.file) {
+      formData.append("cover", imagePreview.file);
+    }
     try {
       const response = await postData("agent/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
       showToast(t("property_added_successfully"), "success");
@@ -369,56 +466,42 @@ if (imagePreview && imagePreview.file) {
     </div>
   );
 
-  const InputField = ({
+  // Formatted Number Input Component
+  const FormattedNumberInput = ({
     label,
     name,
-    type = "text",
     required = false,
-    options = [],
-    dir = "ltr",
     placeholder = "",
   }: {
     label: string;
     name: keyof FormInputs;
-    type?: string;
     required?: boolean;
-    options?: { value: string; label: string }[];
-    dir?: string;
     placeholder?: string;
-  }) => (
-    <div className="mb-4">
-      <label className="form-label fw-medium text-dark mb-2">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </label>
-      {type === "select" ? (
-        <select
-          {...register(name, { required })}
-          className="form-select premium-input"
-          dir={dir}
-          style={{
-            border: "2px solid #e9ecef",
-            borderRadius: "0.75rem",
-            padding: "0.75rem 1rem",
-            fontSize: "0.95rem",
-            transition: "all 0.3s ease",
-            background: "#ffffff",
-          }}
-        >
-          <option value="">{placeholder || `${t("select")} ${label}`}</option>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      ) : (
+  }) => {
+    const { field } = useController({ name, control });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const digits = value.replace(/\D/g, "");
+      field.onChange(digits ? Number(digits) : "");
+    };
+
+    const displayValue = field.value
+      ? Number(field.value).toLocaleString('en').replace(/,/g, ' ')
+      : '';
+
+    return (
+      <div className="mb-4">
+        <label className="form-label fw-medium text-dark mb-2">
+          {label}
+          {required && <span className="text-danger ms-1">*</span>}
+        </label>
         <input
-          {...register(name, { required })}
-          type={type}
-          className="form-control premium-input"
-          dir={dir}
+          type="text"
+          value={displayValue}
+          onChange={handleChange}
           placeholder={placeholder}
+          className="form-control premium-input"
           style={{
             border: "2px solid #e9ecef",
             borderRadius: "0.75rem",
@@ -427,24 +510,339 @@ if (imagePreview && imagePreview.file) {
             transition: "all 0.3s ease",
             background: "#ffffff",
           }}
+          inputMode="numeric"
+          pattern="[0-9 ]*"
         />
-      )}
-      {errors[name] && (
-        <div className="error-message text-danger small mt-2 d-flex align-items-center">
-          <div
-            className="error-dot me-2"
+        {errors[name] && (
+          <div className="error-message text-danger small mt-2 d-flex align-items-center">
+            <div
+              className="error-dot me-2"
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                backgroundColor: "#dc3545",
+              }}
+            ></div>
+            {t("field_required")}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Date Input Component
+  const DateInput = ({
+    label,
+    name,
+    required = false,
+  }: {
+    label: string;
+    name: keyof FormInputs;
+    required?: boolean;
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const calendarRef = useRef<HTMLDivElement>(null);
+
+    // Get the field value from react-hook-form
+    const fieldValue = watch(name);
+
+    // Initialize selected date from form value
+    useEffect(() => {
+      if (fieldValue) {
+        setSelectedDate(new Date(fieldValue));
+      }
+    }, [fieldValue]);
+
+    // Close calendar when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const formatDate = (date: Date): string => {
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    };
+
+    const formatDisplayDate = (date: Date): string => {
+      return date.toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    const handleDateSelect = (date: Date) => {
+      setSelectedDate(date);
+      setValue(name, formatDate(date));
+      setIsOpen(false);
+    };
+
+    const getDaysInMonth = (date: Date): Date[] => {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      
+      const days: Date[] = [];
+      
+      // Add previous month's trailing days
+      const firstDayOfWeek = firstDay.getDay();
+      for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        days.push(new Date(year, month, -i));
+      }
+      
+      // Add current month's days
+      for (let day = 1; day <= daysInMonth; day++) {
+        days.push(new Date(year, month, day));
+      }
+      
+      // Add next month's leading days
+      const totalDays = Math.ceil(days.length / 7) * 7;
+      const remainingDays = totalDays - days.length;
+      for (let day = 1; day <= remainingDays; day++) {
+        days.push(new Date(year, month + 1, day));
+      }
+      
+      return days;
+    };
+
+    const navigateMonth = (direction: 'prev' | 'next') => {
+      setCurrentMonth(prev => {
+        const newMonth = new Date(prev);
+        if (direction === 'prev') {
+          newMonth.setMonth(prev.getMonth() - 1);
+        } else {
+          newMonth.setMonth(prev.getMonth() + 1);
+        }
+        return newMonth;
+      });
+    };
+
+    const isToday = (date: Date): boolean => {
+      const today = new Date();
+      return date.toDateString() === today.toDateString();
+    };
+
+    const isSelected = (date: Date): boolean => {
+      return selectedDate ? date.toDateString() === selectedDate.toDateString() : false;
+    };
+
+    const isCurrentMonth = (date: Date): boolean => {
+      return date.getMonth() === currentMonth.getMonth();
+    };
+
+    const monthNames = locale === 'ar' 
+      ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+      : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const dayNames = locale === 'ar'
+      ? ['أح', 'إث', 'ثل', 'أر', 'خم', 'جم', 'سب']
+      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    return (
+      <div className="mb-4" ref={calendarRef}>
+        <label className="form-label fw-medium text-dark mb-2">
+          {label}
+          {required && <span className="text-danger ms-1">*</span>}
+        </label>
+        
+        {/* Date Input Field */}
+        <div className="relative ">
+          <input
+            {...register(name, { required })}
+            type="text"
+            readOnly
+            value={selectedDate ? formatDisplayDate(selectedDate) : ''}
+            onClick={() => setIsOpen(!isOpen)}
+            placeholder={t("select_date")}
+            className="form-control premium-input"
             style={{
-              width: "4px",
-              height: "4px",
-              borderRadius: "50%",
-              backgroundColor: "#dc3545",
+              border: "2px solid #e9ecef",
+              borderRadius: "0.75rem",
+              padding: "0.75rem 1rem",
+              fontSize: "0.95rem",
+              transition: "all 0.3s ease",
+              background: "#ffffff",
+              paddingRight: "2.5rem",
             }}
-          ></div>
-          {t("field_required")}
+            dir={locale === 'ar' ? 'rtl' : 'ltr'}
+          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="position-absolute"
+            style={{
+              right: "0.75rem",
+              top: "50%",
+              transform: "translateY(-50%)",
+              border: "none",
+              background: "transparent",
+              cursor: "pointer"
+            }}
+          >
+            <Calendar className="w-5 h-5 text-muted" />
+          </button>
         </div>
-      )}
-    </div>
-  );
+
+        {/* Calendar Dropdown */}
+        {isOpen && (
+          <div 
+            className="position-absolute mt-1 bg-white border border-slate-300 rounded-lg shadow-lg p-4 min-w-[300px] z-50"
+            style={{
+              boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+              borderRadius: "0.75rem",
+              border: "1px solid #e9ecef"
+            }}
+          >
+            {/* Calendar Header */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <button
+                type="button"
+                onClick={() => navigateMonth('prev')}
+                className="btn p-2"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#6c757d",
+                  transition: "all 0.3s ease"
+                }}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              
+              <h3 className="h6 mb-0 fw-semibold text-dark">
+                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              </h3>
+              
+              <button
+                type="button"
+                onClick={() => navigateMonth('next')}
+                className="btn p-2"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#6c757d",
+                  transition: "all 0.3s ease"
+                }}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Day Names Header */}
+            <div className="d-grid" style={{gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem", marginBottom: "0.5rem"}}>
+              {dayNames.map((day) => (
+                <div
+                  key={day}
+                  className="text-center text-xs fw-medium text-muted py-2"
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            {/* Calendar Days */}
+            <div className="d-grid" style={{gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem"}}>
+              {getDaysInMonth(currentMonth).map((date, index) => {
+                const isCurrentMonthDay = isCurrentMonth(date);
+                const isSelectedDay = isSelected(date);
+                const isTodayDay = isToday(date);
+
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleDateSelect(date)}
+                    className={`btn text-sm rounded-lg transition-all duration-200 ${
+                      isSelectedDay 
+                        ? 'bg-[#F26A3F] text-white' 
+                        : isCurrentMonthDay
+                          ? 'text-dark hover:bg-light'
+                          : 'text-muted'
+                    } ${
+                      isTodayDay && !isSelectedDay 
+                        ? 'border border-[#F26A3F]' 
+                        : ''
+                    }`}
+                    disabled={!isCurrentMonthDay}
+                    style={{
+                      width: "2rem",
+                      height: "2rem",
+                      padding: "0",
+                      fontSize: "0.875rem",
+                      ...(isSelectedDay && {
+                        boxShadow: "0 0 0 3px rgba(242, 106, 63, 0.25)",
+                        transform: "scale(1.05)"
+                      })
+                    }}
+                  >
+                    {date.getDate()}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="d-flex justify-content-between mt-4 pt-4 border-top" style={{borderColor: "#e9ecef"}}>
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  handleDateSelect(today);
+                  setCurrentMonth(today);
+                }}
+                className="btn btn-link p-0"
+                style={{
+                  color: "#F26A3F",
+                  textDecoration: "none",
+                  fontSize: "0.875rem"
+                }}
+              >
+                {t("today")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="btn btn-link p-0"
+                style={{
+                  color: "#6c757d",
+                  textDecoration: "none",
+                  fontSize: "0.875rem"
+                }}
+              >
+                {t("close")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {errors[name] && (
+          <div className="error-message text-danger small mt-2 d-flex align-items-center">
+            <div
+              className="error-dot me-2"
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                backgroundColor: "#dc3545",
+              }}
+            ></div>
+            {t("field_required")}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -645,146 +1043,84 @@ if (imagePreview && imagePreview.file) {
                 description={t("property_pricing_payment_info")}
               />
               {expandedSections.pricing && (
-              <div className="p-4 row g-4">
-                <div className="col-12 col-md-6">
-                  <InputField
-                    label={t("price")}
-                    name="price"
-                    type="number"
-                    required
-                    placeholder={t("enter_property_price")}
-                  />
-                </div>
-
-                {/* Payment Method Toggle */}
-                <div className="col-12 col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label fw-medium text-dark">
-                      {t("payment_method")}
-                      <span className="text-danger ms-1">*</span>
-                    </label>
-                    <div className="btn-group w-100 shadow-sm" role="group">
-                      <button
-                        type="button"
-                        onClick={() => setValue("payment_method", "cash")}
-                        className={`btn d-flex align-items-center justify-content-center gap-2 ${
-                          paymentMethod === "cash"
-                            ? "btn-primary text-white"
-                            : "btn-outline-secondary"
-                        }`}
-                        style={paymentMethod === "cash" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
-                      >
-                        <Coins className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
-                        {t("cash")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setValue("payment_method", "installment")}
-                        className={`btn d-flex align-items-center justify-content-center gap-2 ${
-                          paymentMethod === "installment"
-                            ? "btn-primary text-white"
-                            : "btn-outline-secondary"
-                        }`}
-                        style={paymentMethod === "installment" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
-                      >
-                        <CreditCard className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
-                        {t("installment")}
-                      </button>
-                    </div>
-                    {errors.payment_method && (
-                      <div className="text-danger small d-flex align-items-center mt-1">
-                        <span className="bg-danger rounded-circle me-2" style={{width: "4px", height: "4px"}}></span>
-                        {t("field_required")}
-                      </div>
-                    )}
+                <div className="p-4 row g-4">
+                  <div className="col-12 col-md-6">
+                    <FormattedNumberInput
+                      label={t("price")}
+                      name="price"
+                      required
+                      placeholder={t("enter_property_price")}
+                    />
                   </div>
-                </div>
 
-                {/* Down Payment & Paid Months (only if installment) */}
-                {paymentMethod === "installment" && (
-                  <>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        label={t("down_price")}
-                        name="down_price"
-                        type="number"
-                        required
-                        placeholder={t("enter_down_payment_amount")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        label={t("number_of_months")}
-                        name="paid_months"
-                        type="number"
-                        required
-                        placeholder={t("enter_number_of_installment_months")}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* Mortgage Input */}
-                {/* <div className="col-12">
-                  <div className="mb-3" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-                    <label className="form-label fw-medium text-dark">
-                      {t("mortgage")}
-                    </label>
-                    <div className="d-flex align-items-center justify-content-between p-3 bg-light rounded border">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="p-2 bg-white rounded shadow-sm">
-                          <Home className="w-4 h-4" style={{width: "1rem", height: "1rem", color: "#F26A3F"}} />
-                        </div>
-                        <div>
-                          <p className="small fw-medium text-dark mb-0">
-                            {t("mortgage_available")}
-                          </p>
-                          <p className="small text-muted mb-0">
-                            {t("mortgage_placeholder")}
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const currentValue = watch("mortgage") === "yes";
-                          setValue("mortgage", currentValue ? "no" : "yes");
-                        }}
-                        className="btn p-0 border-0"
-                        style={{
-                          width: "3rem",
-                          height: "1.75rem",
-                          borderRadius: "1rem",
-                          backgroundColor: watch("mortgage") === "yes" ? "#F26A3F" : "#6c757d",
-                          position: "relative",
-                          transition: "all 0.3s ease"
-                        }}
-                      >
-                        <span
-                          className="position-absolute bg-white rounded-circle shadow-sm"
-                          style={{
-                            width: "1.25rem",
-                            height: "1.25rem",
-                            top: "0.25rem",
-                            left: watch("mortgage") === "yes" 
-                              ? (locale === 'ar' ? "0.25rem" : "1.5rem")
-                              : (locale === 'ar' ? "1.5rem" : "0.25rem"),
-                            transition: "all 0.3s ease",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                          }}
+                  {/* Payment Method Toggle */}
+                  <div className="col-12 col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label fw-medium text-dark">
+                        {t("payment_method")}
+                        <span className="text-danger ms-1">*</span>
+                      </label>
+                      <div className="btn-group w-100 shadow-sm" role="group">
+                        <button
+                          type="button"
+                          onClick={() => setValue("payment_method", "cash")}
+                          className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                            paymentMethod === "cash"
+                              ? "btn-primary text-white"
+                              : "btn-outline-secondary"
+                          }`}
+                          style={paymentMethod === "cash" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
                         >
-                          {watch("mortgage") === "yes" && (
-                            <Check className="w-3 h-3" style={{width: "0.75rem", height: "0.75rem", color: "#F26A3F"}} />
-                          )}
-                        </span>
-                      </button>
+                          <Coins className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
+                          {t("cash")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setValue("payment_method", "installment")}
+                          className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                            paymentMethod === "installment"
+                              ? "btn-primary text-white"
+                              : "btn-outline-secondary"
+                          }`}
+                          style={paymentMethod === "installment" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
+                        >
+                          <CreditCard className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
+                          {t("installment")}
+                        </button>
+                      </div>
+                      {errors.payment_method && (
+                        <div className="text-danger small d-flex align-items-center mt-1">
+                          <span className="bg-danger rounded-circle me-2" style={{width: "4px", height: "4px"}}></span>
+                          {t("field_required")}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div> */}
-              </div>
-            )}
+
+                  {/* Down Payment & Paid Months (only if installment) */}
+                  {paymentMethod === "installment" && (
+                    <>
+                      <div className="col-12 col-md-6">
+                        <FormattedNumberInput
+                          label={t("down_price")}
+                          name="down_price"
+                          required
+                          placeholder={t("enter_down_payment_amount")}
+                        />
+                      </div>
+                      <div className="col-12 col-md-6">
+                        <InputField
+                          label={t("number_of_months")}
+                          name="paid_months"
+                          type="number"
+                          required
+                          placeholder={t("enter_number_of_installment_months")}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Room Configuration */}
@@ -837,6 +1173,15 @@ if (imagePreview && imagePreview.file) {
                         placeholder={t("number_of_kitchens")}
                       />
                     </div>
+                    <div className="col-md-6 col-lg-3">
+                      <InputField
+                        label={t("landing_space")}
+                        name="landing_space"
+                        type="number"
+                        required
+                        placeholder={t("enter_landing_space")}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -878,6 +1223,9 @@ if (imagePreview && imagePreview.file) {
                         options={[
                           { value: "apartment", label: t("apartment") },
                           { value: "office", label: t("office") },
+                          { value: "villa", label: t("villa") },
+                          { value: "shop", label: t("shop") },
+                          { value: "warehouse", label: t("warehouse") },
                         ]}
                         placeholder={t("select_type")}
                       />
@@ -894,20 +1242,28 @@ if (imagePreview && imagePreview.file) {
                         ]}
                         placeholder={t("select_option")}
                       />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <DateInput
+                        label={t("starting_day")}
+                        name="starting_day"
+                        required
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
                       <InputField
-                // vaues is ==>'all-furnished','unfurnished','partly-furnished'
-                  label={t("furnishing")}
-                  name="furnishing"
-                  type="select"
-                  required
-                  options={[
-                    { value: "all-furnished", label: t("furnished") },
-                    { value: "unfurnished", label: t("unfurnished") },
-                    { value: "partly-furnished", label: t("partly_furnished") },
-
-                  ]}
-                  placeholder={t("select_furnishing")}
-                />
+                        // values is ==>'all-furnished','unfurnished','partly-furnished'
+                        label={t("furnishing")}
+                        name="furnishing"
+                        type="select"
+                        required
+                        options={[
+                          { value: "all-furnished", label: t("furnished") },
+                          { value: "unfurnished", label: t("unfurnished") },
+                          { value: "partly-furnished", label: t("partly_furnished") },
+                        ]}
+                        placeholder={t("select_furnishing")}
+                      />
                     </div>
                   </div>
                 </div>

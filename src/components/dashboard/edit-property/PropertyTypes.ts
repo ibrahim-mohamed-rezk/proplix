@@ -131,6 +131,8 @@ export type PropertyStatistics = {
 // Main Property Data
 export type PropertyData = {
   data:{
+     starting_day: string | null; // Added starting_day
+  landing_space: number | null; // Added landing_space
 id: number;
   title: string;
   approval_status: string;
@@ -172,6 +174,8 @@ export type ToastState = {
 
 
  export type FormInputs = {
+  starting_day: string;
+  landing_space: string;
   type_id: string;
   area_id: string;
   price: string;

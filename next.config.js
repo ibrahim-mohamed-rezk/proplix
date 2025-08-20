@@ -24,6 +24,10 @@ const nextConfig = {
       {
         hostname: "thumbs.dreamstime.com",
       },
+      // (https://proplix.shop/storage/files/220991755392250.webp) on `next/image`
+      {
+        hostname: "proplix.shop",
+      },
       {
         hostname: "encrypted-tbn0.gstatic.com",
       },
