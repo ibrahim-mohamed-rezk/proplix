@@ -935,6 +935,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                           label={t("property_type")}
                           name="type_id"
                           type="select"
+
                           required
                           options={propertyTypes.map((type) => ({
                             value: type.id.toString(),
@@ -1158,6 +1159,27 @@ export const MainTab: React.FC<MainTabProps> = ({
                           placeholder={t("select_status")}
                         />
                       </div>
+                       <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("type")}
+                        name="type"
+                        type="select"
+                        required
+                        options={[
+                          { value: "apartment", label: t("apartment") },
+                          { value: "villa", label: t("villa") },
+                          { value: "townhouse", label: t("townhouse") },
+                          { value: "stand_alone", label: t("stand_alone") },
+                          { value: "duplex", label: t("duplex") },
+                          { value: "penthouse", label: t("penthouse") },
+                          { value: "office", label: t("office") },
+                          { value: "shop", label: t("shop") },
+                          { value: "warehouse", label: t("warehouse") },
+                          { value: "building", label: t("building") },
+                        ]}
+                        placeholder={t("select_type")}
+                      />
+                    </div>
                       <div className="col-md-6 col-lg-4">
                         <InputField
                           label={t("immediate_delivery")}
@@ -1178,13 +1200,11 @@ export const MainTab: React.FC<MainTabProps> = ({
                           type="select"
                           required
                           options={[
-                            { value: "all-furnished", label: t("furnished") },
-                            { value: "unfurnished", label: t("unfurnished") },
-                            {
-                              value: "partly-furnished",
-                              label: t("partly_furnished"),
-                            },
-                          ]}
+                    { value: "all-furnished", label: t("furnished") },
+                    { value: "unfurnished", label: t("unfurnished") },
+                    { value: "semi-furnished", label: t("semi_furnished") },
+                    { value: "partly-furnished", label: t("partly_furnished") },
+                  ]}
                           placeholder={t("select_furnishing")}
                         />
                       </div>

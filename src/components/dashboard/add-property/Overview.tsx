@@ -24,7 +24,7 @@ import {
   Coins,
   Calendar,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
@@ -59,7 +59,7 @@ type FormInputs = {
   description_ar: string;
   keywords_ar: string;
   slug_ar: string;
-  
+
   // New fields
   landing_space: string; // New field in Room Configuration
   starting_day: string; // New field in Property Details
@@ -156,7 +156,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       toast.info(message);
     }
   };
- const InputField = ({
+  const InputField = ({
     label,
     name,
     type = "text",
@@ -308,7 +308,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     fetchDropdownData();
   }, []);
-  
+
   useEffect(() => {
     setValue("payment_method", "cash");
   }, [setValue]);
@@ -385,7 +385,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       formData.append("cover", imagePreview.file);
     }
     try {
-      const response = await postData("agent/property_listings", formData, new AxiosHeaders({ Authorization: `Bearer ${token}` }));
+      const response = await postData(
+        "agent/property_listings",
+        formData,
+        new AxiosHeaders({ Authorization: `Bearer ${token}` })
+      );
       showToast(t("property_added_successfully"), "success");
       router.push(`/properties/view/${response?.data?.id}`);
     } catch (error) {
@@ -487,8 +491,8 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     };
 
     const displayValue = field.value
-      ? Number(field.value).toLocaleString('en').replace(/,/g, ' ')
-      : '';
+      ? Number(field.value).toLocaleString("en").replace(/,/g, " ")
+      : "";
 
     return (
       <div className="mb-4">
@@ -559,24 +563,28 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     // Close calendar when clicking outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+        if (
+          calendarRef.current &&
+          !calendarRef.current.contains(event.target as Node)
+        ) {
           setIsOpen(false);
         }
       };
 
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const formatDate = (date: Date): string => {
-      return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+      return date.toISOString().split("T")[0]; // YYYY-MM-DD format
     };
 
     const formatDisplayDate = (date: Date): string => {
-      return date.toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+      return date.toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     };
 
@@ -592,34 +600,34 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
       const daysInMonth = lastDay.getDate();
-      
+
       const days: Date[] = [];
-      
+
       // Add previous month's trailing days
       const firstDayOfWeek = firstDay.getDay();
       for (let i = firstDayOfWeek - 1; i >= 0; i--) {
         days.push(new Date(year, month, -i));
       }
-      
+
       // Add current month's days
       for (let day = 1; day <= daysInMonth; day++) {
         days.push(new Date(year, month, day));
       }
-      
+
       // Add next month's leading days
       const totalDays = Math.ceil(days.length / 7) * 7;
       const remainingDays = totalDays - days.length;
       for (let day = 1; day <= remainingDays; day++) {
         days.push(new Date(year, month + 1, day));
       }
-      
+
       return days;
     };
 
-    const navigateMonth = (direction: 'prev' | 'next') => {
-      setCurrentMonth(prev => {
+    const navigateMonth = (direction: "prev" | "next") => {
+      setCurrentMonth((prev) => {
         const newMonth = new Date(prev);
-        if (direction === 'prev') {
+        if (direction === "prev") {
           newMonth.setMonth(prev.getMonth() - 1);
         } else {
           newMonth.setMonth(prev.getMonth() + 1);
@@ -634,20 +642,50 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     };
 
     const isSelected = (date: Date): boolean => {
-      return selectedDate ? date.toDateString() === selectedDate.toDateString() : false;
+      return selectedDate
+        ? date.toDateString() === selectedDate.toDateString()
+        : false;
     };
 
     const isCurrentMonth = (date: Date): boolean => {
       return date.getMonth() === currentMonth.getMonth();
     };
 
-    const monthNames = locale === 'ar' 
-      ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-      : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNames =
+      locale === "ar"
+        ? [
+            "يناير",
+            "فبراير",
+            "مارس",
+            "أبريل",
+            "مايو",
+            "يونيو",
+            "يوليو",
+            "أغسطس",
+            "سبتمبر",
+            "أكتوبر",
+            "نوفمبر",
+            "ديسمبر",
+          ]
+        : [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
 
-    const dayNames = locale === 'ar'
-      ? ['أح', 'إث', 'ثل', 'أر', 'خم', 'جم', 'سب']
-      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames =
+      locale === "ar"
+        ? ["أح", "إث", "ثل", "أر", "خم", "جم", "سب"]
+        : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     return (
       <div className="mb-4" ref={calendarRef}>
@@ -655,14 +693,14 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           {label}
           {required && <span className="text-danger ms-1">*</span>}
         </label>
-        
+
         {/* Date Input Field */}
         <div className="relative ">
           <input
             {...register(name, { required })}
             type="text"
             readOnly
-            value={selectedDate ? formatDisplayDate(selectedDate) : ''}
+            value={selectedDate ? formatDisplayDate(selectedDate) : ""}
             onClick={() => setIsOpen(!isOpen)}
             placeholder={t("select_date")}
             className="form-control premium-input"
@@ -675,7 +713,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
               background: "#ffffff",
               paddingRight: "2.5rem",
             }}
-            dir={locale === 'ar' ? 'rtl' : 'ltr'}
+            dir={locale === "ar" ? "rtl" : "ltr"}
           />
           <button
             type="button"
@@ -687,7 +725,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
               transform: "translateY(-50%)",
               border: "none",
               background: "transparent",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             <Calendar className="w-5 h-5 text-muted" />
@@ -696,43 +734,44 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
         {/* Calendar Dropdown */}
         {isOpen && (
-          <div 
+          <div
             className="position-absolute mt-1 bg-white border border-slate-300 rounded-lg shadow-lg p-4 min-w-[300px] z-50"
             style={{
               boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
               borderRadius: "0.75rem",
-              border: "1px solid #e9ecef"
+              border: "1px solid #e9ecef",
             }}
           >
             {/* Calendar Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
               <button
                 type="button"
-                onClick={() => navigateMonth('prev')}
+                onClick={() => navigateMonth("prev")}
                 className="btn p-2"
                 style={{
                   background: "transparent",
                   border: "none",
                   color: "#6c757d",
-                  transition: "all 0.3s ease"
+                  transition: "all 0.3s ease",
                 }}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              
+
               <h3 className="h6 mb-0 fw-semibold text-dark">
-                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                {monthNames[currentMonth.getMonth()]}{" "}
+                {currentMonth.getFullYear()}
               </h3>
-              
+
               <button
                 type="button"
-                onClick={() => navigateMonth('next')}
+                onClick={() => navigateMonth("next")}
                 className="btn p-2"
                 style={{
                   background: "transparent",
                   border: "none",
                   color: "#6c757d",
-                  transition: "all 0.3s ease"
+                  transition: "all 0.3s ease",
                 }}
               >
                 <ChevronRight className="w-4 h-4" />
@@ -740,7 +779,14 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             </div>
 
             {/* Day Names Header */}
-            <div className="d-grid" style={{gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem", marginBottom: "0.5rem"}}>
+            <div
+              className="d-grid"
+              style={{
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gap: "0.25rem",
+                marginBottom: "0.5rem",
+              }}
+            >
               {dayNames.map((day) => (
                 <div
                   key={day}
@@ -752,7 +798,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             </div>
 
             {/* Calendar Days */}
-            <div className="d-grid" style={{gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem"}}>
+            <div
+              className="d-grid"
+              style={{ gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem" }}
+            >
               {getDaysInMonth(currentMonth).map((date, index) => {
                 const isCurrentMonthDay = isCurrentMonth(date);
                 const isSelectedDay = isSelected(date);
@@ -764,15 +813,15 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                     type="button"
                     onClick={() => handleDateSelect(date)}
                     className={`btn text-sm rounded-lg transition-all duration-200 ${
-                      isSelectedDay 
-                        ? 'bg-[#F26A3F] text-white' 
+                      isSelectedDay
+                        ? "bg-[#F26A3F] text-white"
                         : isCurrentMonthDay
-                          ? 'text-dark hover:bg-light'
-                          : 'text-muted'
+                        ? "text-dark hover:bg-light"
+                        : "text-muted"
                     } ${
-                      isTodayDay && !isSelectedDay 
-                        ? 'border border-[#F26A3F]' 
-                        : ''
+                      isTodayDay && !isSelectedDay
+                        ? "border border-[#F26A3F]"
+                        : ""
                     }`}
                     disabled={!isCurrentMonthDay}
                     style={{
@@ -782,8 +831,8 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       fontSize: "0.875rem",
                       ...(isSelectedDay && {
                         boxShadow: "0 0 0 3px rgba(242, 106, 63, 0.25)",
-                        transform: "scale(1.05)"
-                      })
+                        transform: "scale(1.05)",
+                      }),
                     }}
                   >
                     {date.getDate()}
@@ -793,7 +842,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             </div>
 
             {/* Quick Actions */}
-            <div className="d-flex justify-content-between mt-4 pt-4 border-top" style={{borderColor: "#e9ecef"}}>
+            <div
+              className="d-flex justify-content-between mt-4 pt-4 border-top"
+              style={{ borderColor: "#e9ecef" }}
+            >
               <button
                 type="button"
                 onClick={() => {
@@ -805,7 +857,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 style={{
                   color: "#F26A3F",
                   textDecoration: "none",
-                  fontSize: "0.875rem"
+                  fontSize: "0.875rem",
                 }}
               >
                 {t("today")}
@@ -817,7 +869,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                 style={{
                   color: "#6c757d",
                   textDecoration: "none",
-                  fontSize: "0.875rem"
+                  fontSize: "0.875rem",
                 }}
               >
                 {t("close")}
@@ -1069,28 +1121,53 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                               ? "btn-primary text-white"
                               : "btn-outline-secondary"
                           }`}
-                          style={paymentMethod === "cash" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
+                          style={
+                            paymentMethod === "cash"
+                              ? {
+                                  backgroundColor: "#F26A3F",
+                                  borderColor: "#F26A3F",
+                                }
+                              : {}
+                          }
                         >
-                          <Coins className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
+                          <Coins
+                            className="w-4 h-4"
+                            style={{ width: "1rem", height: "1rem" }}
+                          />
                           {t("cash")}
                         </button>
                         <button
                           type="button"
-                          onClick={() => setValue("payment_method", "installment")}
+                          onClick={() =>
+                            setValue("payment_method", "installment")
+                          }
                           className={`btn d-flex align-items-center justify-content-center gap-2 ${
                             paymentMethod === "installment"
                               ? "btn-primary text-white"
                               : "btn-outline-secondary"
                           }`}
-                          style={paymentMethod === "installment" ? {backgroundColor: "#F26A3F", borderColor: "#F26A3F"} : {}}
+                          style={
+                            paymentMethod === "installment"
+                              ? {
+                                  backgroundColor: "#F26A3F",
+                                  borderColor: "#F26A3F",
+                                }
+                              : {}
+                          }
                         >
-                          <CreditCard className="w-4 h-4" style={{width: "1rem", height: "1rem"}} />
+                          <CreditCard
+                            className="w-4 h-4"
+                            style={{ width: "1rem", height: "1rem" }}
+                          />
                           {t("installment")}
                         </button>
                       </div>
                       {errors.payment_method && (
                         <div className="text-danger small d-flex align-items-center mt-1">
-                          <span className="bg-danger rounded-circle me-2" style={{width: "4px", height: "4px"}}></span>
+                          <span
+                            className="bg-danger rounded-circle me-2"
+                            style={{ width: "4px", height: "4px" }}
+                          ></span>
                           {t("field_required")}
                         </div>
                       )}
@@ -1222,10 +1299,15 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         required
                         options={[
                           { value: "apartment", label: t("apartment") },
-                          { value: "office", label: t("office") },
                           { value: "villa", label: t("villa") },
+                          { value: "townhouse", label: t("townhouse") },
+                          { value: "stand_alone", label: t("stand_alone") },
+                          { value: "duplex", label: t("duplex") },
+                          { value: "penthouse", label: t("penthouse") },
+                          { value: "office", label: t("office") },
                           { value: "shop", label: t("shop") },
                           { value: "warehouse", label: t("warehouse") },
+                          { value: "building", label: t("building") },
                         ]}
                         placeholder={t("select_type")}
                       />
@@ -1258,10 +1340,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         type="select"
                         required
                         options={[
-                          { value: "all-furnished", label: t("furnished") },
-                          { value: "unfurnished", label: t("unfurnished") },
-                          { value: "partly-furnished", label: t("partly_furnished") },
-                        ]}
+                    { value: "all-furnished", label: t("furnished") },
+                    { value: "unfurnished", label: t("unfurnished") },
+                    { value: "semi-furnished", label: t("semi_furnished") },
+                    { value: "partly-furnished", label: t("partly_furnished") },
+                  ]}
                         placeholder={t("select_furnishing")}
                       />
                     </div>
