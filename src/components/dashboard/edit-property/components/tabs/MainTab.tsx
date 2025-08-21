@@ -243,15 +243,50 @@ export const MainTab: React.FC<MainTabProps> = ({
     placeholder?: string;
   }) => {
     const { field } = useController({ name, control });
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const input = e.target;
+      const cursorPosition = input.selectionStart || 0;
       const value = e.target.value;
+
+      // Remove all non-digit characters
       const digits = value.replace(/\D/g, "");
-      field.onChange(digits ? Number(digits) : "");
+
+      // Store the raw number value
+      const numValue = digits ? Number(digits) : "";
+      field.onChange(numValue);
+
+      // Calculate new cursor position after formatting
+      setTimeout(() => {
+        if (inputRef.current && digits) {
+          const formattedValue = Number(digits)
+            .toLocaleString("en-US")
+            .replace(/,/g, " ");
+          const digitsBefore = value
+            .slice(0, cursorPosition)
+            .replace(/\D/g, "").length;
+
+          let newPosition = 0;
+          let digitCount = 0;
+
+          for (let i = 0; i < formattedValue.length; i++) {
+            if (formattedValue[i] !== " ") {
+              digitCount++;
+            }
+            if (digitCount === digitsBefore) {
+              newPosition = i + 1;
+              break;
+            }
+          }
+
+          inputRef.current.setSelectionRange(newPosition, newPosition);
+        }
+      }, 0);
     };
 
     const displayValue = field.value
-      ? Number(field.value).toLocaleString("en").replace(/,/g, " ")
+      ? Number(field.value).toLocaleString("en-US").replace(/,/g, " ")
       : "";
 
     return (
@@ -261,6 +296,7 @@ export const MainTab: React.FC<MainTabProps> = ({
           {required && <span className="text-danger ms-1">*</span>}
         </label>
         <input
+          ref={inputRef}
           type="text"
           value={displayValue}
           onChange={handleChange}
@@ -273,6 +309,8 @@ export const MainTab: React.FC<MainTabProps> = ({
             fontSize: "0.95rem",
             transition: "all 0.3s ease",
             background: "#ffffff",
+            textAlign: locale === "ar" ? "right" : "left",
+            unicodeBidi: "plaintext",
           }}
           inputMode="numeric"
           pattern="[0-9 ]*"
@@ -935,7 +973,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                           label={t("property_type")}
                           name="type_id"
                           type="select"
-
                           required
                           options={propertyTypes.map((type) => ({
                             value: type.id.toString(),
@@ -1159,27 +1196,27 @@ export const MainTab: React.FC<MainTabProps> = ({
                           placeholder={t("select_status")}
                         />
                       </div>
-                       <div className="col-md-6 col-lg-4">
-                      <InputField
-                        label={t("type")}
-                        name="type"
-                        type="select"
-                        required
-                        options={[
-                          { value: "apartment", label: t("apartment") },
-                          { value: "villa", label: t("villa") },
-                          { value: "townhouse", label: t("townhouse") },
-                          { value: "stand_alone", label: t("stand_alone") },
-                          { value: "duplex", label: t("duplex") },
-                          { value: "penthouse", label: t("penthouse") },
-                          { value: "office", label: t("office") },
-                          { value: "shop", label: t("shop") },
-                          { value: "warehouse", label: t("warehouse") },
-                          { value: "building", label: t("building") },
-                        ]}
-                        placeholder={t("select_type")}
-                      />
-                    </div>
+                      <div className="col-md-6 col-lg-4">
+                        <InputField
+                          label={t("type")}
+                          name="type"
+                          type="select"
+                          required
+                          options={[
+                            { value: "apartment", label: t("apartment") },
+                            { value: "villa", label: t("villa") },
+                            { value: "townhouse", label: t("townhouse") },
+                            { value: "stand_alone", label: t("stand_alone") },
+                            { value: "duplex", label: t("duplex") },
+                            { value: "penthouse", label: t("penthouse") },
+                            { value: "office", label: t("office") },
+                            { value: "shop", label: t("shop") },
+                            { value: "warehouse", label: t("warehouse") },
+                            { value: "building", label: t("building") },
+                          ]}
+                          placeholder={t("select_type")}
+                        />
+                      </div>
                       <div className="col-md-6 col-lg-4">
                         <InputField
                           label={t("immediate_delivery")}
@@ -1200,11 +1237,17 @@ export const MainTab: React.FC<MainTabProps> = ({
                           type="select"
                           required
                           options={[
-                    { value: "all-furnished", label: t("furnished") },
-                    { value: "unfurnished", label: t("unfurnished") },
-                    { value: "semi-furnished", label: t("semi_furnished") },
-                    { value: "partly-furnished", label: t("partly_furnished") },
-                  ]}
+                            { value: "all-furnished", label: t("furnished") },
+                            { value: "unfurnished", label: t("unfurnished") },
+                            {
+                              value: "semi-furnished",
+                              label: t("semi_furnished"),
+                            },
+                            {
+                              value: "partly-furnished",
+                              label: t("partly_furnished"),
+                            },
+                          ]}
                           placeholder={t("select_furnishing")}
                         />
                       </div>

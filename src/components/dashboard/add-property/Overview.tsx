@@ -472,68 +472,103 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
   // Formatted Number Input Component
   const FormattedNumberInput = ({
-    label,
-    name,
-    required = false,
-    placeholder = "",
-  }: {
-    label: string;
-    name: keyof FormInputs;
-    required?: boolean;
-    placeholder?: string;
-  }) => {
-    const { field } = useController({ name, control });
+  label,
+  name,
+  required = false,
+  placeholder = "",
+}: {
+  label: string;
+  name: keyof FormInputs;
+  required?: boolean;
+  placeholder?: string;
+}) => {
+  const { field } = useController({ name, control });
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const digits = value.replace(/\D/g, "");
-      field.onChange(digits ? Number(digits) : "");
-    };
-
-    const displayValue = field.value
-      ? Number(field.value).toLocaleString("en").replace(/,/g, " ")
-      : "";
-
-    return (
-      <div className="mb-4">
-        <label className="form-label fw-medium text-dark mb-2">
-          {label}
-          {required && <span className="text-danger ms-1">*</span>}
-        </label>
-        <input
-          type="text"
-          value={displayValue}
-          onChange={handleChange}
-          placeholder={placeholder}
-          className="form-control premium-input"
-          style={{
-            border: "2px solid #e9ecef",
-            borderRadius: "0.75rem",
-            padding: "0.75rem 1rem",
-            fontSize: "0.95rem",
-            transition: "all 0.3s ease",
-            background: "#ffffff",
-          }}
-          inputMode="numeric"
-          pattern="[0-9 ]*"
-        />
-        {errors[name] && (
-          <div className="error-message text-danger small mt-2 d-flex align-items-center">
-            <div
-              className="error-dot me-2"
-              style={{
-                width: "4px",
-                height: "4px",
-                borderRadius: "50%",
-                backgroundColor: "#dc3545",
-              }}
-            ></div>
-            {t("field_required")}
-          </div>
-        )}
-      </div>
-    );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target;
+    const cursorPosition = input.selectionStart || 0;
+    const value = e.target.value;
+    
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, '');
+    
+    // Store the raw number value
+    const numValue = digits ? Number(digits) : '';
+    field.onChange(numValue);
+    
+    // Calculate new cursor position after formatting
+    setTimeout(() => {
+      if (inputRef.current && digits) {
+        const formattedValue = Number(digits).toLocaleString('en-US').replace(/,/g, ' ');
+        const digitsBefore = value.slice(0, cursorPosition).replace(/\D/g, '').length;
+        
+        let newPosition = 0;
+        let digitCount = 0;
+        
+        for (let i = 0; i < formattedValue.length; i++) {
+          if (formattedValue[i] !== ' ') {
+            digitCount++;
+          }
+          if (digitCount === digitsBefore) {
+            newPosition = i + 1;
+            break;
+          }
+        }
+        
+        inputRef.current.setSelectionRange(newPosition, newPosition);
+      }
+    }, 0);
   };
+
+  const displayValue = field.value
+    ? Number(field.value).toLocaleString("en-US").replace(/,/g, " ")
+    : "";
+
+  return (
+    <div className="mb-4">
+      <label className="form-label fw-medium text-dark mb-2">
+        {label}
+        {required && <span className="text-danger ms-1">*</span>}
+      </label>
+      <input
+        ref={inputRef}
+        type="text"
+        value={displayValue}
+        onChange={handleChange}
+        placeholder={placeholder}
+        className="form-control premium-input"
+        style={{
+          border: "2px solid #e9ecef",
+          borderRadius: "0.75rem",
+          padding: "0.75rem 1rem",
+          fontSize: "0.95rem",
+          transition: "all 0.3s ease",
+          background: "#ffffff",
+          direction: "ltr",
+          textAlign: locale === 'ar' ? 'right' : 'left',
+          unicodeBidi: 'plaintext'
+        }}
+        inputMode="numeric"
+        pattern="[0-9 ]*"
+      />
+      {errors[name] && (
+        <div className="error-message text-danger small mt-2 d-flex align-items-center">
+          <div
+            className="error-dot me-2"
+            style={{
+              width: "4px",
+              height: "4px",
+              borderRadius: "50%",
+              backgroundColor: "#dc3545",
+            }}
+          ></div>
+          {t("field_required")}
+        </div>
+      )}
+    </div>
+  );
+};
 
   // Date Input Component
   const DateInput = ({
