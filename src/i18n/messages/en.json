@@ -166,6 +166,17 @@
   "property/floor-plan": "Property Floor Plan",
   "e.g., Swimming Pool, Gym": "e.g., Swimming Pool, Gym",
   "properties": {
+    "semi_furnished": "Semi Furnished",
+    "villa": "Villa",
+    "townhouse": "Townhouse",
+    "stand_alone": "Stand Alone",
+    "duplex": "Duplex",
+    "penthouse": "Penthouse",
+    "shop": "Shop",
+    "warehouse": "Warehouse",
+    "building": "Building",
+
+
     "landing_space": "Landing Space",
     "enter_landing_space": "Enter Landing Space",
     "starting_day": "Starting Day",

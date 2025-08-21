@@ -152,6 +152,16 @@
   "property/floor-plan": "الخرائط",
   "e.g., Swimming Pool, Gym": "مثلا: بركة سباحة، صالة رياضية",
   "properties": {
+    "semi_furnished": "مفروش جزئياً",
+    "villa": "فيلا",
+    "townhouse": "شقه",
+
+    "stand_alone": "مفروش كامل",
+    "duplex": "دوبلكس",
+    "penthouse": "بنتهاوس",
+    "shop": "متجر",
+    "warehouse": "مخزن",
+    "building": "بناء",
     "landing_space":"مساحة التسعير",
 "close": "إغلاق",
     "save": "حفظ",
