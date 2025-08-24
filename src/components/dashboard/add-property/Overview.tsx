@@ -770,7 +770,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
         {/* Calendar Dropdown */}
         {isOpen && (
           <div
-            className="position-absolute mt-1 bg-white border border-slate-300 rounded-lg shadow-lg p-4 min-w-[300px] z-50"
+            className=" relative mt-1 bg-white border border-slate-300 rounded-lg shadow-lg p-4 min-w-[300px] z-50"
             style={{
               boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
               borderRadius: "0.75rem",
