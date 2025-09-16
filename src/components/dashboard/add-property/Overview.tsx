@@ -1,9 +1,7 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import GoogleLocationInput from "@/components/common/GoogleLocationInput";
 import { useForm, useWatch, useController } from "react-hook-form";
-
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
 import { useRouter } from "@/i18n/routing";
@@ -32,7 +30,7 @@ import { useLocale } from "next-intl";
 type FormInputs = {
   // General Information
   type_id: string;
-  area_id: string;
+  // area_id: string; // REMOVED
   // userId: string;
   price: string;
   down_price: string;
@@ -47,19 +45,16 @@ type FormInputs = {
   paid_months?: string;
   furnishing: string;
   mortgage?: string;
-
   // English fields
   title_en: string;
   description_en: string;
   keywords_en: string;
   slug_en: string;
-
   // Arabic fields
   title_ar: string;
   description_ar: string;
   keywords_ar: string;
   slug_ar: string;
-
   // New fields
   landing_space: string; // New field in Room Configuration
   starting_day: string; // New field in Property Details
@@ -71,20 +66,21 @@ type SelectOption = {
   name?: string;
 };
 
-type AreaOption = {
-  id: number;
-  image: string;
-  count_of_properties: number;
-  name: string;
-  description: {
-    en: {
-      name: string;
-    };
-    ar: {
-      name: string;
-    };
-  };
-};
+// AreaOption type is no longer needed and can be removed
+// type AreaOption = {
+//   id: number;
+//   image: string;
+//   count_of_properties: number;
+//   name: string;
+//   description: {
+//     en: {
+//       name: string;
+//     };
+//     ar: {
+//       name: string;
+//     };
+//   };
+// };
 
 interface LocationData {
   description: string;
@@ -121,7 +117,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     control,
     watch,
   } = useForm<FormInputs>();
-
   const [descriptionEn, setDescriptionEn] = useState<string>("");
   const [descriptionAr, setDescriptionAr] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
@@ -136,11 +131,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     english: true,
     images: true,
   });
+
   const paymentMethod = useWatch({ control, name: "payment_method" }) || "cash";
 
   // State for dropdown options
   const [propertyTypes, setPropertyTypes] = useState<SelectOption[]>([]);
-  const [areas, setAreas] = useState<AreaOption[]>([]);
+  // const [areas, setAreas] = useState<AreaOption[]>([]); // REMOVED
   // const [agents, setAgents] = useState<AgentOption[]>([]);
   const [locationData, setLocationData] = useState<LocationData | null>(null);
 
@@ -156,6 +152,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       toast.info(message);
     }
   };
+
   const InputField = ({
     label,
     name,
@@ -238,6 +235,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       )}
     </div>
   );
+
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -247,15 +245,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
   const handleImageSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-
     if (imagePreview) {
       URL.revokeObjectURL(imagePreview.url);
     }
-
     const file = files[0];
     const url = URL.createObjectURL(file);
     const id = `${Date.now()}-${Math.random()}`;
-
     setImagePreview({ file, url, id });
   };
 
@@ -281,31 +276,28 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
         showToast(t("auth_token_not_found"), "error");
         return;
       }
-
       try {
-        const [typesResponse, areasResponse] = await Promise.all([
+        const [typesResponse] = await Promise.all([
           getData(
             "types",
             {},
             new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
           ),
-          getData(
-            "areas",
-            {},
-            new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
-          ),
+          // getData(
+          //   "areas",
+          //   {},
+          //   new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
+          // ), // REMOVED
           // getData("owner/agents", {}, new AxiosHeaders({ Authorization: `Bearer ${token}` }))
         ]);
-
         if (typesResponse.status) setPropertyTypes(typesResponse.data.data);
-        if (areasResponse.status) setAreas(areasResponse.data.data);
+        // if (areasResponse.status) setAreas(areasResponse.data.data); // REMOVED
         // setAgents(agentsResponse);
       } catch (error) {
         console.error("Error fetching dropdown ", error);
         showToast(t("error_fetching_dropdown_data"), "error");
       }
     };
-
     fetchDropdownData();
   }, []);
 
@@ -315,10 +307,9 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData();
-
     // General fields
     formData.append("type_id", data.type_id);
-    // formData.append("area_id", data.area_id);
+    // formData.append("area_id", data.area_id); // REMOVED
     formData.append("price", data.price);
     formData.append("sqt", data.sqt);
     formData.append("bedroom", data.bedroom);
@@ -355,7 +346,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     if (locationData) {
       formData.append("location", locationData.description);
       formData.append("location_place_id", locationData.placeId);
-
       if (locationData.coordinates) {
         formData.append(
           "location_lat",
@@ -384,6 +374,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     if (imagePreview && imagePreview.file) {
       formData.append("cover", imagePreview.file);
     }
+
     try {
       const response = await postData(
         "agent/property_listings",
@@ -391,7 +382,8 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
         new AxiosHeaders({ Authorization: `Bearer ${token}` })
       );
       showToast(t("property_added_successfully"), "success");
-      router.push(`/properties/view/${response?.data?.id}`);
+      // /ar/dashboard
+      router.push(`/dashboard/edit-property/${response?.data?.id}`);
     } catch (error) {
       console.error("Failed to create property:", error);
       showToast(t("failed_to_add_property"), "error");
@@ -472,103 +464,99 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
   // Formatted Number Input Component
   const FormattedNumberInput = ({
-  label,
-  name,
-  required = false,
-  placeholder = "",
-}: {
-  label: string;
-  name: keyof FormInputs;
-  required?: boolean;
-  placeholder?: string;
-}) => {
-  const { field } = useController({ name, control });
-  const inputRef = useRef<HTMLInputElement>(null);
+    label,
+    name,
+    required = false,
+    placeholder = "",
+  }: {
+    label: string;
+    name: keyof FormInputs;
+    required?: boolean;
+    placeholder?: string;
+  }) => {
+    const { field } = useController({ name, control });
+    const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target;
-    const cursorPosition = input.selectionStart || 0;
-    const value = e.target.value;
-    
-    // Remove all non-digit characters
-    const digits = value.replace(/\D/g, '');
-    
-    // Store the raw number value
-    const numValue = digits ? Number(digits) : '';
-    field.onChange(numValue);
-    
-    // Calculate new cursor position after formatting
-    setTimeout(() => {
-      if (inputRef.current && digits) {
-        const formattedValue = Number(digits).toLocaleString('en-US').replace(/,/g, ' ');
-        const digitsBefore = value.slice(0, cursorPosition).replace(/\D/g, '').length;
-        
-        let newPosition = 0;
-        let digitCount = 0;
-        
-        for (let i = 0; i < formattedValue.length; i++) {
-          if (formattedValue[i] !== ' ') {
-            digitCount++;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const input = e.target;
+      const cursorPosition = input.selectionStart || 0;
+      const value = e.target.value;
+
+      // Remove all non-digit characters
+      const digits = value.replace(/\D/g, '');
+      // Store the raw number value
+      const numValue = digits ? Number(digits) : '';
+      field.onChange(numValue);
+
+      // Calculate new cursor position after formatting
+      setTimeout(() => {
+        if (inputRef.current && digits) {
+          const formattedValue = Number(digits).toLocaleString('en-US').replace(/,/g, ' ');
+          const digitsBefore = value.slice(0, cursorPosition).replace(/\D/g, '').length;
+          let newPosition = 0;
+          let digitCount = 0;
+          for (let i = 0; i < formattedValue.length; i++) {
+            if (formattedValue[i] !== ' ') {
+              digitCount++;
+            }
+            if (digitCount === digitsBefore) {
+              newPosition = i + 1;
+              break;
+            }
           }
-          if (digitCount === digitsBefore) {
-            newPosition = i + 1;
-            break;
-          }
+          inputRef.current.setSelectionRange(newPosition, newPosition);
         }
-        
-        inputRef.current.setSelectionRange(newPosition, newPosition);
-      }
-    }, 0);
+      }, 0);
+    };
+
+    const displayValue = field.value
+      ? Number(field.value).toLocaleString("en-US").replace(/,/g, " ")
+      : "";
+
+    return (
+      <div className="mb-4">
+        <label className="form-label fw-medium text-dark mb-2">
+          {label}
+          {required && <span className="text-danger ms-1">*</span>}
+        </label>
+        <input
+          ref={inputRef}
+          type="text"
+          value={displayValue}
+          onChange={handleChange}
+          placeholder={placeholder}
+          className="form-control premium-input"
+          style={{
+            border: "2px solid #e9ecef",
+            borderRadius: "0.75rem",
+            padding: "0.75rem 1rem",
+            fontSize: "0.95rem",
+            transition: "all 0.3s ease",
+            background: "#ffffff",
+            direction: "ltr",
+            textAlign: locale === 'ar' ? 'right' : 'left',
+            unicodeBidi: 'plaintext'
+          }}
+          inputMode="numeric"
+          pattern="[0-9 ]*"
+        />
+        {errors[name] && (
+          <div className="error-message text-danger small mt-2 d-flex align-items-center">
+            <div
+              className="error-dot me-2"
+              style={{
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                backgroundColor: "#dc3545",
+              }}
+            ></div>
+            {t("field_required")}
+          </div>
+        )}
+      </div>
+    );
   };
-
-  const displayValue = field.value
-    ? Number(field.value).toLocaleString("en-US").replace(/,/g, " ")
-    : "";
-
-  return (
-    <div className="mb-4">
-      <label className="form-label fw-medium text-dark mb-2">
-        {label}
-        {required && <span className="text-danger ms-1">*</span>}
-      </label>
-      <input
-        ref={inputRef}
-        type="text"
-        value={displayValue}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="form-control premium-input"
-        style={{
-          border: "2px solid #e9ecef",
-          borderRadius: "0.75rem",
-          padding: "0.75rem 1rem",
-          fontSize: "0.95rem",
-          transition: "all 0.3s ease",
-          background: "#ffffff",
-          direction: "ltr",
-          textAlign: locale === 'ar' ? 'right' : 'left',
-          unicodeBidi: 'plaintext'
-        }}
-        inputMode="numeric"
-        pattern="[0-9 ]*"
-      />
-      {errors[name] && (
-        <div className="error-message text-danger small mt-2 d-flex align-items-center">
-          <div
-            className="error-dot me-2"
-            style={{
-              width: "4px",
-              height: "4px",
-              borderRadius: "50%",
-              backgroundColor: "#dc3545",
-            }}
-          ></div>
-          {t("field_required")}
-        </div>
-      )}
-    </div>
-  );
-};
 
   // Date Input Component
   const DateInput = ({
@@ -605,7 +593,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           setIsOpen(false);
         }
       };
-
       document.addEventListener("mousedown", handleClickOutside);
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
@@ -635,7 +622,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
       const daysInMonth = lastDay.getDate();
-
       const days: Date[] = [];
 
       // Add previous month's trailing days
@@ -688,20 +674,20 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     const monthNames =
       locale === "ar"
-        ? [
-            "يناير",
-            "فبراير",
-            "مارس",
-            "أبريل",
-            "مايو",
-            "يونيو",
-            "يوليو",
-            "أغسطس",
-            "سبتمبر",
-            "أكتوبر",
-            "نوفمبر",
-            "ديسمبر",
-          ]
+        ?  [
+        "يناير",
+        "فبراير",
+        "مارس",
+        "أبريل",
+        "مايو",
+        "يونيو",
+        "يوليو",
+        "أغسطس",
+        "سبتمبر",
+        "أكتوبر",
+        "نوفمبر",
+        "ديسمبر",
+      ]
         : [
             "January",
             "February",
@@ -719,7 +705,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     const dayNames =
       locale === "ar"
-        ? ["أح", "إث", "ثل", "أر", "خم", "جم", "سب"]
+        ?["أح", "إث", "ثلا", "أر", "خم", "جم", "سب"]
         : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     return (
@@ -728,7 +714,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           {label}
           {required && <span className="text-danger ms-1">*</span>}
         </label>
-
         {/* Date Input Field */}
         <div className="relative ">
           <input
@@ -792,12 +777,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-
               <h3 className="h6 mb-0 fw-semibold text-dark">
                 {monthNames[currentMonth.getMonth()]}{" "}
                 {currentMonth.getFullYear()}
               </h3>
-
               <button
                 type="button"
                 onClick={() => navigateMonth("next")}
@@ -939,7 +922,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1) !important;
           outline: none !important;
         }
-
         .section-header:hover {
           background: linear-gradient(
             135deg,
@@ -947,15 +929,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             #e2e6ea 100%
           ) !important;
         }
-
         .section-header:hover .icon-container {
           transform: translateY(-2px) !important;
         }
-
         .section-content {
           animation: slideDown 0.3s ease-out;
         }
-
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -966,29 +945,24 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             transform: translateY(0);
           }
         }
-
         .form-section {
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
           transition: all 0.3s ease;
           border: 1px solid #e9ecef;
         }
-
         .form-section:hover {
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
           transform: translateY(-2px);
         }
-
         .upload-area {
           border: 2px dashed #dee2e6;
           transition: all 0.3s ease;
           background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
         }
-
         .upload-area:hover {
           border-color: #0d6efd;
           background: linear-gradient(135deg, #f0f7ff 0%, #e7f3ff 100%);
         }
-
         .btn-premium {
           background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
           border: none;
@@ -998,12 +972,10 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           transition: all 0.3s ease;
           box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
         }
-
         .btn-premium:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
         }
-
         .btn-outline-premium {
           border: 2px solid #6c757d;
           border-radius: 0.75rem;
@@ -1012,13 +984,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           transition: all 0.3s ease;
           background: transparent;
         }
-
         .btn-outline-premium:hover {
           background: #6c757d;
           color: white;
           transform: translateY(-2px);
         }
-
         .hero-section {
           background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
           border-radius: 1.5rem;
@@ -1027,7 +997,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           position: relative;
           overflow: hidden;
         }
-
         .hero-section::before {
           content: "";
           position: absolute;
@@ -1038,7 +1007,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000" opacity="0.02"/><circle cx="75" cy="75" r="1" fill="%23000" opacity="0.02"/><circle cx="50" cy="10" r="1" fill="%23000" opacity="0.02"/><circle cx="10" cy="90" r="1" fill="%23000" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
           pointer-events: none;
         }
-
         .hero-icon {
           width: 80px;
           height: 80px;
@@ -1051,7 +1019,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
           box-shadow: 0 8px 30px rgba(13, 110, 253, 0.3);
           animation: float 3s ease-in-out infinite;
         }
-
         @keyframes float {
           0%,
           100% {
@@ -1093,19 +1060,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                         placeholder={t("select_type")}
                       />
                     </div>
-                    <div className="col-md-6 col-lg-4">
-                      <InputField
-                        label={t("area")}
-                        name="area_id"
-                        type="select"
-                        required
-                        options={areas.map((area) => ({
-                          value: area.id.toString(),
-                          label: `${area?.name}`,
-                        }))}
-                        placeholder={t("select_area")}
-                      />
-                    </div>
+                    {/* The area_id field has been completely removed from this row */}
                     <div className="col-md-6 col-lg-4 ">
                       <label className="form-label fw-medium text-dark mb-2">
                         {t("location")}
@@ -1139,7 +1094,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       placeholder={t("enter_property_price")}
                     />
                   </div>
-
                   {/* Payment Method Toggle */}
                   <div className="col-12 col-md-6">
                     <div className="mb-3">
@@ -1208,7 +1162,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       )}
                     </div>
                   </div>
-
                   {/* Down Payment & Paid Months (only if installment) */}
                   {paymentMethod === "installment" && (
                     <>

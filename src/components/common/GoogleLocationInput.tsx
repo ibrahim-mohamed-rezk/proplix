@@ -33,15 +33,6 @@ interface GooglePlacePredictionText {
   text?: string; 
 }
 
-type GooglePlacePrediction = {
-  placeId?: string;
-  text?: string | GooglePlacePredictionText;
-  structuredFormat?: {
-    mainText?: { text?: string };
-    secondaryText?: { text?: string };
-  };
-};
-
 interface GoogleLocationInputProps {
   onLocationChange: (locationData: LocationData) => void;
   defaultValue?: string;

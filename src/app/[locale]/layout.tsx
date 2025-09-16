@@ -70,7 +70,7 @@ export default async function RootLayout({
         <script
           async
           defer
-          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4rQ9DdkG71tIdyYlOl0JHgoWt7IxyHu8&libraries=places&callback=initGoogleMaps"
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initGoogleMaps`}
         />
 
         <script
