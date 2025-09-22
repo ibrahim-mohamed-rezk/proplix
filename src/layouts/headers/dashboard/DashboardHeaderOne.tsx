@@ -217,7 +217,7 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
    return (
       <aside className={`dash-aside-navbar ${isActive ? "show" : ""}`}>
          <div className="position-relative">
-            <Link href="/dashboard-index" className={`d-flex px-4 ${isRTL ? 'flex-row-reverse' : ''} align-items-center`}>
+            <Link href={`${lang}/dashboard-index`} className={`d-flex px-4 ${isRTL ? 'flex-row-reverse' : ''} align-items-center`}>
                   <svg
                   style={{
                      width: "clamp(150px,10.78125vw,207px)",

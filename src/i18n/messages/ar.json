@@ -608,7 +608,29 @@
     "Dashboard": "لوحة التحكم",
     "Create Property": "إنشاء عقار",
     "Account Settings": "إعدادات الحساب",
-    "Change Password": "تغيير كلمة المرور"
+    "Change Password": "تغيير كلمة المرور",
+    "dashboard-index": {
+      "dashboard": "لوحة التحكم",
+      "loading": "جاري التحميل...",
+      "not_found": "غير موجود",
+      "all_properties": "جميع العقارات",
+      "total_pending": "إجمالي قيد الانتظار",
+      "for_sale": "للبيع",
+      "for_rent": "للإيجار",
+      "property_analytics_overview": "نظرة عامة على تحليلات العقارات",
+      "filter_by": "تصفية حسب:",
+      "weekly": "أسبوعي",
+      "daily": "يومي",
+      "monthly": "شهري",
+      "average_price": "متوسط السعر",
+      "cancelled": "ملغي",
+      "accepted": "مقبول",
+      "immediate_delivery": "تسليم فوري",
+      "properties_distribution_by_area": "توزيع العقارات حسب المنطقة",
+      "areas": "مناطق",
+      "properties": "عقارات",
+      "egp": "جنيه مصري"
+    }
   },
   "dashboard-index": {
     "loading": "جاري التحميل...",
