@@ -1,5 +1,4 @@
 "use client";
-import menu_data from "@/data/home-data/MenuData";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
@@ -8,46 +7,68 @@ import logo from "@/assets/images/logo/logo_01.svg";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 const NavMenu = () => {
-    const pathname = usePathname();
-    const [navTitle, setNavTitle] = useState("");
-    const t = useTranslations("header");
+  const pathname = usePathname();
+  const [navTitle, setNavTitle] = useState("");
+  const t = useTranslations("header");
 
-    //openMobileMenu
-    const openMobileMenu = (menu: any) => {
-        if (navTitle === menu ) {
-            setNavTitle("");
-        } else {
-            setNavTitle(menu);
-        }
-    };
 
-    return (
-      <ul className="navbar-nav align-items-lg-center">
-        <li className="d-block d-lg-none">
-          <div className="logo">
-            <Link href="/" className="d-block">
-              <Image src={logo} alt="" />
-            </Link>
-          </div>
-        </li>
+  //openMobileMenu
+  const openMobileMenu = (menu: any) => {
+    if (navTitle === menu) {
+      setNavTitle("");
+    } else {
+      setNavTitle(menu);
+    }
+  };
 
-        <li className="nav-item ">
-          <Link className="nav-link text-[#000]" href="/">
-            {t("home")}
+  return (
+    <ul className="navbar-nav align-items-lg-center">
+      <li className="d-block d-lg-none">
+        <div className="logo">
+          <Link href="/" className="d-block">
+            <Image src={logo} alt="" />
           </Link>
-        </li>
-        <li className="nav-item ">
-          <Link className="nav-link" href="/properties">
-            {t("properties")}
-          </Link>
-        </li>
-        <li className="nav-item ">
-          <Link className="nav-link" href="/contact">
-            {t("contact")}
-          </Link>
-        </li>
+        </div>
+      </li>
 
-        {/* {menu_data.map((menu: any) => (
+      <li className="nav-item ">
+        <Link
+          className={`nav-link ${
+            pathname.split("/")[2] === undefined
+              ? "!text-[#FF6725] font-semibold"
+              : ""
+          }`}
+          href="/"
+        >
+          {t("home")}
+        </Link>
+      </li>
+      <li className="nav-item ">
+        <Link
+          className={`nav-link ${
+            pathname.split("/")[2] === "properties"
+              ? "!text-[#FF6725] font-semibold"
+              : ""
+          }`}
+          href="/properties"
+        >
+          {t("properties")}
+        </Link>
+      </li>
+      <li className="nav-item ">
+        <Link
+          className={`nav-link ${
+            pathname.split("/")[2] === "contact"
+              ? "!text-[#FF6725] font-semibold"
+              : ""
+          }`}
+          href="/contact"
+        >
+          {t("contact")}
+        </Link>
+      </li>
+
+      {/* {menu_data.map((menu: any) => (
           <li key={menu.id} className={`nav-item dropdown ${menu.class_name}`}>
             <Link
               href={menu.link}
@@ -111,14 +132,20 @@ const NavMenu = () => {
             )}
           </li>
         ))} */}
-        <li className="nav-item ">
-          <Link className="nav-link" href="/blogs">
-            {t("blog")}
-          </Link>
-        </li>
-      </ul>
-    );
+      <li className="nav-item ">
+        <Link
+          className={`nav-link ${
+            pathname.split("/")[2] === "blogs"
+              ? "!text-[#FF6725] font-semibold"
+              : ""
+          }`}
+          href="/blogs"
+        >
+          {t("blog")}
+        </Link>
+      </li>
+    </ul>
+  );
 };
 
 export default NavMenu;
-

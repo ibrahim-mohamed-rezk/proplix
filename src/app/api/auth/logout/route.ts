@@ -7,6 +7,16 @@ export async function POST() {
     expires: new Date(0),
     path: "/",
   });
+  (await cookies()).set("user", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    path: "/",
+  });
+  (await cookies()).set("user_data", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    path: "/",
+  });
 
   return NextResponse.json({ message: "Logged out" });
 }

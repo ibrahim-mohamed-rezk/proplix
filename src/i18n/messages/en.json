@@ -729,6 +729,7 @@
     "Agency": "Agency"
   },
   "endUser": {
+    "edit_property": "Edit Property",
     "List View": "List View",
     "no_features_found": "No features found",
     "Map View": "Map View",

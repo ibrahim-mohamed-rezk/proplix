@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getData } from "@/libs/server/backendServer";
 import Script from "next/script";
 import FooterOne from "@/layouts/footers/FooterOne";
+import { UserTypes } from "@/libs/types/types";
 
 const ListingDetailsOne = async ({
   slug,
@@ -14,6 +15,7 @@ const ListingDetailsOne = async ({
   locale: string;
 }) => {
   const token = (await cookies()).get("token")?.value;
+  const user = JSON.parse((await cookies()).get("user")?.value || "{}");
 
   const feachData = async () => {
     try {
@@ -60,7 +62,9 @@ const ListingDetailsOne = async ({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <HeaderOne token={token} style={true} />
-      <ListingDetailsOneArea token={token as string}
+      <ListingDetailsOneArea
+        user={user as UserTypes}
+        token={token as string}
         property={propertyData?.property}
         similar={propertyData?.similar}
       />

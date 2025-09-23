@@ -749,6 +749,7 @@
     "Agency": "وكالة"
   },
   "endUser": {
+    "edit_property": "تعديل العقار",
     "List View": "عرض قائمة",
     "no_features_found": "لا توجد خصائص",
     "Map View": "عرض الخريطة",
