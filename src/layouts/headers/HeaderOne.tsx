@@ -8,8 +8,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
 import { UserTypes } from "@/libs/types/types";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
-import { RotateCw } from "lucide-react";
+// import Image from "next/image";
+// import { RotateCw } from "lucide-react";
 
 const HeaderOne = ({
   style,
