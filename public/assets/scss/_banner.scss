@@ -534,13 +534,16 @@
                 height: 100%;
                 border: none;
                 border-radius: 10px;
-                padding: 0 170px 0 25px;
+                // padding: 0 170px 0 25px;
+                padding-inline-start: 25px;
+                padding-inline-end: 170px;
+
                 background: #fff;
             }
             button {
                 position: absolute;
                 top:8px;
-                right: 8px;
+                inset-inline-end: 8px;
                 bottom: 8px;
                 border-radius: 10px;
                 background: $color-one;

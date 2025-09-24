@@ -52,7 +52,7 @@ const FancyBanner = ({ style }: any) => {
                     <Image src={titleShape} alt="" className="lazy-img" />
                   )}
                 </span>{" "}
-                {t("banner_as_retailer")}
+                {/* {t("banner_as_retailer")} */}
               </h3>
             </div>
           </div>
@@ -66,7 +66,9 @@ const FancyBanner = ({ style }: any) => {
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
                 />
-                <button className={style ? "rounded-0" : ""}>
+                <button
+                  className={style ? "rounded-0" : ""}
+                >
                   {t("banner_get_started")}
                 </button>
               </form>

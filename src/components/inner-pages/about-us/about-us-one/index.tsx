@@ -9,7 +9,7 @@ import BLockFeatureFive from "@/components/homes/home-one/BLockFeatureFive";
 // import FooterFour from "@/layouts/footers/FooterFour"
 import FancyBanner from "@/components/common/FancyBanner";
 import FooterOne from "@/layouts/footers/FooterOne";
-import HomeBLockFeatureOne from "@/components/homes/home-one/BLockFeatureOne";
+// import HomeBLockFeatureOne from "@/components/homes/home-one/BLockFeatureOne";
 import { getTranslations } from "next-intl/server";
 
 const AboutUsOne = async () => {
@@ -18,10 +18,10 @@ const AboutUsOne = async () => {
     <>
       <HeaderOne style={true} />
       <BreadcrumbOne title={t("title")} sub_title={t("title")} style={false} />
-      <BLockFeatureOne />
+      <BLockFeatureOne   />
       {/* <VideoBanner /> */}
-      {/* <BLockFeatureFive style={true} /> */}
-      <HomeBLockFeatureOne />
+      <BLockFeatureFive style={true} />
+      {/* <HomeBLockFeatureOne /> */}
       {/* <Feedback style={true} /> */}
       {/* <AgentArea style={false} /> */}
       {/* <Brand /> */}

@@ -1,9 +1,13 @@
+"use client";
 import Count from "@/components/common/Count";
 import { Link } from "@/i18n/routing";
-import { getTranslations } from "next-intl/server";
+import Image from "next/image";
+import titleShape from "@/assets/images/shape/title_shape_09.svg";
+import { useLocale, useTranslations } from "next-intl";
 
-const BLockFeatureOne = async () => {
-  const t = await getTranslations("endUser.about");
+const BLockFeatureOne = () => {
+  const t = useTranslations("endUser.about");
+  const locale = useLocale();
   return (
     <div className="block-feature-two mt-150 xl-mt-100">
       <div className="container">
@@ -12,11 +16,22 @@ const BLockFeatureOne = async () => {
             <div className="me-xxl-4">
               <div className="title-one mb-60 lg-mb-40">
                 <div className="upper-title">{t("title")}</div>
-                <h3>{t("sub_title")}</h3>
+                <h3
+                  className={`${
+                    locale === "ar" ? "flex flex-row-reverse  justify-end" : ""
+                  }`}
+                >
+                  {t("sub_title")}
+                  <span className="mx-1">
+                    {t("property")}
+                    <Image src={titleShape} alt="" className="lazy-img" />
+                  </span>
+                  {t("marketaplace")}
+                </h3>
                 <p className="fs-22">{t("description")}</p>
               </div>
               <Link href="/contact" className="btn-two">
-              {t("contact_us")}
+                {t("contact_us")}
               </Link>
               <div className="counter-wrapper border-top pt-40 md-pt-10 mt-65 md-mt-40">
                 <div className="row">

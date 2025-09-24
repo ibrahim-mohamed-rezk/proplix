@@ -21,16 +21,15 @@ const BLockFeatureFive = ({ style }: any) => {
           <div className="col-xl-8 m-auto">
             <div className="title-one text-center mb-35 lg-mb-20">
               <h3>
-                {t("block_feature_five_title_1")} <br />{" "}
-                {t("block_feature_five_title_2")}{" "}
+                {t("block_feature_five_title_1")}
                 <span>
                   {t("block_feature_five_title_3")}
                   <Image src={titleShape} alt="" className="lazy-img" />
                 </span>
               </h3>
-              <p className="fs-24 color-dark">
+              {/* <p className="fs-24 color-dark">
                 {t("block_feature_five_subtitle")}
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
