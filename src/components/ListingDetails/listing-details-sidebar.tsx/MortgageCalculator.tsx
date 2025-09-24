@@ -2,7 +2,7 @@
 import { useRouter } from "@/i18n/routing";
 import { postData } from "@/libs/server/backendServer";
 import { PropertyTypes } from "@/libs/types/types";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 // Custom styles for the range input to make the thumb and track #FF6625
 const rangeStyles = `
@@ -152,8 +152,17 @@ const MortgageCalculator = ({ property }: { property?: PropertyTypes }) => {
 
   const handleDownPaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const sanitized = sanitizeInput(e.target.value);
-    setDownPayment(sanitized.replace(/^0+/, "") || "0");
+    const numeric = parseFloat(sanitized.replace(/,/g, "")) || 0;
+    const clamped = Math.min(Math.max(numeric, 0), price);
+    setDownPayment(clamped.toString());
   };
+
+  // Ensure down payment never exceeds price when price changes
+  useEffect(() => {
+    if (down > price) {
+      setDownPayment(price.toString());
+    }
+  }, [price, down]);
 
   return (
     <div className="w-full bg-white rounded-[20px] inline-flex justify-start items-center gap-[10px]">
@@ -210,8 +219,9 @@ const MortgageCalculator = ({ property }: { property?: PropertyTypes }) => {
           </div>
           <div className="relative w-[320px]">
             <input
-              type="tel"
+              type="number"
               value={downPayment}
+              max={price}
               onChange={handleDownPaymentChange}
               className="w-full h-[48px] bg-white rounded-[10px] border border-black px-[16px] text-black text-[16px] font-normal font-['Gordita'] focus:outline-none focus:border-orange-500"
               placeholder="100,000"
@@ -272,7 +282,7 @@ const MortgageCalculator = ({ property }: { property?: PropertyTypes }) => {
           {/* Calculate Button */}
           <button
             className={`w-[320px] px-[32px] py-[12px] bg-black rounded-[8px] inline-flex justify-center items-center gap-[10px] cursor-pointer hover:bg-gray-800 transition-colors`}
-            disabled={price <= 0 || down <= 0 || down === price}
+            disabled={price <= 0 || down <= 0 || down >= price}
             onClick={() => {
               router.push(
                 `/installments?price=${price}&down=${down}&loanTerm=${loanTerm}`
