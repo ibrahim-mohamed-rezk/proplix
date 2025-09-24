@@ -527,7 +527,7 @@
     .form-wrapper {
         display: flex;
         flex-direction: column;
-        justify-content: end;
+        align-items: end;
         form {
             max-width: 500px;
             height: 80px;
