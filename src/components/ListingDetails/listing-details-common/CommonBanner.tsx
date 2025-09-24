@@ -61,7 +61,6 @@ const CommonBanner = ({
             <div className="w-96 flex justify-start items-start gap-[12px] mt-4">
               <Link
                 href={`/dashboard/edit-property/${property?.id}`}
-                target="_blank"
                 className="flex-1 flex items-center justify-center gap-[8px] px-[20px] py-[8px] rounded-[8px] shadow-lg bg-[#FF6625] min-h-[48px] min-w-[120px]"
                 type="button"
                 style={{ minWidth: 0 }}

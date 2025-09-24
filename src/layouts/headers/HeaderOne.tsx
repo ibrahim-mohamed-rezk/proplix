@@ -5,7 +5,7 @@ import UseSticky from "@/hooks/UseSticky";
 import LoginModal from "@/modals/LoginModal";
 import axios from "axios";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UserTypes } from "@/libs/types/types";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -26,6 +26,7 @@ const HeaderOne = ({
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<UserTypes | null>(null);
+  const navbarRef = useRef<HTMLDivElement>(null);
 
   const logout = async () => {
     await axios.post("/api/auth/logout", {
@@ -53,6 +54,28 @@ const HeaderOne = ({
 
   useEffect(() => {
     feachUser();
+  }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navbarRef.current && !navbarRef.current.contains(event.target as Node)) {
+        // Check if mobile menu is open
+        const navbarCollapse = document.getElementById('navbarNav');
+        if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+          // Close the mobile menu by clicking the toggler button
+          const togglerButton = document.querySelector('[data-bs-target="#navbarNav"]') as HTMLButtonElement;
+          if (togglerButton) {
+            togglerButton.click();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const changeLanguage = (l: string) => {
@@ -251,7 +274,7 @@ const HeaderOne = ({
                 )}
               </div>
 
-              <nav className="navbar navbar-expand-lg p0 order-lg-2">
+              <nav className="navbar navbar-expand-lg p0 order-lg-2" ref={navbarRef}>
                 <button
                   className="navbar-toggler d-block d-lg-none"
                   type="button"
