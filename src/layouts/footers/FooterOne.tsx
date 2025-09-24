@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import footer_data from "@/data/home-data/FooterData";
 
@@ -7,7 +7,14 @@ import footerShape_2 from "@/assets/images/shape/shape_33.svg";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 
-const icon_1: string[] = ["facebook", "twitter", "instagram"];
+const icon_1: {
+  name: string;
+  url: string;
+}[] = [
+  { name: "facebook", url: "https://www.facebook.com/proplixeg" },
+  { name: "tiktok", url: "https://www.tiktok.com/@proplixco" },
+  { name: "instagram", url: "https://www.instagram.com/proplixeg" },
+];
 
 const FooterOne = ({ style }: any) => {
   const t = useTranslations("endUser");
@@ -69,7 +76,7 @@ const FooterOne = ({ style }: any) => {
                         <path
                           d="M207 18.9051H200.605L195.822 25.967L191.04 18.9051H184.599L192.585 30.2279L184.645 41.6367H191.079L195.822 34.5682L200.566 41.6367H206.96L199.059 30.2279L207 18.9051Z"
                           fill="#231F20"
-                        /> 
+                        />
                       </svg>
                     </Link>
                   </div>
@@ -88,13 +95,13 @@ const FooterOne = ({ style }: any) => {
                   <ul className="style-none d-flex align-items-center social-icon">
                     {icon_1.map((icon, i) => (
                       <li key={i}>
-                        <Link href="#">
+                        <a target="_blank" href={icon.url}>
                           <i
-                            className={`fa-brands fa${
-                              style ? "" : "-square"
-                            }-${icon}`}
+                            className={`fa-brands fa${style ? "" : "-square"}-${
+                              icon.name
+                            } fa-${icon.name}`}
                           ></i>
-                        </Link>
+                        </a>
                       </li>
                     ))}
                   </ul>
@@ -110,7 +117,11 @@ const FooterOne = ({ style }: any) => {
             </div>
 
             <div className="col-lg-8">
-              <div className={`d-flex flex-wrap ${style ? "h-100" : ""} mobile-footer-grid`}>
+              <div
+                className={`d-flex flex-wrap ${
+                  style ? "h-100" : ""
+                } mobile-footer-grid`}
+              >
                 {footer_data
                   .filter((items) => items.page === "home_1")
                   .map((item) => (
@@ -154,7 +165,7 @@ const FooterOne = ({ style }: any) => {
             width: 100%;
             padding: 0 1rem;
           }
-          
+
           .mobile-footer-grid .footer-nav {
             margin-top: 2rem !important;
             width: 100%;
