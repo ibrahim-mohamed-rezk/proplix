@@ -176,7 +176,6 @@
     "warehouse": "Warehouse",
     "building": "Building",
 
-
     "landing_space": "Landing Space",
     "enter_landing_space": "Enter Landing Space",
     "starting_day": "Starting Day",
@@ -612,7 +611,7 @@
     "Change Password": "Change Password"
   },
   "dashboard-index": {
-    "dashboard":"Dashboard",
+    "dashboard": "Dashboard",
     "loading": "Loading...",
     "not_found": "NOT FOUND",
     "all_properties": "All Properties",
@@ -892,7 +891,19 @@
     "emailError": "A valid email is required",
     "messagePlaceholder": "Your message*",
     "messageError": "Message is required",
-    "sendButton": "Send Message"
+    "sendButton": "Send Message",
+    "about": {
+      "title": "About Proplix",
+      "sub_title": "Your Trusted Property Marketplace.",
+      "description": "Making it easy to buy, sell, and rent real estate with confidence.",
+      "contact_us": "Contact Us",
+      "Low interest rate": "Low interest rate",
+      "cumulative_trading_volume": "Cumulative trading volume",
+      "title_1": "Who we are?",
+      "desc_2": "We’re a team of real estate and tech professionals rethinking how Egyptians buy, sell, and rent. With local expertise and smart digital tools, Proplix is a trusted hub for resale and rental properties.",
+      "title_2": "About Proplix",
+      "desc_3": "Founded in 2025, Proplix makes Egypt’s resale real estate market transparent, simple, and accessible. From first-time buyers to seasoned investors, we connect people with the right homes and opportunities."
+    }
   },
   "SignupPage": {
     "Create Agent Account": "Create Agent Account",
