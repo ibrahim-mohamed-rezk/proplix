@@ -525,8 +525,11 @@
         z-index: -1;
     }
     .form-wrapper {
-        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
         form {
+            max-width: 500px;
             height: 80px;
             position: relative;
             input {

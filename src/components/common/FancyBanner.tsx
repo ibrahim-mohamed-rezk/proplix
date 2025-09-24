@@ -57,7 +57,7 @@ const FancyBanner = ({ style }: any) => {
             </div>
           </div>
           <div className="col-lg-6">
-            <div className="form-wrapper me-auto ms-auto me-lg-0">
+            <div className="form-wrapper">
               <form onSubmit={(e) => subscribe(e)}>
                 <input
                   type="email"
@@ -72,7 +72,7 @@ const FancyBanner = ({ style }: any) => {
                   {t("banner_get_started")}
                 </button>
               </form>
-              <div className="fs-16 mt-10 text-white">
+              <div className="fs-16 mt-10 flex justify-start text-white">
                 {t("banner_already_agent")}{" "}
                 <Link
                   href="#"
