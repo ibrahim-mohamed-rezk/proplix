@@ -5,10 +5,11 @@ import BLockFeatureOne from "./BLockFeatureOne"
 import BLockFeatureFive from "@/components/homes/home-one/BLockFeatureFive"
 // import Feedback from "@/components/homes/home-five/Feedback"
 // import AgentArea from "@/components/homes/home-one/AgentArea"
-import Brand from "./Brand"
+// import Brand from "./Brand"
 // import FooterFour from "@/layouts/footers/FooterFour"
 import FancyBanner from "@/components/common/FancyBanner"
 import FooterOne from "@/layouts/footers/FooterOne"
+import HomeBLockFeatureOne from "@/components/homes/home-one/BLockFeatureOne"
 
 const AboutUsOne = () => {
    return (
@@ -17,7 +18,8 @@ const AboutUsOne = () => {
          <BreadcrumbOne title="About Agency" sub_title="About us" style={false} />
          <BLockFeatureOne />
          {/* <VideoBanner /> */}
-         <BLockFeatureFive style={true} />
+         {/* <BLockFeatureFive style={true} /> */}
+         <HomeBLockFeatureOne />
          {/* <Feedback style={true} /> */}
          {/* <AgentArea style={false} /> */}
          {/* <Brand /> */}
