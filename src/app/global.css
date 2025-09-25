@@ -132,3 +132,15 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
   padding-bottom: 0 !important;
   
 }
+
+@media (min-width: 1400px) {
+    .custome-aminity {
+        width: 33% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .custome-aminity {
+        width: 100% !important;
+    }
+}

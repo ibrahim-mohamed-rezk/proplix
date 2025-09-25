@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/routing";
 import { PropertyTypes, UserTypes } from "@/libs/types/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const CommonBanner = ({
   property,
@@ -12,16 +12,20 @@ const CommonBanner = ({
 }) => {
   const t = useTranslations("endUser");
 
-  console.log(user?.id, property?.user.id);
+  const locale = useLocale();
 
   return (
     <div className="row">
       <div className="col-lg-6">
-        <h3 className="property-titlee">{property?.title}</h3>
+        <h3 className="property-titlee !text-[clamp(20px,1.823vw,35px)] ">
+          {property?.title}
+        </h3>
         <div className="d-flex flex-wrap flex-col mt-10">
           <div className="d-flex items-center justify-start">
             <div
-              className={`list-type !border-none rounded-[23px] text-uppercase me-3 ${
+              className={`list-type !border-none rounded-[23px] text-uppercase ${
+                locale === "ar" ? "ms-3" : "me-3"
+              } ${
                 property?.status.toLowerCase() === "sale"
                   ? "!bg-[#00B579]"
                   : property?.status.toLowerCase() === "rent"
@@ -47,15 +51,19 @@ const CommonBanner = ({
       <div className="col-lg-6 d-flex justify-content-start justify-content-lg-end PropertyTypes text-lg-end">
         <div className="d-inline-flex flex-column justify-content-start  md-mt-40">
           {/* <div className="price color-dark fw-500">{property?.price}EGP</div> */}
-          <div className="price color-dark fw-500">
-            {property?.price?.toLocaleString()}EGP
+          <div className="price !text-[clamp(20px,1.823vw,35px)] color-dark fw-500">
+            {property?.price?.toLocaleString()} {t("EGP")}
           </div>
-          {property?.status.toLowerCase() === "rent" && (
-            <div className="est-price fs-20 md-mb-30">
-              {t("down_price")}
-              <span className="fw-500 color-dark"> {property?.down_price}</span>
-            </div>
-          )}
+          {property?.status.toLowerCase() === "rent" &&
+            property?.down_price && (
+              <div className="est-price fs-20 md-mb-30">
+                {t("down_price")}
+                <span className="fw-500 color-dark">
+                  {" "}
+                  {property?.down_price}
+                </span>
+              </div>
+            )}
 
           {property?.user.id === user?.id ? (
             <div className="w-96 flex justify-start items-start gap-[12px] mt-4">

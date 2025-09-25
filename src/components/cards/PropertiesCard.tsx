@@ -85,7 +85,7 @@ const PropertiesCard = ({
         );
         localStorage.setItem("favorites", JSON.stringify(revertedFavorites));
         setIsFavorite(false);
-      } 
+      }
 
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data?.msg || "An error occurred");
@@ -244,7 +244,7 @@ const PropertiesCard = ({
               style={{ fontSize: "clamp(20px,1.458vw,28px)" }}
             >
               {Number(item?.price).toLocaleString()}
-              EGP{item?.status === "rent" && "/M"}
+              {` ${t("EGP")}`} {item?.status === "rent" && `/${t("month")}`}
             </strong>
             <div className="flex items-center justify-center gap-[10px]">
               <a

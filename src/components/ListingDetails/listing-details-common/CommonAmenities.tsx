@@ -7,11 +7,16 @@ const CommonAmenities = ({ property }: { property?: PropertyTypes }) => {
     <>
       <h4 className="mb-20">{t("amenities")}</h4>
       <p className="fs-20 lh-lg pb-25">{t("property_features_description")}</p>
-      <ul className="style-none d-flex flex-wrap justify-content-between list-style-two">
+      <ul className="style-none d-flex flex-wrap justify-content-start list-style-two">
         {property?.amenities?.map((list) => (
-          <li className="aminity" style={{
-            fontWeight: 400
-          }} key={list.id}>
+          <li
+            className="aminity text-nowrap !p-0 !w-[48%] custome-aminity "
+            style={{
+              fontWeight: 400,
+              
+            }}
+            key={list.id}
+          >
             <img src={list.image} alt={list.title} width={25} height={25} />
             {list.title}
           </li>

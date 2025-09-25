@@ -750,6 +750,8 @@
   },
   "endUser": {
     "edit_property": "تعديل العقار",
+    "EGP": "جنيه",
+    "month": "شهريا",
     "List View": "عرض قائمة",
     "no_features_found": "لا توجد خصائص",
     "Map View": "عرض الخريطة",
@@ -880,7 +882,7 @@
     "Pricing": "الأسعار",
     "Terms & conditions": "الشروط والأحكام",
     "Cookie": "ملفات تعريف الارتباط",
-    "down_price": "المقم:",
+    "down_price": "المقدم:",
     "see_all": "اظهار",
     "Privacy policy": "سياسة الخصوصية",
     "Buy Condos": "شراء شقق سكنية",
