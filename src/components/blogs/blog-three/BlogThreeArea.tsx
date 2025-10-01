@@ -10,7 +10,7 @@ const BlogThreeArea = () => {
   // fetch types
   const [types, setTypes] = useState<blogFilterTypes[]>([]);
   const [blogs, setBlogs] = useState<blogTypes[]>([]);
-  const [type, setType] = useState<string>(localStorage.getItem("type") || "all");
+  const [type, setType] = useState<string>("all");
   const t = useTranslations("endUser");
   const locale = useLocale();
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,6 +26,16 @@ const BlogThreeArea = () => {
     prev_page_url: null,
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize type from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedType = localStorage.getItem("type");
+      if (savedType) {
+        setType(savedType);
+      }
+    }
+  }, []);
 
   // Fetch types only once on mount
   useEffect(() => {
@@ -51,12 +61,16 @@ const BlogThreeArea = () => {
     const fetchBlogs = async () => {
       setIsLoading(true);
       try {
-        const typeId =
-          type === "all"
-            ? ""
-            : `type_id=${types.find((t) => t.title === type)?.id}`;
+        let typeId = "";
+        if (type !== "all") {
+          const foundType = types.find((t) => t.title === type);
+          if (foundType?.id) {
+            typeId = `type_id=${foundType.id}`;
+          }
+        }
+
         const response = await getData(
-          `blogs?${typeId}`,
+          `blogs${typeId ? `?${typeId}` : ""}`,
           { page: currentPage },
           {
             lang: locale,
@@ -90,7 +104,12 @@ const BlogThreeArea = () => {
         <div className="blog-filter-nav">
           <ul className="style-none d-flex justify-content-center flex-wrap isotop-menu-wrapper">
             <li
-              onClick={() => setType("all")}
+              onClick={() => {
+                setType("all");
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("type", "all");
+                }
+              }}
               className={type === "all" ? "is-checked" : ""}
             >
               {t("all")}
@@ -98,7 +117,12 @@ const BlogThreeArea = () => {
             {types.map((category: blogFilterTypes) => (
               <li
                 key={category.id}
-                onClick={() => setType(category.title)}
+                onClick={() => {
+                  setType(category.title);
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem("type", category.title);
+                  }
+                }}
                 className={type === category.title ? "is-checked" : ""}
               >
                 {category.title}
@@ -199,11 +223,14 @@ const BlogThreeArea = () => {
                 pagination.current_page === 1 ? "disabled" : ""
               }
               nextClassName={
-                pagination.current_page === pagination.last_page ? "disabled" : ""
+                pagination.current_page === pagination.last_page
+                  ? "disabled"
+                  : ""
               }
             />
             <div className="mt-2 small text-muted">
-              {t("page") || "Page"} {pagination.current_page} {t("of") || "of"} {pagination.last_page} &nbsp;|&nbsp;
+              {t("page") || "Page"} {pagination.current_page} {t("of") || "of"}{" "}
+              {pagination.last_page} &nbsp;|&nbsp;
               {t("total")} {pagination.total} {t("blogs") || "blogs"}
             </div>
           </div>

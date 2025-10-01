@@ -11,6 +11,7 @@ const BlogDetailsArea = () => {
   const [blog, setBlog] = useState<any>(null);
   const { "blog-slug": slug } = useParams();
   const locale = useLocale();
+  const [latestBlogs, setLatestBlogs] = useState<any[]>([]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -23,6 +24,7 @@ const BlogDetailsArea = () => {
           }
         );
         setBlog(response.data.data.blog);
+        setLatestBlogs(response.data.data.latest_blogs);
       } catch (error) {
         throw error;
       }
@@ -101,7 +103,7 @@ const BlogDetailsArea = () => {
                 </div>
               </article>
             </div>
-            <BlogSidebar style={true} />
+            <BlogSidebar rc_data={latestBlogs} style={true} />
           </div>
         </div>
       </div>
