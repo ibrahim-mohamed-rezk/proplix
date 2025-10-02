@@ -14,12 +14,22 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const t = useTranslations("endUser");
 
+  // Check if property has valid locations
+  const hasValidLocations = property?.property_locations?.some(
+    (location) => location.latitude !== null && location.longitude !== null
+  );
+
+  // Return null if no valid locations
+  if (!hasValidLocations) {
+    return null;
+  }
+
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [55.2708, 25.2048], // Default center
+      center: [5.2708, 5.2048], // Default center
       zoom: 12,
     });
   }, []);
@@ -34,17 +44,29 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
 
     const locations = property?.property_locations;
 
+    console.log(property);
+
+    // Filter out locations with null coordinates
+    const validLocations = locations.filter(
+      (location) => location.latitude !== null && location.longitude !== null
+    );
+
+    // If no valid locations, return early
+    if (validLocations.length === 0) {
+      return;
+    }
+
     // Add markers to map
-    locations.forEach((location) => {
+    validLocations.forEach((location) => {
       new mapboxgl.Marker({ color: "red" })
         .setLngLat([location.longitude, location.latitude])
         .addTo(map.current!);
     });
 
     // Fit map to markers
-    if (locations.length > 0) {
+    if (validLocations.length > 0) {
       const bounds = new mapboxgl.LngLatBounds();
-      locations.forEach((location) => {
+      validLocations.forEach((location) => {
         bounds.extend([location.longitude, location.latitude]);
       });
       map.current.fitBounds(bounds, { padding: 50 });

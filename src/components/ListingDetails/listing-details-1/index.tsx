@@ -27,12 +27,42 @@ const ListingDetailsOne = async ({
         }
       );
       return response.data.data;
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Error fetching property data:", error);
+      // If property not found (400 status), return null to handle gracefully
+      if (error?.response?.status === 400 || error?.response?.status === 404) {
+        return null;
+      }
       throw error;
     }
   };
 
   const propertyData = await feachData();
+
+  // If property not found, return 404 page
+  if (!propertyData) {
+    return (
+      <>
+        <HeaderOne token={token} style={true} />
+        <div className="container py-[250px]">
+          <div className="row justify-content-center">
+            <div className="col-md-6 text-center">
+              <h1 className="display-1 text-muted">404</h1>
+              <h2 className="mb-3">Property Not Found</h2>
+              <p className="lead mb-4">
+                The property you're looking for doesn't exist or has been
+                removed.
+              </p>
+              <a href="/properties" className="btn btn-primary">
+                Browse Properties
+              </a>
+            </div>
+          </div>
+        </div>
+        <FooterOne />
+      </>
+    );
+  }
 
   const structuredData = {
     "@context": "https://schema.org",

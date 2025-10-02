@@ -34,10 +34,12 @@ const DashboardHeaderTwo = ({ title }: any) => {
 
   const changeLanguage = (l: string) => {
     const paramsString = searchParams.toString();
-    
+
     // Remove the current locale from the pathname to avoid duplication
-    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
-    const url = paramsString ? `${pathWithoutLocale}?${paramsString}` : pathWithoutLocale;
+    const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+    const url = paramsString
+      ? `${pathWithoutLocale}?${paramsString}`
+      : pathWithoutLocale;
 
     router.replace(url, { locale: l });
     setLangOpen(false);
@@ -57,7 +59,9 @@ const DashboardHeaderTwo = ({ title }: any) => {
             </button>
             <div className="profile-notification position-relative dropdown-center flex-shrink-0">
               <button
-                className={`noti-btn dropdown-toggle ${locale==="ar"?"mx-1":"mx-4"}`}
+                className={`noti-btn dropdown-toggle ${
+                  locale === "ar" ? "mx-1" : "mx-4"
+                }`}
                 type="button"
                 id="notification-dropdown"
                 data-bs-toggle="dropdown"
@@ -71,31 +75,31 @@ const DashboardHeaderTwo = ({ title }: any) => {
             </div>
             {/* Language Switcher */}
             <div className="relative me-3 flex-shrink-0">
-  <button
-    onClick={() => {
-      const currentIndex = locales.indexOf(locale);
-      const nextIndex = (currentIndex + 1) % locales.length;
-      const nextLocale = locales[nextIndex];
-      changeLanguage(nextLocale);
-    }}
-    className="flex items-center   hover:shadow-lg rounded-[clamp(12px,1vw,24px)] font-['Libre_Baskerville'] text-[clamp(15px,1.1vw,22px)] font-semibold py-[clamp(5px,0.6vw,8px)] px-[clamp(5px,1vw,8px)] justify-center gap-[8px] text-black transition-all duration-200 focus:outline-none"
-  >
-    <span className={`fi fi-${flagMap[locale]} mr-1`} />
-    <Image
-      src={`/images/${locale}.svg`}
-      alt="Flag"
-      width={30}
-      height={20}
-      className="rounded shadow-sm "
-    />
-    <span className="uppercase text-[#222] font-bold font-['Libre_Baskerville'] text-[18px] tracking-wider">
-      {locale}
-    </span>
-    {/* Optional: You can keep the chevron or replace with a cycle icon */}
-    {/* <ChevronDown className="w-4 h-4 text-[18px] text-[#222]" /> */}
-  </button>
-</div>
-            
+              <button
+                onClick={() => {
+                  const currentIndex = locales.indexOf(locale);
+                  const nextIndex = (currentIndex + 1) % locales.length;
+                  const nextLocale = locales[nextIndex];
+                  changeLanguage(nextLocale);
+                }}
+                className="flex items-center   hover:shadow-lg rounded-[clamp(12px,1vw,24px)] font-['Libre_Baskerville'] text-[clamp(15px,1.1vw,22px)] font-semibold py-[clamp(5px,0.6vw,8px)] px-[clamp(5px,1vw,8px)] justify-center gap-[8px] text-black transition-all duration-200 focus:outline-none"
+              >
+                <span className={`fi fi-${flagMap[locale]} mr-1`} />
+                <Image
+                  src={`/images/${locale}.svg`}
+                  alt="Flag"
+                  width={30}
+                  height={20}
+                  className="rounded shadow-sm "
+                />
+                <span className="uppercase text-[#222] font-bold font-['Libre_Baskerville'] text-[18px] tracking-wider">
+                  {locale}
+                </span>
+                {/* Optional: You can keep the chevron or replace with a cycle icon */}
+                {/* <ChevronDown className="w-4 h-4 text-[18px] text-[#222]" /> */}
+              </button>
+            </div>
+
             <div className="d-none d-md-block me-3 flex-shrink-0">
               <Link
                 href={`/${locale}/dashboard/add-property`}

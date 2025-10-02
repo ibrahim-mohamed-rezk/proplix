@@ -37,7 +37,6 @@ type FormInputs = {
   sqt: string;
   bedroom: string;
   bathroom: string;
-  kitchen: string;
   status: string;
   type: string;
   immediate_delivery: string;
@@ -133,6 +132,8 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
   });
 
   const paymentMethod = useWatch({ control, name: "payment_method" }) || "cash";
+  const status = useWatch({ control, name: "status" });
+  const immediateDelivery = useWatch({ control, name: "immediate_delivery" });
 
   // State for dropdown options
   const [propertyTypes, setPropertyTypes] = useState<SelectOption[]>([]);
@@ -305,6 +306,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     setValue("payment_method", "cash");
   }, [setValue]);
 
+  // Auto-set payment method to cash when status is rent
+  useEffect(() => {
+    if (status === "rent") {
+      setValue("payment_method", "cash");
+    }
+  }, [status, setValue]);
+
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData();
     // General fields
@@ -314,7 +322,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     formData.append("sqt", data.sqt);
     formData.append("bedroom", data.bedroom);
     formData.append("bathroom", data.bathroom);
-    formData.append("kitichen", data.kitchen);
     formData.append("status", data.status);
     formData.append("type", data.type);
     formData.append("immediate_delivery", data.immediate_delivery);
@@ -483,20 +490,24 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
       const value = e.target.value;
 
       // Remove all non-digit characters
-      const digits = value.replace(/\D/g, '');
+      const digits = value.replace(/\D/g, "");
       // Store the raw number value
-      const numValue = digits ? Number(digits) : '';
+      const numValue = digits ? Number(digits) : "";
       field.onChange(numValue);
 
       // Calculate new cursor position after formatting
       setTimeout(() => {
         if (inputRef.current && digits) {
-          const formattedValue = Number(digits).toLocaleString('en-US').replace(/,/g, ' ');
-          const digitsBefore = value.slice(0, cursorPosition).replace(/\D/g, '').length;
+          const formattedValue = Number(digits)
+            .toLocaleString("en-US")
+            .replace(/,/g, " ");
+          const digitsBefore = value
+            .slice(0, cursorPosition)
+            .replace(/\D/g, "").length;
           let newPosition = 0;
           let digitCount = 0;
           for (let i = 0; i < formattedValue.length; i++) {
-            if (formattedValue[i] !== ' ') {
+            if (formattedValue[i] !== " ") {
               digitCount++;
             }
             if (digitCount === digitsBefore) {
@@ -534,8 +545,8 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
             transition: "all 0.3s ease",
             background: "#ffffff",
             direction: "ltr",
-            textAlign: locale === 'ar' ? 'right' : 'left',
-            unicodeBidi: 'plaintext'
+            textAlign: locale === "ar" ? "right" : "left",
+            unicodeBidi: "plaintext",
           }}
           inputMode="numeric"
           pattern="[0-9 ]*"
@@ -674,20 +685,20 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     const monthNames =
       locale === "ar"
-        ?  [
-        "يناير",
-        "فبراير",
-        "مارس",
-        "أبريل",
-        "مايو",
-        "يونيو",
-        "يوليو",
-        "أغسطس",
-        "سبتمبر",
-        "أكتوبر",
-        "نوفمبر",
-        "ديسمبر",
-      ]
+        ? [
+            "يناير",
+            "فبراير",
+            "مارس",
+            "أبريل",
+            "مايو",
+            "يونيو",
+            "يوليو",
+            "أغسطس",
+            "سبتمبر",
+            "أكتوبر",
+            "نوفمبر",
+            "ديسمبر",
+          ]
         : [
             "January",
             "February",
@@ -705,7 +716,7 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
 
     const dayNames =
       locale === "ar"
-        ?["أح", "إث", "ثلا", "أر", "خم", "جم", "سب"]
+        ? ["أح", "إث", "ثلا", "أر", "خم", "جم", "سب"]
         : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     return (
@@ -1076,6 +1087,104 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
               )}
             </div>
 
+            {/* Property Details */}
+            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
+              <SectionHeader
+                title={t("property_details")}
+                icon={<FileText className="w-5 h-5 text-info" />}
+                sectionKey="details"
+                description={t("status_type_delivery_info")}
+              />
+              {expandedSections.details && (
+                <div
+                  className="section-content p-4"
+                  style={{ borderTop: "1px solid #f8f9fa" }}
+                >
+                  <div className="row g-4">
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("status")}
+                        name="status"
+                        type="select"
+                        required
+                        options={[
+                          { value: "rent", label: t("rent") },
+                          { value: "sale", label: t("sale") },
+                        ]}
+                        placeholder={t("select_status")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("type")}
+                        name="type"
+                        type="select"
+                        required
+                        options={[
+                          { value: "apartment", label: t("apartment") },
+                          { value: "villa", label: t("villa") },
+                          { value: "townhouse", label: t("townhouse") },
+                          { value: "stand_alone", label: t("stand_alone") },
+                          { value: "duplex", label: t("duplex") },
+                          { value: "penthouse", label: t("penthouse") },
+                          { value: "office", label: t("office") },
+                          { value: "shop", label: t("shop") },
+                          { value: "warehouse", label: t("warehouse") },
+                          { value: "building", label: t("building") },
+                        ]}
+                        placeholder={t("select_type")}
+                      />
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        label={t("immediate_delivery")}
+                        name="immediate_delivery"
+                        type="select"
+                        required
+                        options={[
+                          { value: "yes", label: t("yes") },
+                          { value: "no", label: t("no") },
+                        ]}
+                        placeholder={t("select_option")}
+                      />
+                    </div>
+                    {/* Only show starting date when immediate delivery is no */}
+                    {immediateDelivery === "no" && (
+                      <div className="col-md-6 col-lg-4">
+                        <DateInput
+                          label={t("starting_day")}
+                          name="starting_day"
+                          required
+                        />
+                      </div>
+                    )}
+                    <div className="col-md-6 col-lg-4">
+                      <InputField
+                        // values is ==>'all-furnished','unfurnished','partly-furnished'
+                        label={t("furnishing")}
+                        name="furnishing"
+                        type="select"
+                        required
+                        options={[
+                          { value: "all-furnished", label: t("furnished") },
+                          { value: "unfurnished", label: t("unfurnished") },
+                          {
+                            value: "semi-furnished",
+                            label: t("semi_furnished"),
+                          },
+                          {
+                            value: "partly-furnished",
+                            label: t("partly_furnished"),
+                          },
+                        ]}
+                        placeholder={t("select_furnishing")}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Pricing Information */}
             <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
               <SectionHeader
@@ -1125,31 +1234,34 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                           />
                           {t("cash")}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setValue("payment_method", "installment")
-                          }
-                          className={`btn d-flex align-items-center justify-content-center gap-2 ${
-                            paymentMethod === "installment"
-                              ? "btn-primary text-white"
-                              : "btn-outline-secondary"
-                          }`}
-                          style={
-                            paymentMethod === "installment"
-                              ? {
-                                  backgroundColor: "#F26A3F",
-                                  borderColor: "#F26A3F",
-                                }
-                              : {}
-                          }
-                        >
-                          <CreditCard
-                            className="w-4 h-4"
-                            style={{ width: "1rem", height: "1rem" }}
-                          />
-                          {t("installment")}
-                        </button>
+                        {/* Only show installment option for sale status */}
+                        {status === "sale" && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setValue("payment_method", "installment")
+                            }
+                            className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                              paymentMethod === "installment"
+                                ? "btn-primary text-white"
+                                : "btn-outline-secondary"
+                            }`}
+                            style={
+                              paymentMethod === "installment"
+                                ? {
+                                    backgroundColor: "#F26A3F",
+                                    borderColor: "#F26A3F",
+                                  }
+                                : {}
+                            }
+                          >
+                            <CreditCard
+                              className="w-4 h-4"
+                              style={{ width: "1rem", height: "1rem" }}
+                            />
+                            {t("installment")}
+                          </button>
+                        )}
                       </div>
                       {errors.payment_method && (
                         <div className="text-danger small d-flex align-items-center mt-1">
@@ -1231,109 +1343,11 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                     </div>
                     <div className="col-md-6 col-lg-3">
                       <InputField
-                        label={t("kitchen")}
-                        name="kitchen"
-                        type="number"
-                        required
-                        placeholder={t("number_of_kitchens")}
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-3">
-                      <InputField
                         label={t("landing_space")}
                         name="landing_space"
                         type="number"
                         required
                         placeholder={t("enter_landing_space")}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Property Details */}
-            <div className="form-section bg-white rounded-4 mb-4 overflow-hidden">
-              <SectionHeader
-                title={t("property_details")}
-                icon={<FileText className="w-5 h-5 text-info" />}
-                sectionKey="details"
-                description={t("status_type_delivery_info")}
-              />
-              {expandedSections.details && (
-                <div
-                  className="section-content p-4"
-                  style={{ borderTop: "1px solid #f8f9fa" }}
-                >
-                  <div className="row g-4">
-                    <div className="col-md-6 col-lg-4">
-                      <InputField
-                        label={t("status")}
-                        name="status"
-                        type="select"
-                        required
-                        options={[
-                          { value: "rent", label: t("rent") },
-                          { value: "sale", label: t("sale") },
-                        ]}
-                        placeholder={t("select_status")}
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                      <InputField
-                        label={t("type")}
-                        name="type"
-                        type="select"
-                        required
-                        options={[
-                          { value: "apartment", label: t("apartment") },
-                          { value: "villa", label: t("villa") },
-                          { value: "townhouse", label: t("townhouse") },
-                          { value: "stand_alone", label: t("stand_alone") },
-                          { value: "duplex", label: t("duplex") },
-                          { value: "penthouse", label: t("penthouse") },
-                          { value: "office", label: t("office") },
-                          { value: "shop", label: t("shop") },
-                          { value: "warehouse", label: t("warehouse") },
-                          { value: "building", label: t("building") },
-                        ]}
-                        placeholder={t("select_type")}
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                      <InputField
-                        label={t("immediate_delivery")}
-                        name="immediate_delivery"
-                        type="select"
-                        required
-                        options={[
-                          { value: "yes", label: t("yes") },
-                          { value: "no", label: t("no") },
-                        ]}
-                        placeholder={t("select_option")}
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                      <DateInput
-                        label={t("starting_day")}
-                        name="starting_day"
-                        required
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                      <InputField
-                        // values is ==>'all-furnished','unfurnished','partly-furnished'
-                        label={t("furnishing")}
-                        name="furnishing"
-                        type="select"
-                        required
-                        options={[
-                    { value: "all-furnished", label: t("furnished") },
-                    { value: "unfurnished", label: t("unfurnished") },
-                    { value: "semi-furnished", label: t("semi_furnished") },
-                    { value: "partly-furnished", label: t("partly_furnished") },
-                  ]}
-                        placeholder={t("select_furnishing")}
                       />
                     </div>
                   </div>

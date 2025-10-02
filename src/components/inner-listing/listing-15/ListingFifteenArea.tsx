@@ -13,6 +13,7 @@ import UseSticky from "@/hooks/UseSticky";
 
 const ListingFifteenArea = () => {
   const [properties, setProperties] = useState<any[]>([]);
+  const [previousProperties, setPreviousProperties] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -24,15 +25,10 @@ const ListingFifteenArea = () => {
   type Filters = {
     [key: string]: string | number | number[] | null;
   };
-  const [filters, setFilters] = useState<Filters>(() => {
-    const storedFilters = localStorage.getItem("filters");
-    return storedFilters
-      ? JSON.parse(storedFilters)
-      : {
-          status: "sale",
-          price: null,
-          down_price: null,
-        };
+  const [filters, setFilters] = useState<Filters>({
+    status: "sale",
+    price: null,
+    down_price: null,
   });
   const locale = useLocale();
   const [types, setTypes] = useState([]);
@@ -44,15 +40,47 @@ const ListingFifteenArea = () => {
   // Mobile view state
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
 
+  // Initialize filters from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedFilters = localStorage.getItem("filters");
+      if (storedFilters) {
+        try {
+          const parsedFilters = JSON.parse(storedFilters);
+          setFilters(parsedFilters);
+        } catch (error) {
+          console.error("Error parsing stored filters:", error);
+        }
+      }
+    }
+  }, []);
+
   // Update localStorage when filters change
   useEffect(() => {
-    localStorage.setItem("filters", JSON.stringify(filters));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("filters", JSON.stringify(filters));
+    }
   }, [filters]);
 
   // Function to clear all existing markers
   const clearMarkers = () => {
     markers.current.forEach((marker) => marker.remove());
     markers.current = [];
+  };
+
+  // Function to compare properties arrays to check if they're the same
+  const arePropertiesEqual = (props1: any[], props2: any[]): boolean => {
+    if (props1.length !== props2.length) return false;
+
+    return props1.every((prop1, index) => {
+      const prop2 = props2[index];
+      return (
+        prop1.id === prop2.id &&
+        prop1.title === prop2.title &&
+        prop1.price === prop2.price &&
+        prop1.status === prop2.status
+      );
+    });
   };
 
   // Function to generate random coordinates around a center point (for testing/demo)
@@ -68,13 +96,21 @@ const ListingFifteenArea = () => {
   };
 
   // Function to add property markers to the map
-  const addPropertyMarkers = (propertiesToMap: any[]) => {
+  const addPropertyMarkers = (
+    propertiesToMap: any[],
+    forceUpdate: boolean = false
+  ) => {
     if (!map.current) return;
 
     console.log("Adding markers for properties:", propertiesToMap.length);
 
-    // Clear existing markers
-    clearMarkers();
+    // Only clear and recreate markers if forced or if this is the first time
+    if (forceUpdate || markers.current.length === 0) {
+      clearMarkers();
+    } else {
+      console.log("Skipping marker recreation - properties unchanged");
+      return;
+    }
 
     // Track valid coordinates for bounds calculation
     const validCoordinates: [number, number][] = [];
@@ -221,8 +257,13 @@ const ListingFifteenArea = () => {
       const pagination = response.data.data.pagination;
 
       if (append) {
-        setProperties((prev) => [...prev, ...newProperties]);
+        setProperties((prev) => {
+          const updated = [...prev, ...newProperties];
+          setPreviousProperties(prev);
+          return updated;
+        });
       } else {
+        setPreviousProperties(properties);
         setProperties(newProperties);
       }
 
@@ -247,10 +288,16 @@ const ListingFifteenArea = () => {
   // Update map markers when properties change
   useEffect(() => {
     if (properties.length > 0 && map.current) {
-      // Wait a bit for map to be fully initialized
-      setTimeout(() => {
-        addPropertyMarkers(properties);
-      }, 500);
+      // Only update markers if properties have actually changed
+      if (!arePropertiesEqual(properties, previousProperties)) {
+        console.log("Properties changed, updating markers");
+        // Wait a bit for map to be fully initialized
+        setTimeout(() => {
+          addPropertyMarkers(properties, true);
+        }, 500);
+      } else {
+        console.log("Properties unchanged, skipping marker update");
+      }
     }
   }, [properties, locale]);
 
@@ -283,7 +330,9 @@ const ListingFifteenArea = () => {
       type_id: null,
     };
     setFilters(defaultFilters);
-    localStorage.setItem("filters", JSON.stringify(defaultFilters));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("filters", JSON.stringify(defaultFilters));
+    }
   };
 
   // fetch types form api
@@ -323,7 +372,7 @@ const ListingFifteenArea = () => {
     map.current.on("load", () => {
       console.log("Map loaded successfully");
       if (properties.length > 0) {
-        addPropertyMarkers(properties);
+        addPropertyMarkers(properties, true);
       }
     });
 
@@ -332,7 +381,7 @@ const ListingFifteenArea = () => {
       console.log("Map style loaded");
       if (properties.length > 0) {
         setTimeout(() => {
-          addPropertyMarkers(properties);
+          addPropertyMarkers(properties, true);
         }, 100);
       }
     });

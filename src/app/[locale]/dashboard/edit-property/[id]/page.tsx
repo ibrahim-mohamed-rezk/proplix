@@ -17,7 +17,7 @@ const index = async () => {
 
   return (
     <Wrapper>
-                        <DashboardHeaderOne />
+      <DashboardHeaderOne />
       <DashboardEditProperty token={token as string} />
     </Wrapper>
   );

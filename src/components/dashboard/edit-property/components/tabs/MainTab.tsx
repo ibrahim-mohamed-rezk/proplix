@@ -85,10 +85,25 @@ export const MainTab: React.FC<MainTabProps> = ({
   });
 
   const paymentMethod = useWatch({ control, name: "payment_method" }) || "cash";
+  const status = useWatch({ control, name: "status" });
+  const immediateDelivery = useWatch({ control, name: "immediate_delivery" });
+
+  // Auto-set payment method to cash when status is rent
+  useEffect(() => {
+    if (status === "rent") {
+      setValue("payment_method", "cash");
+    }
+  }, [status, setValue]);
+
+  // Clear starting_day when immediate delivery is yes
+  useEffect(() => {
+    if (immediateDelivery === "yes") {
+      setValue("starting_day", "");
+    }
+  }, [immediateDelivery, setValue]);
 
   // State for dropdown options
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
-  const [areas, setAreas] = useState<PropertyArea[]>([]);
   const [locationData, setLocationData] = useState<LocationData | null>(null);
 
   const showToast = (
@@ -110,13 +125,11 @@ export const MainTab: React.FC<MainTabProps> = ({
       const data = property.data;
       // Set basic fields
       setValue("type_id", data.type?.id?.toString() || "");
-      setValue("area_id", data.area?.id?.toString() || "");
       setValue("price", data.price?.toString() || "");
       setValue("down_price", data.down_price?.toString() || "");
       setValue("sqt", data.sqt?.toString() || "");
       setValue("bedroom", data.bedroom?.toString() || "");
       setValue("bathroom", data.bathroom?.toString() || "");
-      setValue("kitchen", data.kitichen?.toString() || "");
       setValue("status", data.status || "");
       setValue("immediate_delivery", data.immediate_delivery || "");
       setValue("payment_method", data.payment_method || "cash");
@@ -203,20 +216,12 @@ export const MainTab: React.FC<MainTabProps> = ({
     const fetchDropdownData = async () => {
       if (!token || !isEditing) return;
       try {
-        const [typesResponse, areasResponse] = await Promise.all([
-          getData(
-            "types",
-            {},
-            new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
-          ),
-          getData(
-            "areas",
-            {},
-            new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
-          ),
-        ]);
+        const typesResponse = await getData(
+          "types",
+          {},
+          new AxiosHeaders({ Authorization: `Bearer ${token}`, lang: locale })
+        );
         if (typesResponse.status) setPropertyTypes(typesResponse.data.data);
-        if (areasResponse.status) setAreas(areasResponse.data.data);
       } catch (error) {
         console.error("Error fetching dropdown data:", error);
         showToast(t("error_fetching_dropdown_data"), "error");
@@ -813,7 +818,6 @@ export const MainTab: React.FC<MainTabProps> = ({
     formData.append("sqt", data.sqt);
     formData.append("bedroom", data.bedroom);
     formData.append("bathroom", data.bathroom);
-    formData.append("kitichen", data.kitchen);
     formData.append("status", data.status);
     formData.append("immediate_delivery", data.immediate_delivery);
     formData.append("furnishing", data.furnishing);
@@ -982,19 +986,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                         />
                       </div>
                       <div className="col-md-6 col-lg-4">
-                        <InputField
-                          label={t("area")}
-                          name="area_id"
-                          type="select"
-                          required
-                          options={areas.map((area) => ({
-                            value: area.id.toString(),
-                            label: area.description?.en?.name || area.name,
-                          }))}
-                          placeholder={t("select_area")}
-                        />
-                      </div>
-                      <div className="col-md-6 col-lg-4">
                         <label className="form-label fw-medium text-dark mb-2">
                           {t("location")}
                         </label>
@@ -1004,164 +995,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                             locationData?.description || "Colorado, USA"
                           }
                           placeholder={t("search_for_a_location")}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Pricing */}
-              <div className="form-section bg-white rounded-4 mb-4">
-                <SectionHeader
-                  title={t("pricing_financial_details")}
-                  icon={<DollarSign className="w-5 h-5 text-success" />}
-                  sectionKey="pricing"
-                  description={t("property_pricing_payment_info")}
-                />
-                {expandedSections.pricing && (
-                  <div className="p-4 row g-4">
-                    <div className="col-12 col-md-6">
-                      <FormattedNumberInput
-                        label={t("price")}
-                        name="price"
-                        required
-                        placeholder={t("enter_property_price")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label fw-medium text-dark">
-                          {t("payment_method")}
-                          <span className="text-danger ms-1">*</span>
-                        </label>
-                        <div className="btn-group w-100 shadow-sm" role="group">
-                          <button
-                            type="button"
-                            onClick={() => setValue("payment_method", "cash")}
-                            className={`btn d-flex align-items-center justify-content-center gap-2 ${
-                              paymentMethod === "cash"
-                                ? "btn-primary text-white"
-                                : "btn-outline-secondary"
-                            }`}
-                            style={
-                              paymentMethod === "cash"
-                                ? {
-                                    backgroundColor: "#F26A3F",
-                                    borderColor: "#F26A3F",
-                                  }
-                                : {}
-                            }
-                          >
-                            <Coins className="w-4 h-4" /> {t("cash")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setValue("payment_method", "installment")
-                            }
-                            className={`btn d-flex align-items-center justify-content-center gap-2 ${
-                              paymentMethod === "installment"
-                                ? "btn-primary text-white"
-                                : "btn-outline-secondary"
-                            }`}
-                            style={
-                              paymentMethod === "installment"
-                                ? {
-                                    backgroundColor: "#F26A3F",
-                                    borderColor: "#F26A3F",
-                                  }
-                                : {}
-                            }
-                          >
-                            <CreditCard className="w-4 h-4" />{" "}
-                            {t("installment")}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    {paymentMethod === "installment" && (
-                      <>
-                        <div className="col-12 col-md-6">
-                          <FormattedNumberInput
-                            label={t("down_price")}
-                            name="down_price"
-                            required
-                            placeholder={t("enter_down_payment_amount")}
-                          />
-                        </div>
-                        <div className="col-12 col-md-6">
-                          <InputField
-                            label={t("number_of_months")}
-                            name="paid_months"
-                            type="number"
-                            required
-                            placeholder={t(
-                              "enter_number_of_installment_months"
-                            )}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Room Configuration */}
-              <div className="form-section bg-white rounded-4 mb-4">
-                <SectionHeader
-                  title={t("room_configuration")}
-                  icon={<Home className="w-5 h-5 text-warning" />}
-                  sectionKey="rooms"
-                  description={t("bedrooms_bathrooms_kitchen_details")}
-                />
-                {expandedSections.rooms && (
-                  <div
-                    className="section-content p-4"
-                    style={{ borderTop: "1px solid #f8f9fa" }}
-                  >
-                    <div className="row g-4">
-                      <div className="col-md-6 col-lg-3">
-                        <FormattedNumberInput
-                          label={t("square_meters")}
-                          name="sqt"
-                          required
-                          placeholder={t("property_size")}
-                        />
-                      </div>
-                      <div className="col-md-6 col-lg-3">
-                        <InputField
-                          label={t("bedroom")}
-                          name="bedroom"
-                          type="number"
-                          required
-                          placeholder={t("number_of_bedrooms")}
-                        />
-                      </div>
-                      <div className="col-md-6 col-lg-3">
-                        <InputField
-                          label={t("bathroom")}
-                          name="bathroom"
-                          type="number"
-                          required
-                          placeholder={t("number_of_bathrooms")}
-                        />
-                      </div>
-                      <div className="col-md-6 col-lg-3">
-                        <InputField
-                          label={t("kitchen")}
-                          name="kitchen"
-                          type="number"
-                          required
-                          placeholder={t("number_of_kitchens")}
-                        />
-                      </div>
-                      <div className="col-md-6 col-lg-3">
-                        <FormattedNumberInput
-                          label={t("landing_space")}
-                          name="landing_space"
-                          required
-                          placeholder={t("enter_landing_space")}
                         />
                       </div>
                     </div>
@@ -1251,11 +1084,184 @@ export const MainTab: React.FC<MainTabProps> = ({
                           placeholder={t("select_furnishing")}
                         />
                       </div>
-                      <div className="col-md-6 col-lg-4">
-                        <DateInput
-                          label={t("starting_day")}
-                          name="starting_day"
+                      {immediateDelivery === "no" && (
+                        <div className="col-md-6 col-lg-4">
+                          <DateInput
+                            label={t("starting_day")}
+                            name="starting_day"
+                            required
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Pricing */}
+              <div className="form-section bg-white rounded-4 mb-4">
+                <SectionHeader
+                  title={t("pricing_financial_details")}
+                  icon={<DollarSign className="w-5 h-5 text-success" />}
+                  sectionKey="pricing"
+                  description={t("property_pricing_payment_info")}
+                />
+                {expandedSections.pricing && (
+                  <div className="p-4 row g-4">
+                    <div className="col-12 col-md-6">
+                      <FormattedNumberInput
+                        label={t("price")}
+                        name="price"
+                        required
+                        placeholder={t("enter_property_price")}
+                      />
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label fw-medium text-dark">
+                          {t("payment_method")}
+                          <span className="text-danger ms-1">*</span>
+                        </label>
+                        {status === "rent" ? (
+                          <div
+                            className="btn-group w-100 shadow-sm"
+                            role="group"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setValue("payment_method", "cash")}
+                              className="btn btn-primary text-white d-flex align-items-center justify-content-center gap-2"
+                              style={{
+                                backgroundColor: "#F26A3F",
+                                borderColor: "#F26A3F",
+                              }}
+                            >
+                              <Coins className="w-4 h-4" /> {t("cash")}
+                            </button>
+                          </div>
+                        ) : (
+                          <div
+                            className="btn-group w-100 shadow-sm"
+                            role="group"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setValue("payment_method", "cash")}
+                              className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                                paymentMethod === "cash"
+                                  ? "btn-primary text-white"
+                                  : "btn-outline-secondary"
+                              }`}
+                              style={
+                                paymentMethod === "cash"
+                                  ? {
+                                      backgroundColor: "#F26A3F",
+                                      borderColor: "#F26A3F",
+                                    }
+                                  : {}
+                              }
+                            >
+                              <Coins className="w-4 h-4" /> {t("cash")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setValue("payment_method", "installment")
+                              }
+                              className={`btn d-flex align-items-center justify-content-center gap-2 ${
+                                paymentMethod === "installment"
+                                  ? "btn-primary text-white"
+                                  : "btn-outline-secondary"
+                              }`}
+                              style={
+                                paymentMethod === "installment"
+                                  ? {
+                                      backgroundColor: "#F26A3F",
+                                      borderColor: "#F26A3F",
+                                    }
+                                  : {}
+                              }
+                            >
+                              <CreditCard className="w-4 h-4" />{" "}
+                              {t("installment")}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {status === "sale" && paymentMethod === "installment" && (
+                      <>
+                        <div className="col-12 col-md-6">
+                          <FormattedNumberInput
+                            label={t("down_price")}
+                            name="down_price"
+                            required
+                            placeholder={t("enter_down_payment_amount")}
+                          />
+                        </div>
+                        <div className="col-12 col-md-6">
+                          <InputField
+                            label={t("number_of_months")}
+                            name="paid_months"
+                            type="number"
+                            required
+                            placeholder={t(
+                              "enter_number_of_installment_months"
+                            )}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Room Configuration */}
+              <div className="form-section bg-white rounded-4 mb-4">
+                <SectionHeader
+                  title={t("room_configuration")}
+                  icon={<Home className="w-5 h-5 text-warning" />}
+                  sectionKey="rooms"
+                  description={t("bedrooms_bathrooms_kitchen_details")}
+                />
+                {expandedSections.rooms && (
+                  <div
+                    className="section-content p-4"
+                    style={{ borderTop: "1px solid #f8f9fa" }}
+                  >
+                    <div className="row g-4">
+                      <div className="col-md-6 col-lg-3">
+                        <FormattedNumberInput
+                          label={t("square_meters")}
+                          name="sqt"
                           required
+                          placeholder={t("property_size")}
+                        />
+                      </div>
+                      <div className="col-md-6 col-lg-3">
+                        <InputField
+                          label={t("bedroom")}
+                          name="bedroom"
+                          type="number"
+                          required
+                          placeholder={t("number_of_bedrooms")}
+                        />
+                      </div>
+                      <div className="col-md-6 col-lg-3">
+                        <InputField
+                          label={t("bathroom")}
+                          name="bathroom"
+                          type="number"
+                          required
+                          placeholder={t("number_of_bathrooms")}
+                        />
+                      </div>
+                      <div className="col-md-6 col-lg-3">
+                        <FormattedNumberInput
+                          label={t("landing_space")}
+                          name="landing_space"
+                          required
+                          placeholder={t("enter_landing_space")}
                         />
                       </div>
                     </div>
@@ -1529,14 +1535,6 @@ export const MainTab: React.FC<MainTabProps> = ({
           </div>
           {/* Status Badges */}
           <div className="d-flex align-items-center gap-3 flex-wrap">
-            {property?.data?.area && (
-              <p className="mb-0 text-muted d-flex align-items-center gap-2">
-                {t("area")}:{" "}
-                <span className="badge bg-light text-dark rounded-4-3 p-2 shadow-sm">
-                  {property?.data?.area?.description?.en?.name}
-                </span>
-              </p>
-            )}
             <span className="text-muted d-flex align-items-center gap-2">
               {t("approval_status")}:{" "}
               <span className="badge bg-primary bg-opacity-75 text-white rounded-4-3 p-2 shadow-sm">
@@ -1578,12 +1576,6 @@ export const MainTab: React.FC<MainTabProps> = ({
           <ReadOnlyField
             label={t("bathroom")}
             value={property?.data?.bathroom}
-          />
-        </div>
-        <div className="col-12 col-md-6 col-lg-3 mb-3">
-          <ReadOnlyField
-            label={t("kitichen")}
-            value={property?.data?.kitichen}
           />
         </div>
         <div className="col-12 col-md-6 col-lg-3 mb-3">
