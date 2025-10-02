@@ -55,7 +55,8 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   // Refs for Google services
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+  const autocompleteService =
+    useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
 
   // Default hardcoded location (Cairo, Egypt)
@@ -79,9 +80,62 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
   // Filter function to ensure only Egypt results
   const isLocationInEgypt = (description: string): boolean => {
     const lowerDesc = description.toLowerCase();
-    return lowerDesc.includes('egypt') || 
-           lowerDesc.includes('مصر') || 
-           lowerDesc.includes('eg');
+    return (
+      lowerDesc.includes("egypt") ||
+      lowerDesc.includes("مصر") ||
+      lowerDesc.includes("eg")
+    );
+  };
+
+  // Filter function to exclude business establishments
+  const isGeographicalPlace = (description: string): boolean => {
+    const lowerDesc = description.toLowerCase();
+    const businessKeywords = [
+      "restaurant",
+      "cafe",
+      "hotel",
+      "gym",
+      "market",
+      "mall",
+      "shop",
+      "store",
+      "bank",
+      "hospital",
+      "clinic",
+      "school",
+      "university",
+      "mosque",
+      "church",
+      "pharmacy",
+      "supermarket",
+      "gas station",
+      "station",
+      "airport",
+      "bus stop",
+      "مطعم",
+      "كافيه",
+      "فندق",
+      "جيم",
+      "سوق",
+      "مول",
+      "متجر",
+      "بنك",
+      "مستشفى",
+      "عيادة",
+      "مدرسة",
+      "جامعة",
+      "مسجد",
+      "كنيسة",
+      "صيدلية",
+      "محطة وقود",
+    ];
+
+    // Check if description contains business keywords
+    const hasBusinessKeywords = businessKeywords.some((keyword) =>
+      lowerDesc.includes(keyword)
+    );
+
+    return !hasBusinessKeywords;
   };
 
   // Check if Google Maps API is ready
@@ -99,12 +153,13 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
   const initializeGoogleServices = () => {
     if (isGoogleMapsReady()) {
       try {
-        autocompleteService.current = new window.google.maps.places.AutocompleteService();
+        autocompleteService.current =
+          new window.google.maps.places.AutocompleteService();
         placesService.current = new window.google.maps.places.PlacesService(
           document.createElement("div")
         );
         setIsGoogleMapsLoaded(true);
-        
+
         // Set default location to Egypt if defaultValue contains non-Egypt location
         if (defaultValue && !isLocationInEgypt(defaultValue)) {
           setLocationQuery("Cairo, Egypt");
@@ -151,7 +206,9 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
   }, [defaultValue]);
 
   // Handle input change and fetch suggestions
-  const handleLocationInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLocationInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const query = e.target.value;
     setLocationQuery(query);
 
@@ -167,23 +224,26 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
         const requests = [
           {
             input: query,
-            types: ["geocode"],
+            types: ["geocode"], // Only geographical places
             componentRestrictions: { country: "EG" },
             bounds: new window.google.maps.LatLngBounds(
-              new window.google.maps.LatLng(egyptBounds.south, egyptBounds.west),
+              new window.google.maps.LatLng(
+                egyptBounds.south,
+                egyptBounds.west
+              ),
               new window.google.maps.LatLng(egyptBounds.north, egyptBounds.east)
             ),
           },
           {
             input: `${query} Egypt`,
-            types: ["geocode"],
+            types: ["geocode"], // Only geographical places
             componentRestrictions: { country: "EG" },
           },
           {
             input: query,
-            types: ["(cities)"],
+            types: ["(cities)"], // Cities and localities only
             componentRestrictions: { country: "EG" },
-          }
+          },
         ];
 
         let allPredictions: PlacePrediction[] = [];
@@ -194,11 +254,18 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
             autocompleteService.current!.getPlacePredictions(
               request,
               (predictions, status) => {
-                if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-                  // Filter to ensure only Egypt results
-                  const egyptPredictions = predictions.filter(p => 
-                    isLocationInEgypt(p.description) || 
-                    p.terms?.some(term => term.value.toLowerCase().includes('egypt'))
+                if (
+                  status === window.google.maps.places.PlacesServiceStatus.OK &&
+                  predictions
+                ) {
+                  // Filter to ensure only Egypt results and geographical places
+                  const egyptPredictions = predictions.filter(
+                    (p) =>
+                      (isLocationInEgypt(p.description) ||
+                        p.terms?.some((term) =>
+                          term.value.toLowerCase().includes("egypt")
+                        )) &&
+                      isGeographicalPlace(p.description)
                   );
                   allPredictions.push(...egyptPredictions);
                 }
@@ -209,9 +276,13 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
         }
 
         // Remove duplicates and limit results
-        const uniquePredictions = allPredictions.filter((prediction, index, self) => 
-          index === self.findIndex(p => p.place_id === prediction.place_id)
-        ).slice(0, 10);
+        const uniquePredictions = allPredictions
+          .filter(
+            (prediction, index, self) =>
+              index ===
+              self.findIndex((p) => p.place_id === prediction.place_id)
+          )
+          .slice(0, 10);
 
         if (uniquePredictions.length > 0) {
           setSuggestions(uniquePredictions);
@@ -240,11 +311,15 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
       };
 
       placesService.current.getDetails(request, (place, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+        if (
+          status === window.google.maps.places.PlacesServiceStatus.OK &&
+          place
+        ) {
           // Verify the place is in Egypt
-          const isInEgypt = place.address_components?.some(component => 
-            component.types.includes('country') && 
-            (component.short_name === 'EG' || component.long_name === 'Egypt')
+          const isInEgypt = place.address_components?.some(
+            (component) =>
+              component.types.includes("country") &&
+              (component.short_name === "EG" || component.long_name === "Egypt")
           );
 
           if (isInEgypt) {
@@ -293,12 +368,17 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
   }, []);
 
   return (
-    <div className="location-autocomplete-wrapper" style={{ position: "relative" }}>
+    <div
+      className="location-autocomplete-wrapper"
+      style={{ position: "relative" }}
+    >
       <input
         ref={locationInputRef}
         type="text"
         className="form-control location-input fw-normal"
-        placeholder={isGoogleMapsLoaded ? placeholder : "Loading location services..."}
+        placeholder={
+          isGoogleMapsLoaded ? placeholder : "Loading location services..."
+        }
         value={locationQuery}
         onChange={handleLocationInputChange}
         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
@@ -358,7 +438,8 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
               style={{
                 padding: "12px 15px",
                 cursor: "pointer",
-                borderBottom: index < suggestions.length - 1 ? "1px solid #f0f0f0" : "none",
+                borderBottom:
+                  index < suggestions.length - 1 ? "1px solid #f0f0f0" : "none",
                 fontSize: "14px",
                 transition: "background-color 0.2s",
               }}
@@ -370,7 +451,8 @@ const GoogleLocationInput: React.FC<GoogleLocationInputProps> = ({
               }}
             >
               <div style={{ fontWeight: "500", marginBottom: "2px" }}>
-                {suggestion.structured_formatting?.main_text || suggestion.description}
+                {suggestion.structured_formatting?.main_text ||
+                  suggestion.description}
               </div>
               {suggestion.structured_formatting?.secondary_text && (
                 <div style={{ fontSize: "12px", color: "#666" }}>

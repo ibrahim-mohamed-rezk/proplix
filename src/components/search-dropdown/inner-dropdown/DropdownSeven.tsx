@@ -250,7 +250,7 @@ const DropdownSeven = ({
             "administrative_area_level_1",
             "administrative_area_level_2",
             "country",
-          ], // Cities, states, governorates, and countries
+          ], // Only geographical places: cities, states, governorates, and countries
           includedRegionCodes: ["EG"], // Restrict to Egypt only
           locationBias: {
             radius: 50000, // 50km radius
@@ -298,7 +298,7 @@ const DropdownSeven = ({
       else if (autocompleteService.current) {
         const request: google.maps.places.AutocompletionRequest = {
           input: query,
-          types: ["(cities)"], // Focus on cities
+          types: ["(cities)"], // Focus on cities - geographical places only
           componentRestrictions: { country: ["EG"] }, // Restrict to Egypt only
           // Add location bias to prioritize results near Cairo
           location: new google.maps.LatLng(
@@ -335,7 +335,7 @@ const DropdownSeven = ({
         try {
           const request: google.maps.places.AutocompletionRequest = {
             input: query,
-            types: ["(cities)"], // Focus on cities
+            types: ["(cities)"], // Focus on cities - geographical places only
             componentRestrictions: { country: ["EG"] }, // Restrict to Egypt only
             // Add location bias to prioritize results near Cairo
             location: new google.maps.LatLng(

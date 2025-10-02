@@ -106,9 +106,8 @@ const DropdownTwo = ({
     if (query.length > 2 && isGoogleMapsLoaded && autocompleteService.current) {
       const request = {
         input: query,
-        types: ["establishment", "geocode"], // You can customize this based on your needs
-        // You can add country restrictions if needed:
-        // componentRestrictions: { country: 'us' }
+        types: ["geocode"], // Only geographical places, no businesses
+        componentRestrictions: { country: "EG" }, // Restrict to Egypt only
       };
 
       autocompleteService.current.getPlacePredictions(
@@ -118,7 +117,56 @@ const DropdownTwo = ({
             status === window.google.maps.places.PlacesServiceStatus.OK &&
             predictions
           ) {
-            setLocationSuggestions(predictions);
+            // Filter out business establishments
+            const businessKeywords = [
+              "restaurant",
+              "cafe",
+              "hotel",
+              "gym",
+              "market",
+              "mall",
+              "shop",
+              "store",
+              "bank",
+              "hospital",
+              "clinic",
+              "school",
+              "university",
+              "mosque",
+              "church",
+              "pharmacy",
+              "supermarket",
+              "gas station",
+              "station",
+              "airport",
+              "bus stop",
+              "مطعم",
+              "كافيه",
+              "فندق",
+              "جيم",
+              "سوق",
+              "مول",
+              "متجر",
+              "بنك",
+              "مستشفى",
+              "عيادة",
+              "مدرسة",
+              "جامعة",
+              "مسجد",
+              "كنيسة",
+              "صيدلية",
+              "محطة وقود",
+            ];
+
+            const filteredPredictions = predictions.filter((prediction) => {
+              const lowerDesc = prediction.description.toLowerCase();
+              const hasBusinessKeywords = businessKeywords.some((keyword) =>
+                lowerDesc.includes(keyword)
+              );
+              return !hasBusinessKeywords;
+            });
+
+            setLocationSuggestions(filteredPredictions);
             setShowLocationSuggestions(true);
           } else {
             setLocationSuggestions([]);
