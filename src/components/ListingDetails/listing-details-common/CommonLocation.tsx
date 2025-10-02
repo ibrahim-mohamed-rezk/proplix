@@ -19,11 +19,6 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
     (location) => location.latitude !== null && location.longitude !== null
   );
 
-  // Return null if no valid locations
-  if (!hasValidLocations) {
-    return null;
-  }
-
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
@@ -72,6 +67,11 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
       map.current.fitBounds(bounds, { padding: 50 });
     }
   }, [property]);
+
+  // Return null if no valid locations (after hooks)
+  if (!hasValidLocations) {
+    return null;
+  }
 
   return (
     <>
