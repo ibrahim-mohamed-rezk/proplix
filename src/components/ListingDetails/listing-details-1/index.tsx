@@ -50,7 +50,7 @@ const ListingDetailsOne = async ({
               <h1 className="display-1 text-muted">404</h1>
               <h2 className="mb-3">Property Not Found</h2>
               <p className="lead mb-4">
-                The property you're looking for doesn't exist or has been
+                The property you&apos;re looking for doesn&apos;t exist or has been
                 removed.
               </p>
               <a href="/properties" className="btn btn-primary">
