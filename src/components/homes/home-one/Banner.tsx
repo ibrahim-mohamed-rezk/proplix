@@ -6,6 +6,8 @@ import bannerThumb from "@/assets/images/assets/ils_01.svg";
 import { useLocale, useTranslations } from "next-intl";
 import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
 import { useEffect, useState } from "react";
+import { getData } from "@/libs/server/backendServer";
+import { PropertyTypes } from "@/libs/types/types";
 
 const Banner = () => {
   const t = useTranslations("home");
@@ -20,6 +22,28 @@ const Banner = () => {
   const handleResetFilter = (): void => {
     setFilters({});
   };
+
+  const [properties, setProperties] = useState<PropertyTypes[]>([]);
+
+  const feachData = async () => {
+    try {
+      const response = await getData(
+        "properties",
+        { per_page: 100000000000000000000 },
+        {
+          lang: locale,
+        }
+      );
+      setProperties(response.data.data.properties);
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    feachData();
+  }, [locale]);
 
   // save filters
   useEffect(() => {
@@ -96,6 +120,8 @@ const Banner = () => {
     }
   };
 
+  console.log("properties", properties);
+
   return (
     <div className="hero-banner-one bg-pink z-1 pt-225 xl-pt-200 pb-250 xl-pb-150 lg-pb-100 position-relative">
       <div className="container position-relative">
@@ -111,7 +137,7 @@ const Banner = () => {
               className="fs-24 color-dark text-center pt-35 pb-35 wow fadeInUp"
               data-wow-delay="0.1s"
             >
-              {t("banner.description")}
+              {t("banner.description", { count: properties.length })}
             </p>
           </div>
         </div>

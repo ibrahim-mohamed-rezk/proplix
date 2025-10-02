@@ -34,7 +34,7 @@
   "home": {
     "banner": {
       "title": "Get the perfect home for your family",
-      "description": "We have over 745,000 villas, houses, and lands",
+      "description": "We have over {count} villas, houses, and lands",
       "selectSaleType": "Select Sale Type",
       "selectRentType": "Select Rent Type",
       "sale": "Sale",
@@ -699,7 +699,21 @@
     "Save & Update": "Save & Update",
     "Enter your new password": "Enter your new password",
     "Type current password": "Type current password",
-    "Confirm your new password": "Confirm your new password"
+    "Confirm your new password": "Confirm your new password",
+    "Current password is required to update profile": "Current password is required to update profile",
+    "Username is required": "Username is required",
+    "Email is required": "Email is required",
+    "Please enter a valid email address": "Please enter a valid email address",
+    "Please enter a valid phone number": "Please enter a valid phone number (e.g., 01234567890)",
+    "Please enter a valid second phone number": "Please enter a valid phone number (e.g., 01234567890)",
+    "Position is required": "Position is required",
+    "Website is required": "Website is required",
+    "Please enter a valid website URL (starting with http:// or https://)": "Please enter a valid website URL (starting with http:// or https://)",
+    "About description is required": "About description is required",
+    "Country is required": "Country is required",
+    "City is required": "City is required",
+    "Address is required": "Address is required",
+    "Please fill all required fields: Country, City, Address, and Current Password": "Please fill all required fields: Country, City, Address, and Current Password"
   },
   "account-settings": {
     "Enter your current password": "Enter your current password",

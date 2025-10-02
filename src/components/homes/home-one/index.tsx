@@ -34,6 +34,7 @@ const HomeOne = async ({ locale }: { locale: string }) => {
   };
   const homeData = await feachData();
 
+
   return (
     <>
       <HeaderOne token={token} style={false} />

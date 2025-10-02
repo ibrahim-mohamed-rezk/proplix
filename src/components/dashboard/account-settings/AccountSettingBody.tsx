@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-toastify";
 import { useLocale } from "next-intl"
 import { useTranslations } from "next-intl"
+import { validatePhoneNumber } from "@/utils/phoneValidation";
 
 interface ProfileData {
   name?: string;
@@ -14,12 +15,13 @@ interface ProfileData {
 }
 
 const AccountSettingBody = ({ token }: { token: string }) => {
-  const t = useTranslations('account-settings');
+  const t = useTranslations("account-settings");
   const [profileData, setProfileData] = useState<ProfileData>({});
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const locale = useLocale();
   const getAuthHeaders = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -31,15 +33,15 @@ const AccountSettingBody = ({ token }: { token: string }) => {
         setLoading(true);
         setError(null);
         const headers = getAuthHeaders();
-        const response = await getData('agent/profile', {}, headers);
+        const response = await getData("agent/profile", {}, headers);
         console.log(response);
 
         // Extract only the needed fields from the API response
         const data = response.data.data || response;
         const initialData = {
-          name: data.name || '',
-          email: data.email || '',
-          phone: data.phone || ''
+          name: data.name || "",
+          email: data.email || "",
+          phone: data.phone || "",
         };
         setProfileData(initialData);
       } catch (error) {
@@ -57,18 +59,38 @@ const AccountSettingBody = ({ token }: { token: string }) => {
   }, [token]);
 
   const handleInputChange = (field: keyof ProfileData, value: string) => {
-    setProfileData(prev => ({
+    setProfileData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
+
+    // Validate phone number in real-time
+    if (field === "phone") {
+      const validation = validatePhoneNumber(value, true);
+      if (!validation.isValid) {
+        setPhoneError(validation.error || "Invalid phone number");
+      } else {
+        setPhoneError(null);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate phone number before submission
+    if (profileData.phone) {
+      const validation = validatePhoneNumber(profileData.phone, true);
+      if (!validation.isValid) {
+        setPhoneError(validation.error || "Invalid phone number");
+        toast.error(validation.error || "Please enter a valid phone number");
+        return;
+      }
+    }
+
     // Don't submit if password is entered but empty
-    if (password.trim() === '') {
-      toast.error(t('Please enter your current password to save changes'));
+    if (password.trim() === "") {
+      toast.error(t("Please enter your current password to save changes"));
       return;
     }
 
@@ -78,31 +100,34 @@ const AccountSettingBody = ({ token }: { token: string }) => {
 
       // Create FormData
       const formData = new FormData();
-      formData.append('name', profileData.name || '');
-      formData.append('email', profileData.email || '');
-      formData.append('phone', profileData.phone || '');
-      formData.append('current_password', password);
+      formData.append("name", profileData.name || "");
+      formData.append("email", profileData.email || "");
+      formData.append("phone", profileData.phone || "");
+      formData.append("current_password", password);
 
       const headers = getAuthHeaders();
 
       // Send POST request to profile/update
-      const response = await postData('agent/profile/update', formData, headers);
-
+      const response = await postData(
+        "agent/profile/update",
+        formData,
+        headers
+      );
 
       if (response.status === true) {
-        toast.success(t('Profile updated successfully!'));
-        setPassword(''); // Clear password field after successful update
+        toast.success(t("Profile updated successfully!"));
+        setPassword(""); // Clear password field after successful update
 
         // Update local state with new data if needed
         if (response.data) {
           setProfileData({
-            name: response.data.name || '',
-            email: response.data.email || '',
-            phone: response.data.phone || ''
+            name: response.data.name || "",
+            email: response.data.email || "",
+            phone: response.data.phone || "",
           });
         }
       } else {
-        const errorMessage = response.msg || 'Failed to update profile';
+        const errorMessage = response.msg || "Failed to update profile";
         setError(t(errorMessage));
         toast.error(errorMessage);
       }
@@ -153,7 +178,9 @@ const AccountSettingBody = ({ token }: { token: string }) => {
     <div className="dashboard-body">
       <div className="position-relative">
         <DashboardHeaderTwo title="Account Settings" />
-        <h2 className="main-title d-block d-lg-none">{t("Account Settings")}</h2>
+        <h2 className="main-title d-block d-lg-none">
+          {t("Account Settings")}
+        </h2>
         <div className="bg-white card-box">
           <h4 className="dash-title-three">{t("Edit & Update")}</h4>
           <form onSubmit={handleSubmit}>
@@ -165,8 +192,8 @@ const AccountSettingBody = ({ token }: { token: string }) => {
                     type="text"
                     id="name"
                     placeholder="Full Name"
-                    value={profileData.name || ''}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    value={profileData.name || ""}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
                     required
                   />
                 </div>
@@ -178,8 +205,8 @@ const AccountSettingBody = ({ token }: { token: string }) => {
                     type="email"
                     id="email"
                     placeholder="your.email@example.com"
-                    value={profileData.email || ''}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    value={profileData.email || ""}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     required
                   />
                 </div>
@@ -190,16 +217,22 @@ const AccountSettingBody = ({ token }: { token: string }) => {
                   <input
                     type="tel"
                     id="phone"
-                    placeholder="+1 234 567 8900"
-                    value={profileData.phone || ''}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="01234567890"
+                    value={profileData.phone || ""}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     required
+                    className={phoneError ? "is-invalid" : ""}
                   />
+                  {phoneError && (
+                    <div className="invalid-feedback d-block">{phoneError}</div>
+                  )}
                 </div>
               </div>
               <div className="col-12">
                 <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="password">{t("Current Password (Required to save changes)")}</label>
+                  <label htmlFor="password">
+                    {t("Current Password (Required to save changes)")}
+                  </label>
                   <input
                     type="password"
                     id="password"
@@ -211,7 +244,9 @@ const AccountSettingBody = ({ token }: { token: string }) => {
                   <div className="info-text d-sm-flex align-items-center justify-content-between mt-5">
                     <p className="m0">
                       {t("Want to change the password?")}
-                      <Link href={`/${locale}/dashboard/account-settings/password-change`}>
+                      <Link
+                        href={`/${locale}/dashboard/account-settings/password-change`}
+                      >
                         {t(" Click here")}
                       </Link>
                     </p>
@@ -231,7 +266,7 @@ const AccountSettingBody = ({ token }: { token: string }) => {
                 className="dash-btn-two tran3s mx-3 "
                 disabled={saving}
               >
-                {saving ? t('Saving') : t('Save')}
+                {saving ? t("Saving") : t("Save")}
               </button>
               <button type="button" className="dash-cancel-btn tran3s">
                 {t("Cancel")}

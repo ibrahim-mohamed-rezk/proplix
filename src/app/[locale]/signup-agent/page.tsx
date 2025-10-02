@@ -9,6 +9,7 @@ import Wrapper from "@/layouts/Wrapper";
 import HeaderOne from "@/layouts/headers/HeaderOne";
 import FooterOne from "@/layouts/footers/FooterOne";
 import axios from "axios";
+import { validatePhoneNumber } from "@/utils/phoneValidation";
 
 interface SignupFormData {
   // User basic info
@@ -58,6 +59,7 @@ const SignupPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const t = useTranslations("SignupPage");
   const locale = useLocale();
 
@@ -66,6 +68,16 @@ const SignupPage = () => {
       ...prev,
       [field]: value,
     }));
+
+    // Validate phone number in real-time
+    if (field === "phone") {
+      const validation = validatePhoneNumber(value, true);
+      if (!validation.isValid) {
+        setPhoneError(validation.error || "Invalid phone number");
+      } else {
+        setPhoneError(null);
+      }
+    }
   };
 
   const handleSocialLinksChange = (links: string[]) => {
@@ -145,6 +157,17 @@ const SignupPage = () => {
     }
     if (!formData.email.trim()) {
       toast.error(t("Email is required"));
+      return false;
+    }
+    if (!formData.phone.trim()) {
+      toast.error(t("Phone number is required"));
+      return false;
+    }
+    // Validate phone number format
+    const phoneValidation = validatePhoneNumber(formData.phone, true);
+    if (!phoneValidation.isValid) {
+      setPhoneError(phoneValidation.error || "Invalid phone number");
+      toast.error(phoneValidation.error || "Please enter a valid phone number");
       return false;
     }
     if (!formData.password.trim()) {
@@ -411,8 +434,14 @@ const SignupPage = () => {
                       onChange={(e) =>
                         handleInputChange("phone", e.target.value)
                       }
-                      placeholder={t("Enter your phone number")}
+                      placeholder="+1 (555) 123-4567"
+                      className={phoneError ? "is-invalid" : ""}
                     />
+                    {phoneError && (
+                      <div className="invalid-feedback d-block">
+                        {phoneError}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

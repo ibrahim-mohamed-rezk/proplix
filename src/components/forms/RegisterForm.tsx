@@ -9,6 +9,7 @@ import Image from "next/image";
 
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import { postData } from "@/libs/server/backendServer";
+import { validatePhoneNumber } from "@/utils/phoneValidation";
 
 interface FormData {
   name: string;
@@ -31,7 +32,18 @@ const RegisterForm = ({
     .object({
       name: yup.string().required().label("Name"),
       email: yup.string().required().email().label("Email"),
-      phone: yup.string().required().label("Phone"),
+      phone: yup
+        .string()
+        .required("Phone number is required")
+        .test(
+          "phone-validation",
+          "Please enter a valid phone number",
+          function (value) {
+            if (!value) return false;
+            const validation = validatePhoneNumber(value, true);
+            return validation.isValid;
+          }
+        ),
       password: yup.string().required().label("Password"),
       password_confirmation: yup
         .string()
@@ -100,9 +112,9 @@ const RegisterForm = ({
           <div className="input-group-meta position-relative mb-25">
             <label>phone*</label>
             <input
-              type="number"
+              type="tel"
               {...register("phone")}
-              placeholder="01012345678"
+              placeholder="01234567890"
             />
             <p className="form_error">{errors.phone?.message}</p>
           </div>
@@ -160,7 +172,11 @@ const RegisterForm = ({
         <div className="col-12">
           <div className="agreement-checkbox d-flex justify-content-between align-items-center">
             <div>
-              <input type="checkbox" id="remember2" onChange={(e) => setRemember(e.target.checked)} />
+              <input
+                type="checkbox"
+                id="remember2"
+                onChange={(e) => setRemember(e.target.checked)}
+              />
               <label htmlFor="remember2">
                 By hitting the &quot;Register&quot; button, you agree to the{" "}
                 <Link href="#">Terms conditions</Link> &{" "}

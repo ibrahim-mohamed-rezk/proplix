@@ -2,7 +2,7 @@
   "home": {
     "banner": {
       "title": "الحصول على المنزل المثالي لأسرتك",
-      "description": "لدينا أكثر من 745,000 فيلات ومنازل وأراضي",
+      "description": "لدينا أكثر من {count} فيلات ومنازل وأراضي",
       "selectSaleType": "اختر نوع البيع",
       "selectRentType": "اختر نوع الإيجار",
       "sale": "بيع",
@@ -720,7 +720,21 @@
     "Save & Update": " حفظ وتحديث",
     "Enter your new password": " أدخل كلمة المرور الجديدة",
     "Type current password": " اكتب كلمة المرور الحالية",
-    "Confirm your new password": " تأكيد كلمة المرور الجديدة"
+    "Confirm your new password": " تأكيد كلمة المرور الجديدة",
+    "Current password is required to update profile": "كلمة المرور الحالية مطلوبة لتحديث الملف الشخصي",
+    "Username is required": "اسم المستخدم مطلوب",
+    "Email is required": "البريد الإلكتروني مطلوب",
+    "Please enter a valid email address": "يرجى إدخال عنوان بريد إلكتروني صالح",
+    "Please enter a valid phone number": "يرجى إدخال رقم هاتف صالح (مثال: 01234567890)",
+    "Please enter a valid second phone number": "يرجى إدخال رقم هاتف صالح (مثال: 01234567890)",
+    "Position is required": "المنصب مطلوب",
+    "Website is required": "الموقع الإلكتروني مطلوب",
+    "Please enter a valid website URL (starting with http:// or https://)": "يرجى إدخال رابط موقع إلكتروني صالح (يبدأ بـ http:// أو https://)",
+    "About description is required": "وصف نبذة عني مطلوب",
+    "Country is required": "البلد مطلوب",
+    "City is required": "المدينة مطلوبة",
+    "Address is required": "العنوان مطلوب",
+    "Please fill all required fields: Country, City, Address, and Current Password": "يرجى ملء جميع الحقول المطلوبة: البلد، المدينة، العنوان، وكلمة المرور الحالية"
   },
   "account-settings": {
     "Enter your current password": "أدخل كلمة المرور الحالية",

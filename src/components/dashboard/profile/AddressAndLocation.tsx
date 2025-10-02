@@ -73,8 +73,12 @@ const AddressAndLocation = ({
   });
   const t = useTranslations("ProfileBody");
 
-  // Calculate canSubmit based on password field
-  const canSubmit = locationData.current_password.trim().length > 0;
+  // Calculate canSubmit based on all required fields
+  const canSubmit =
+    locationData.current_password.trim().length > 0 &&
+    locationData.country.trim().length > 0 &&
+    locationData.city.trim().length > 0 &&
+    locationData.address.trim().length > 0;
 
   // Initialize location data when profileData changes (only once)
   useEffect(() => {
@@ -137,7 +141,14 @@ const AddressAndLocation = ({
               onChange={(e) => handleInputChange("address", e.target.value)}
               placeholder="19 Yawkey Way"
               disabled={isUpdating}
+              className={!locationData.address.trim() ? "is-invalid" : ""}
+              required
             />
+            {!locationData.address.trim() && (
+              <div className="invalid-feedback d-block">
+                {t("Address is required")}
+              </div>
+            )}
           </div>
         </div>
 
@@ -152,7 +163,14 @@ const AddressAndLocation = ({
               onChange={(e) => handleInputChange("country", e.target.value)}
               placeholder="Select Country"
               disabled={isUpdating}
+              className={!locationData.country.trim() ? "is-invalid" : ""}
+              required
             />
+            {!locationData.country.trim() && (
+              <div className="invalid-feedback d-block">
+                {t("Country is required")}
+              </div>
+            )}
           </div>
         </div>
 
@@ -167,7 +185,14 @@ const AddressAndLocation = ({
               onChange={(e) => handleInputChange("city", e.target.value)}
               placeholder="Select City"
               disabled={isUpdating}
+              className={!locationData.city.trim() ? "is-invalid" : ""}
+              required
             />
+            {!locationData.city.trim() && (
+              <div className="invalid-feedback d-block">
+                {t("City is required")}
+              </div>
+            )}
           </div>
         </div>
 
@@ -269,7 +294,9 @@ const AddressAndLocation = ({
           disabled={isUpdating || !canSubmit}
           title={
             !canSubmit
-              ? t("Please enter your current password")
+              ? t(
+                  "Please fill all required fields: Country, City, Address, and Current Password"
+                )
               : t("Save profile changes")
           }
         >
