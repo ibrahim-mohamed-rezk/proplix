@@ -39,6 +39,8 @@ const ListingDetailsOne = async ({
 
   const propertyData = await feachData();
 
+  console.log(propertyData);
+
   // If property not found, return 404 page
   if (!propertyData) {
     return (

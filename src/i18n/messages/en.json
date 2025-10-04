@@ -713,7 +713,8 @@
     "Country is required": "Country is required",
     "City is required": "City is required",
     "Address is required": "Address is required",
-    "Please fill all required fields: Country, City, Address, and Current Password": "Please fill all required fields: Country, City, Address, and Current Password"
+    "Please fill all required fields: Country, City, Address, and Current Password": "Please fill all required fields: Country, City, Address, and Current Password",
+    "web.current_password_not_match": "Current password does not match"
   },
   "account-settings": {
     "Enter your current password": "Enter your current password",

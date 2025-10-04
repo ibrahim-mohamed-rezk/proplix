@@ -93,20 +93,37 @@ const PasswordChangeBody = ({ token }: { token: string }) => {
       })
 
     } catch (error: any) {
-      console.error('Error updating password:', error)
-      
-      if (error.response?.data?.errors) {
-        const apiErrors = error.response.data.errors
-        setErrors(apiErrors)
-        const firstError = Object.values(apiErrors)[0] as string
-        toast.error(firstError)
-      } else if (error.response?.data?.message) {
-        const errorMessage = error.response.data.message
-        setErrors({ general: errorMessage })
-        toast.error(errorMessage)
+      console.error("Error updating password:", error);
+
+      // Handle the specific API response structure with data array and msg field
+      if (error.response?.data) {
+        const responseData = error.response.data;
+
+        // Check if response has the structure: { data: [], msg: "web.current_password_not_match", status: false }
+        if (responseData.msg) {
+          // Display the error message directly from API
+          const errorMessage = responseData.msg;
+          setErrors({ general: errorMessage });
+          toast.error(errorMessage);
+        } else if (responseData.errors) {
+          // Handle validation errors
+          const apiErrors = responseData.errors;
+          setErrors(apiErrors);
+          const firstError = Object.values(apiErrors)[0] as string;
+          toast.error(firstError);
+        } else if (responseData.message) {
+          const errorMessage = responseData.message;
+          setErrors({ general: errorMessage });
+          toast.error(errorMessage);
+        } else {
+          const errorMessage = "An error occurred while updating password";
+          setErrors({ general: errorMessage });
+          toast.error(errorMessage);
+        }
       } else {
-        const errorMessage = 'An error occurred while updating password'
-        toast.error(errorMessage)
+        const errorMessage = "An error occurred while updating password";
+        setErrors({ general: errorMessage });
+        toast.error(errorMessage);
       }
     } finally {
       setLoading(false)

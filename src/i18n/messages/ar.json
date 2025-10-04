@@ -734,7 +734,8 @@
     "Country is required": "البلد مطلوب",
     "City is required": "المدينة مطلوبة",
     "Address is required": "العنوان مطلوب",
-    "Please fill all required fields: Country, City, Address, and Current Password": "يرجى ملء جميع الحقول المطلوبة: البلد، المدينة، العنوان، وكلمة المرور الحالية"
+    "Please fill all required fields: Country, City, Address, and Current Password": "يرجى ملء جميع الحقول المطلوبة: البلد، المدينة، العنوان، وكلمة المرور الحالية",
+    "web.current_password_not_match": "كلمة المرور الحالية غير صحيحة"
   },
   "account-settings": {
     "Enter your current password": "أدخل كلمة المرور الحالية",

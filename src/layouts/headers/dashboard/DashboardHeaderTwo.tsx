@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import Notification from "./Notification";
 import Profile from "./Profile";
 import { useState, useRef } from "react";
 import DashboardHeaderOne from "./DashboardHeaderOne";
@@ -11,7 +10,6 @@ import { useRouter } from "@/i18n/routing";
 import { Check, ChevronDown } from "lucide-react";
 
 import dashboardIcon_1 from "@/assets/images/dashboard/icon/icon_43.svg";
-import dashboardIcon_2 from "@/assets/images/dashboard/icon/icon_11.svg";
 import dashboardAvatar from "@/assets/images/dashboard/avatar_01.jpg";
 
 const DashboardHeaderTwo = ({ title }: any) => {
@@ -57,22 +55,6 @@ const DashboardHeaderTwo = ({ title }: any) => {
             >
               <span></span>
             </button>
-            <div className="profile-notification position-relative dropdown-center flex-shrink-0">
-              <button
-                className={`noti-btn dropdown-toggle ${
-                  locale === "ar" ? "mx-1" : "mx-4"
-                }`}
-                type="button"
-                id="notification-dropdown"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                aria-expanded="false"
-              >
-                <Image src={dashboardIcon_2} alt="" className="lazy-img" />
-                <div className="badge-pill"></div>
-              </button>
-              <Notification />
-            </div>
             {/* Language Switcher */}
             <div className="relative me-3 flex-shrink-0">
               <button
