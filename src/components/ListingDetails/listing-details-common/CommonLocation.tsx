@@ -16,7 +16,13 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
 
   // Check if property has valid locations
   const hasValidLocations = property?.property_locations?.some(
-    (location) => location.latitude !== null && location.longitude !== null
+    (location) =>
+      location.location_lat !== null &&
+      location.location_lng !== null &&
+      !isNaN(Number(location.location_lat)) &&
+      !isNaN(Number(location.location_lng)) &&
+      Number(location.location_lat) !== 0 &&
+      Number(location.location_lng) !== 0
   );
 
   useEffect(() => {
@@ -37,34 +43,60 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
     )
       return;
 
-    const locations = property?.property_locations;
+    try {
+      const locations = property?.property_locations;
 
-    console.log(property);
+      console.log(property);
 
-    // Filter out locations with null coordinates
-    const validLocations = locations.filter(
-      (location) => location.latitude !== null && location.longitude !== null
-    );
+      // Filter out locations with invalid coordinates
+      const validLocations = locations.filter(
+        (location) =>
+          location.location_lat !== null &&
+          location.location_lng !== null &&
+          !isNaN(Number(location.location_lat)) &&
+          !isNaN(Number(location.location_lng)) &&
+          Number(location.location_lat) !== 0 &&
+          Number(location.location_lng) !== 0
+      );
 
-    // If no valid locations, return early
-    if (validLocations.length === 0) {
-      return;
-    }
+      // If no valid locations, return early
+      if (validLocations.length === 0) {
+        return;
+      }
 
-    // Add markers to map
-    validLocations.forEach((location) => {
-      new mapboxgl.Marker({ color: "red" })
-        .setLngLat([location.longitude, location.latitude])
-        .addTo(map.current!);
-    });
-
-    // Fit map to markers
-    if (validLocations.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
+      // Add markers to map
       validLocations.forEach((location) => {
-        bounds.extend([location.longitude, location.latitude]);
+        const lng = Number(location.location_lng);
+        const lat = Number(location.location_lat);
+
+        // Double-check coordinates are valid before creating marker
+        if (!isNaN(lng) && !isNaN(lat) && lng !== 0 && lat !== 0) {
+          new mapboxgl.Marker({ color: "red" })
+            .setLngLat([lng, lat])
+            .addTo(map.current!);
+        }
       });
-      map.current.fitBounds(bounds, { padding: 50 });
+
+      // Fit map to markers
+      if (validLocations.length > 0) {
+        const bounds = new mapboxgl.LngLatBounds();
+        validLocations.forEach((location) => {
+          const lng = Number(location.location_lng);
+          const lat = Number(location.location_lat);
+
+          // Double-check coordinates are valid before extending bounds
+          if (!isNaN(lng) && !isNaN(lat) && lng !== 0 && lat !== 0) {
+            bounds.extend([lng, lat]);
+          }
+        });
+
+        // Only fit bounds if we have valid coordinates
+        if (!bounds.isEmpty()) {
+          map.current.fitBounds(bounds, { padding: 50 });
+        }
+      }
+    } catch (error) {
+      console.error("Error setting up map markers:", error);
     }
   }, [property]);
 
