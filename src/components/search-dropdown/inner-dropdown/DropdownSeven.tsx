@@ -261,7 +261,7 @@ const DropdownSeven = ({
           },
         };
 
-        const response = await (
+        const response = await(
           window.google.maps.places.AutocompleteSuggestion as any
         ).fetchAutocompleteSuggestions(request);
 
@@ -294,35 +294,236 @@ const DropdownSeven = ({
           setShowSuggestions(false);
         }
       }
-      // Fallback to legacy AutocompleteService
+      // Fallback to legacy AutocompleteService with enhanced search for specific developers
       else if (autocompleteService.current) {
-        const request: google.maps.places.AutocompletionRequest = {
-          input: query,
-          types: ["(cities)"], // Focus on cities - geographical places only
-          componentRestrictions: { country: ["EG"] }, // Restrict to Egypt only
-          // Add location bias to prioritize results near Cairo
-          location: new google.maps.LatLng(
-            defaultLocation.coordinates?.lat || 0,
-            defaultLocation.coordinates?.lng || 0
-          ),
-          radius: 100000, // 100km radius from Cairo
-        };
+        // Multiple requests to get geographical places and specific real estate companies
+        const requests = [
+          {
+            input: query,
+            types: ["(cities)"], // Focus on cities - geographical places only
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000, // 100km radius from Cairo
+          },
+          {
+            input: query,
+            types: ["establishment"], // Business establishments
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+          // Specific searches for major Egyptian real estate developers and compounds
+          {
+            input: `${query} SODIC`,
+            types: ["establishment"],
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+          {
+            input: `${query} Palm Hills`,
+            types: ["establishment"],
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+          {
+            input: `${query} Talaat Moustafa`,
+            types: ["establishment"],
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+          {
+            input: `${query} Madinaty`,
+            types: ["establishment"],
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+          {
+            input: `${query} New Cairo`,
+            types: ["establishment"],
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+          {
+            input: `${query} compound`,
+            types: ["establishment"],
+            componentRestrictions: { country: ["EG"] },
+            location: new google.maps.LatLng(
+              defaultLocation.coordinates?.lat || 0,
+              defaultLocation.coordinates?.lng || 0
+            ),
+            radius: 100000,
+          },
+        ];
 
-        autocompleteService.current.getPlacePredictions(
-          request,
-          (predictions, status) => {
-            if (
-              status === window.google.maps.places.PlacesServiceStatus.OK &&
-              predictions
-            ) {
-              setSuggestions(predictions);
-              setShowSuggestions(true);
-            } else {
-              setSuggestions([]);
-              setShowSuggestions(false);
-            }
-          }
+        let allPredictions: any[] = [];
+
+        // Execute all requests in parallel
+        const promises = requests.map((request) => {
+          return new Promise<any[]>((resolve) => {
+            autocompleteService.current.getPlacePredictions(
+              request,
+              (predictions: any[], status: any) => {
+                if (
+                  status === window.google.maps.places.PlacesServiceStatus.OK &&
+                  predictions
+                ) {
+                  resolve(predictions);
+                } else {
+                  resolve([]);
+                }
+              }
+            );
+          });
+        });
+
+        const results = await Promise.all(promises);
+        allPredictions = results.flat();
+
+        // Remove duplicates based on place_id
+        const uniquePredictions = allPredictions.filter(
+          (prediction, index, self) =>
+            index === self.findIndex((p) => p.place_id === prediction.place_id)
         );
+
+        // Keywords for specific Egyptian real estate companies and compounds
+        const specificRealEstateKeywords = [
+          "sodic",
+          "palm hills",
+          "talaat moustafa",
+          "madinaty",
+          "new cairo",
+          "new capital",
+          "compound",
+          "developer",
+          "real estate",
+          "property",
+          "residential",
+          "villa",
+          "apartment",
+          "townhouse",
+          "community",
+          "housing",
+          "estate",
+          "sodic west",
+          "sodic east",
+          "palm hills new cairo",
+          "palm hills sheikh zayed",
+          "talaat moustafa group",
+          "madinaty compound",
+          "new cairo compound",
+          "سوديك",
+          "بالم هيلز",
+          "طلعت مصطفى",
+          "مدينتي",
+          "القاهرة الجديدة",
+          "العاصمة الإدارية",
+          "مجمع",
+          "مطور",
+          "عقارات",
+          "سكني",
+          "فيلا",
+          "شقة",
+          "تاون هاوس",
+          "مجتمع",
+          "إسكان",
+        ];
+
+        // Keywords for irrelevant business establishments
+        const irrelevantBusinessKeywords = [
+          "restaurant",
+          "cafe",
+          "hotel",
+          "gym",
+          "market",
+          "mall",
+          "shop",
+          "store",
+          "bank",
+          "hospital",
+          "clinic",
+          "school",
+          "university",
+          "mosque",
+          "church",
+          "pharmacy",
+          "supermarket",
+          "gas station",
+          "station",
+          "airport",
+          "bus stop",
+          "مطعم",
+          "كافيه",
+          "فندق",
+          "جيم",
+          "سوق",
+          "مول",
+          "متجر",
+          "بنك",
+          "مستشفى",
+          "عيادة",
+          "مدرسة",
+          "جامعة",
+          "مسجد",
+          "كنيسة",
+          "صيدلية",
+          "محطة وقود",
+        ];
+
+        const filteredPredictions = uniquePredictions.filter((prediction) => {
+          const description = prediction.description.toLowerCase();
+
+          // Always include geographical places (cities)
+          if (
+            prediction.types?.includes("locality") ||
+            prediction.types?.includes("administrative_area_level_1")
+          ) {
+            return true;
+          }
+
+          // For business establishments, check if they're relevant real estate companies
+          if (prediction.types?.includes("establishment")) {
+            const hasRelevantKeywords = specificRealEstateKeywords.some(
+              (keyword) => description.includes(keyword)
+            );
+
+            const hasIrrelevantKeywords = irrelevantBusinessKeywords.some(
+              (keyword) => description.includes(keyword)
+            );
+
+            return hasRelevantKeywords && !hasIrrelevantKeywords;
+          }
+
+          return false;
+        });
+
+        setSuggestions(filteredPredictions);
+        setShowSuggestions(true);
       }
     } catch (error) {
       console.error("Error fetching location suggestions:", error);
