@@ -386,19 +386,24 @@ const DropdownSeven = ({
         // Execute all requests in parallel
         const promises = requests.map((request) => {
           return new Promise<any[]>((resolve) => {
-            autocompleteService.current.getPlacePredictions(
-              request,
-              (predictions: any[], status: any) => {
-                if (
-                  status === window.google.maps.places.PlacesServiceStatus.OK &&
-                  predictions
-                ) {
-                  resolve(predictions);
-                } else {
-                  resolve([]);
+            if (autocompleteService.current) {
+              autocompleteService.current.getPlacePredictions(
+                request,
+                (predictions: any[] | null, status: any) => {
+                  if (
+                    status ===
+                      window.google.maps.places.PlacesServiceStatus.OK &&
+                    predictions
+                  ) {
+                    resolve(predictions);
+                  } else {
+                    resolve([]);
+                  }
                 }
-              }
-            );
+              );
+            } else {
+              resolve([]);
+            }
           });
         });
 
