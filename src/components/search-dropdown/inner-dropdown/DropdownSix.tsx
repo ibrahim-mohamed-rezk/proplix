@@ -49,7 +49,7 @@ const DropdownSix = ({
                <input
                  onChange={handleSearchChange}
                  type="text"
-                 placeholder={t("search_placeholder") || "Ex: home, villa"}
+                 placeholder={"Ex: home, villa"}
                  className="type-input box-style"
                />
              </div>
@@ -185,13 +185,13 @@ const DropdownSix = ({
                <div className="d-flex align-items-center sqf-ranger">
                  <input
                    type="text"
-                   placeholder={t("min_price") || "Min"}
+                   placeholder={ "Min"}
                    className="rounded-0"
                  />
                  <div className="divider"></div>
                  <input
-                   type="text"
-                   placeholder={t("max_price") || "Max"}
+                      type="text"
+                      placeholder={"Max"}
                    className="rounded-0"
                  />
                </div>
