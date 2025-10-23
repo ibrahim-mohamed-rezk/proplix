@@ -52,7 +52,8 @@ const CommonBanner = ({
         <div className="d-inline-flex flex-column justify-content-start  md-mt-40">
           {/* <div className="price color-dark fw-500">{property?.price}EGP</div> */}
           <div className="price !text-[clamp(20px,1.823vw,35px)] color-dark fw-500">
-            {property?.price?.toLocaleString()} {t("EGP")}
+            {Number(property?.price).toLocaleString()} {t("EGP")}{" "}
+            {property?.status === "rent" && `/${t("month")}`}
           </div>
           {property?.status.toLowerCase() === "rent" &&
             property?.down_price && (

@@ -802,7 +802,7 @@
     "Create Account": "Resale Specialists",
     "Find Home": "Mortgage Solutions",
     "Quick Process": "Transparency First",
-    "It’s very easy to open an account and start your journey": "We focus exclusively on the resale market, ensuring curated and verified listings.",
+    "It's very easy to open an account and start your journey": "We focus exclusively on the resale market, ensuring curated and verified listings.",
     "Complete your profile with all the info to get attention of client": " Integrated financing options that make ownership easier.",
     "Apply & get your preferable jobs with all the requirements and get it": "No hidden fees, no surprises — just clarity and trust.",
     "banner_start": "Stay updated with",
@@ -858,6 +858,11 @@
     "loading_location_services": "Loading location services...",
     "loading": "Loading...",
     "price_range": "Price Range",
+    "min_price": "Min Price",
+    "max_price": "Max Price",
+    "select_price_range": "Select Price Range",
+    "search_placeholder": "Ex: home, villa",
+    "search_placeholder_alt": "buy, home, loft, apartment",
     "any": "All",
     "advance_search": "ADVANCE Search",
     "by_agent": "By Agent",
@@ -909,6 +914,15 @@
     "messagePlaceholder": "Your message*",
     "messageError": "Message is required",
     "sendButton": "Send Message",
+    "no_properties_available": "No properties available",
+    "loading_more": "Loading more...",
+    "loading_more_properties": "Loading more properties...",
+    "no_more_properties": "No more properties to load",
+    "no_properties_found": "No properties found matching your criteria",
+    "unknown_area": "Unknown Area",
+    "per_month": "/ month",
+    "loading_location_services": "Loading location services...",
+    "sqft": "sqft",
     "about": {
       "title": "About Proplix",
       "property": "Property",
@@ -919,9 +933,9 @@
       "Low interest rate": "Low interest rate",
       "cumulative_trading_volume": "Cumulative trading volume",
       "title_1": "Who we are?",
-      "desc_2": "We’re a team of real estate and tech professionals rethinking how Egyptians buy, sell, and rent. With local expertise and smart digital tools, Proplix is a trusted hub for resale and rental properties.",
+      "desc_2": "We're a team of real estate and tech professionals rethinking how Egyptians buy, sell, and rent. With local expertise and smart digital tools, Proplix is a trusted hub for resale and rental properties.",
       "title_2": "About Proplix",
-      "desc_3": "Founded in 2025, Proplix makes Egypt’s resale real estate market transparent, simple, and accessible. From first-time buyers to seasoned investors, we connect people with the right homes and opportunities."
+      "desc_3": "Founded in 2025, Proplix makes Egypt's resale real estate market transparent, simple, and accessible. From first-time buyers to seasoned investors, we connect people with the right homes and opportunities."
     }
   },
   "SignupPage": {

@@ -1,6 +1,6 @@
 import { getData } from "@/libs/server/backendServer";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const ListingDropdownModal = ({
   handleAmenitiesChange,
@@ -132,7 +132,10 @@ const ListingDropdownModal = ({
                             <h6 className="block-title fw-bold mb-20">
                               {t("size")}
                             </h6>
-                            <div className="d-flex align-items-center" style={{ maxWidth: 320 }}>
+                            <div
+                              className="d-flex align-items-center"
+                              style={{ maxWidth: 320 }}
+                            >
                               <input
                                 type="number"
                                 className="form-control"
@@ -148,7 +151,9 @@ const ListingDropdownModal = ({
                                   minWidth: 0,
                                   height: "44px",
                                 }}
-                                placeholder={t("size_placeholder") || "Enter size"}
+                                placeholder={
+                                  t("size_placeholder") || "Enter size"
+                                }
                                 value={size}
                                 onChange={handleSizeInput}
                               />
@@ -167,7 +172,7 @@ const ListingDropdownModal = ({
                                   padding: "0 20px",
                                 }}
                               >
-                                sqft
+                                {t("sqft")}
                               </span>
                             </div>
                           </div>

@@ -33,8 +33,20 @@ const DropdownTwo = ({
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
+  const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [showMinPriceSuggestions, setShowMinPriceSuggestions] = useState(false);
+  const [showMaxPriceSuggestions, setShowMaxPriceSuggestions] = useState(false);
+  const [minPriceSuggestions, setMinPriceSuggestions] = useState<any[]>([]);
+  const [maxPriceSuggestions, setMaxPriceSuggestions] = useState<any[]>([]);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationSuggestionsRef = useRef<HTMLDivElement>(null);
+  const priceDropdownRef = useRef<HTMLDivElement>(null);
+  const minPriceInputRef = useRef<HTMLInputElement>(null);
+  const maxPriceInputRef = useRef<HTMLInputElement>(null);
+  const minPriceSuggestionsRef = useRef<HTMLDivElement>(null);
+  const maxPriceSuggestionsRef = useRef<HTMLDivElement>(null);
   const autocompleteService = useRef<any>(null);
   const placesService = useRef<any>(null);
 
@@ -346,6 +358,104 @@ const DropdownTwo = ({
     }
   };
 
+  // Handle min price input change
+  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setMinPrice(value);
+
+    // Trigger the price change handler to send request
+    handlePriceChange(value.toString());
+
+    if (value.length > 0) {
+      const filteredRanges = ranges.filter(
+        (range: any) =>
+          range.from.toString().includes(value) ||
+          range.label.toLowerCase().includes(value.toLowerCase())
+      );
+      setMinPriceSuggestions(filteredRanges);
+    } else {
+      setMinPriceSuggestions([]);
+    }
+  };
+
+  // Handle max price input change
+  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setMaxPrice(value);
+
+    // Trigger the down price change handler to send request
+    handleDown_priceChange(value);
+
+    if (value.length > 0) {
+      const filteredRanges = ranges.filter(
+        (range: any) =>
+          range.to.toString().includes(value) ||
+          range.label.toLowerCase().includes(value.toLowerCase())
+      );
+      setMaxPriceSuggestions(filteredRanges);
+    } else {
+      setMaxPriceSuggestions([]);
+    }
+  };
+
+  // Handle min price input focus
+  const handleMinPriceFocus = () => {
+    // Show only unique "from" values for min price
+    const uniqueFromValues = ranges.reduce((acc: any[], range: any) => {
+      if (!acc.find((item) => item.from === range.from)) {
+        acc.push({ from: range.from, label: range.from.toString() });
+      }
+      return acc;
+    }, []);
+    setMinPriceSuggestions(uniqueFromValues);
+    setShowMinPriceSuggestions(true);
+  };
+
+  // Handle max price input focus
+  const handleMaxPriceFocus = () => {
+    // Show only unique "to" values for max price
+    const uniqueToValues = ranges.reduce((acc: any[], range: any) => {
+      if (!acc.find((item) => item.to === range.to)) {
+        acc.push({ to: range.to, label: range.to.toString() });
+      }
+      return acc;
+    }, []);
+    setMaxPriceSuggestions(uniqueToValues);
+    setShowMaxPriceSuggestions(true);
+  };
+
+  // Handle min price input blur
+  const handleMinPriceBlur = () => {
+    // Small delay to allow clicking on suggestions
+    setTimeout(() => {
+      setShowMinPriceSuggestions(false);
+    }, 150);
+  };
+
+  // Handle max price input blur
+  const handleMaxPriceBlur = () => {
+    // Small delay to allow clicking on suggestions
+    setTimeout(() => {
+      setShowMaxPriceSuggestions(false);
+    }, 150);
+  };
+
+  // Handle min price suggestion selection
+  const handleMinPriceSuggestionSelect = (range: any) => {
+    setMinPrice(range.from.toString());
+    setShowMinPriceSuggestions(false);
+    // Trigger the price change handler with the selected from value
+    handlePriceChange(range.from.toString());
+  };
+
+  // Handle max price suggestion selection
+  const handleMaxPriceSuggestionSelect = (range: any) => {
+    setMaxPrice(range.to.toString());
+    setShowMaxPriceSuggestions(false);
+    // Trigger the price change handler with the selected to value
+    handleDown_priceChange(range.to.toString());
+  };
+
   // Hide suggestions on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -356,6 +466,31 @@ const DropdownTwo = ({
         !locationInputRef.current.contains(event.target as Node)
       ) {
         setShowLocationSuggestions(false);
+      }
+
+      if (
+        priceDropdownRef.current &&
+        !priceDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowPriceDropdown(false);
+      }
+
+      if (
+        minPriceSuggestionsRef.current &&
+        !minPriceSuggestionsRef.current.contains(event.target as Node) &&
+        minPriceInputRef.current &&
+        !minPriceInputRef.current.contains(event.target as Node)
+      ) {
+        setShowMinPriceSuggestions(false);
+      }
+
+      if (
+        maxPriceSuggestionsRef.current &&
+        !maxPriceSuggestionsRef.current.contains(event.target as Node) &&
+        maxPriceInputRef.current &&
+        !maxPriceInputRef.current.contains(event.target as Node)
+      ) {
+        setShowMaxPriceSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -442,17 +577,25 @@ const DropdownTwo = ({
                             e.currentTarget as HTMLElement
                           ).style.backgroundColor = "#ff672508";
                           // Make all text inside orange on hover
-                          Array.from(e.currentTarget.querySelectorAll("div, i")).forEach((el) => {
+                          Array.from(
+                            e.currentTarget.querySelectorAll("div, i")
+                          ).forEach((el) => {
                             (el as HTMLElement).style.color = "#FF6725";
                           });
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = "#fff";
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = "#fff";
                           // Restore text color
-                          const mainText = e.currentTarget.querySelector(".main-text");
-                          if (mainText) (mainText as HTMLElement).style.color = "#333";
-                          const secondaryText = e.currentTarget.querySelector(".secondary-text");
-                          if (secondaryText) (secondaryText as HTMLElement).style.color = "#666";
+                          const mainText =
+                            e.currentTarget.querySelector(".main-text");
+                          if (mainText)
+                            (mainText as HTMLElement).style.color = "#333";
+                          const secondaryText =
+                            e.currentTarget.querySelector(".secondary-text");
+                          if (secondaryText)
+                            (secondaryText as HTMLElement).style.color = "#666";
                           const icon = e.currentTarget.querySelector("i");
                           if (icon) (icon as HTMLElement).style.color = "#666";
                         }}
@@ -501,7 +644,7 @@ const DropdownTwo = ({
                       borderRadius: "0 0 4px 4px",
                     }}
                   >
-                    Loading location services...
+                    {t("loading_location_services")}
                   </div>
                 )} */}
               </div>
@@ -532,27 +675,275 @@ const DropdownTwo = ({
           </div>
 
           <div className="col-xl-3 col-lg-4">
-            <div className="input-box-one border-left">
+            <div
+              className="input-box-one border-left"
+              style={{ position: "relative" }}
+            >
               <div className="label">{t("price_range")}</div>
-              <NiceSelect
-                className="nice-select"
-                options={[
-                  {
-                    text: t("all"),
-                    value: "all",
-                  },
-                  ...ranges?.map((range: any) => ({
-                    value: `${range.from}-${range.to}`,
-                    text: range.label,
-                  })),
-                ]}
-                defaultCurrent={
-                  `${filters.price}-${filters.down_price}` || "all"
-                }
-                onChange={(e) => handlerangeChange(e.target.value)}
-                name=""
-                placeholder=""
-              />
+              <div
+                className="price-range-trigger"
+                onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+                style={{
+                  padding: "12px 16px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  backgroundColor: "#fff",
+                  transition: "all 0.2s ease",
+                  position: "relative",
+                  minHeight: "44px",
+                  fontSize: "14px",
+                  fontWeight: "400",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#FF6725";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 8px rgba(255, 103, 37, 0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#d1d5db";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <span style={{ color: minPrice || maxPrice ? "#333" : "#999" }}>
+                  {minPrice && maxPrice
+                    ? `${minPrice} - ${maxPrice}`
+                    : minPrice
+                    ? `From ${minPrice}`
+                    : maxPrice
+                    ? `Up to ${maxPrice}`
+                    : t("select_price_range") || "Select Price Range"}
+                </span>
+                <i
+                  className={`fa-solid fa-chevron-down ${
+                    showPriceDropdown ? "rotated" : ""
+                  }`}
+                  style={{
+                    transition: "transform 0.2s",
+                    transform: showPriceDropdown
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  }}
+                ></i>
+              </div>
+
+              {showPriceDropdown && (
+                <div
+                  ref={priceDropdownRef}
+                  className="price-range-dropdown"
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    backgroundColor: "#fff",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "6px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    zIndex: 1000,
+                    marginTop: "4px",
+                    padding: "16px",
+                    borderTopLeftRadius: "0",
+                    borderTopRightRadius: "0",
+                  }}
+                >
+                  <div className="d-flex align-items-center gap-2">
+                    <div
+                      className="price-input-field"
+                      style={{ position: "relative", flex: 1 }}
+                    >
+                      <input
+                        ref={minPriceInputRef}
+                        type="text"
+                        placeholder={t("min_price") || "Min"}
+                        className="type-input"
+                        value={minPrice}
+                        onChange={handleMinPriceChange}
+                        onFocus={handleMinPriceFocus}
+                        onBlur={handleMinPriceBlur}
+                        autoComplete="off"
+                        style={{
+                          padding: "10px 12px",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "4px",
+                          fontSize: "14px",
+                          fontWeight: "400",
+                          transition: "all 0.2s ease",
+                          backgroundColor: "#fff",
+                          width: "100%",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = "#FF6725";
+                          e.currentTarget.style.boxShadow =
+                            "0 1px 3px rgba(255, 103, 37, 0.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = "#d1d5db";
+                          e.currentTarget.style.backgroundColor = "#fff";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      />
+                      {showMinPriceSuggestions && (
+                        <div
+                          ref={minPriceSuggestionsRef}
+                          className="price-suggestions"
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            backgroundColor: "#fff",
+                            border: "1px solid rgba(0, 0, 0, 0.05)",
+                            borderRadius: "4px",
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                            zIndex: 1001,
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                            marginTop: "2px",
+                          }}
+                        >
+                          {minPriceSuggestions.map((range, idx) => (
+                            <div
+                              key={idx}
+                              className="suggestion-item"
+                              onClick={() =>
+                                handleMinPriceSuggestionSelect(range)
+                              }
+                              style={{
+                                padding: "10px 12px",
+                                cursor: "pointer",
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                transition: "all 0.2s ease",
+                                borderBottom: "1px solid #f3f4f6",
+                                borderRadius: "2px",
+                                margin: "1px 0",
+                              }}
+                              onMouseEnter={(e) => {
+                                (
+                                  e.currentTarget as HTMLElement
+                                ).style.backgroundColor = "#ff672508";
+                              }}
+                              onMouseLeave={(e) => {
+                                (
+                                  e.currentTarget as HTMLElement
+                                ).style.backgroundColor = "#fff";
+                              }}
+                            >
+                              {range.label}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <span
+                      style={{
+                        color: "#6b7280",
+                        fontSize: "14px",
+                        fontWeight: "400",
+                        padding: "0 6px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        minWidth: "16px",
+                      }}
+                    >
+                      -
+                    </span>
+                    <div
+                      className="price-input-field"
+                      style={{ position: "relative", flex: 1 }}
+                    >
+                      <input
+                        ref={maxPriceInputRef}
+                        type="text"
+                        placeholder={t("max_price") || "Max"}
+                        className="type-input"
+                        value={maxPrice}
+                        onChange={handleMaxPriceChange}
+                        onFocus={handleMaxPriceFocus}
+                        onBlur={handleMaxPriceBlur}
+                        autoComplete="off"
+                        style={{
+                          padding: "10px 12px",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "4px",
+                          fontSize: "14px",
+                          fontWeight: "400",
+                          transition: "all 0.2s ease",
+                          backgroundColor: "#fff",
+                          width: "100%",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = "#FF6725";
+                          e.currentTarget.style.boxShadow =
+                            "0 1px 3px rgba(255, 103, 37, 0.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = "#d1d5db";
+                          e.currentTarget.style.backgroundColor = "#fff";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      />
+                      {showMaxPriceSuggestions && (
+                        <div
+                          ref={maxPriceSuggestionsRef}
+                          className="price-suggestions"
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            backgroundColor: "#fff",
+                            border: "1px solid rgba(0, 0, 0, 0.05)",
+                            borderRadius: "4px",
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                            zIndex: 1001,
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                            marginTop: "2px",
+                          }}
+                        >
+                          {maxPriceSuggestions.map((range, idx) => (
+                            <div
+                              key={idx}
+                              className="suggestion-item"
+                              onClick={() =>
+                                handleMaxPriceSuggestionSelect(range)
+                              }
+                              style={{
+                                padding: "10px 12px",
+                                cursor: "pointer",
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                transition: "all 0.2s ease",
+                                borderBottom: "1px solid #f3f4f6",
+                                borderRadius: "2px",
+                                margin: "1px 0",
+                              }}
+                              onMouseEnter={(e) => {
+                                (
+                                  e.currentTarget as HTMLElement
+                                ).style.backgroundColor = "#ff672508";
+                              }}
+                              onMouseLeave={(e) => {
+                                (
+                                  e.currentTarget as HTMLElement
+                                ).style.backgroundColor = "#fff";
+                              }}
+                            >
+                              {range.label}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -578,8 +969,6 @@ const DropdownTwo = ({
         </div>
       </form>
       <ListingDropdownModal
-        handlePriceChange={handlePriceChange}
-        handleDown_priceChange={handleDown_priceChange}
         handleResetFilter={handleResetFilter}
         handleAgentChange={handleAgentChange}
         filters={filters}

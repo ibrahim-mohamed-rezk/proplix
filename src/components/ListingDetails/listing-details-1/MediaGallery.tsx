@@ -7,7 +7,7 @@ interface DataType {
   small_carousel: string[];
 }
 
-const DEFAULT_IMAGE = "/images/proprity.jpg";
+const DEFAULT_IMAGE = "/images/proprity.png";
 
 const MediaGallery = ({
   style,

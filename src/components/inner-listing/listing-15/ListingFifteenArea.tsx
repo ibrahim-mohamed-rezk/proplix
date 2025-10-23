@@ -162,11 +162,11 @@ const ListingFifteenArea = () => {
             property.title
           }</h6>
           <p style="margin: 0; font-size: 12px; color: #666;">
-            ${property.area?.name || "Unknown Area"}
+            ${property.area?.name || t("unknown_area")}
           </p>
           <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: bold; color: #FF6625;">
             ${new Intl.NumberFormat(locale).format(property.price)} ${
-        property.status === "rent" ? "/ month" : ""
+        property.status === "rent" ? t("per_month") : ""
       }
           </p>
           <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 11px; color: #888;">
@@ -251,7 +251,6 @@ const ListingFifteenArea = () => {
         { ...filters, page, per_page: 10 },
         { lang: locale }
       );
-      console.log(response);
 
       const newProperties = response.data.data.properties;
       const pagination = response.data.data.pagination;
@@ -343,8 +342,6 @@ const ListingFifteenArea = () => {
     };
     fetchAgents();
   }, []);
-
-  console.log(filters);
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return; // initialize map only once
@@ -446,7 +443,9 @@ const ListingFifteenArea = () => {
                 setFilters({ ...filters, user_id: value });
               }
             }}
-            handlePriceChange={(_: unknown) => {}}
+            handlePriceChange={(value: string) => {
+              setFilters({ ...filters, price: value });
+            }}
             maxPrice={0}
             priceValue={0}
             handleResetFilter={handleResetFilter}
@@ -466,11 +465,9 @@ const ListingFifteenArea = () => {
               if (value === "all") {
                 setFilters({ ...filters, price: null, down_price: null });
               } else {
-                const [price, down_price] = value.split("-");
                 setFilters({
                   ...filters,
-                  price,
-                  down_price,
+                  down_price: value,
                 });
               }
             }}
@@ -634,7 +631,7 @@ const ListingFifteenArea = () => {
             {isLoading && (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                  <span className="visually-hidden">{t("loading")}</span>
                 </div>
               </div>
             )}
@@ -660,25 +657,25 @@ const ListingFifteenArea = () => {
             {isLoadingMore && (
               <div className="text-center py-4">
                 <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading more...</span>
+                  <span className="visually-hidden">{t("loading_more")}</span>
                 </div>
-                <p className="mt-2 text-muted">Loading more properties...</p>
+                <p className="mt-2 text-muted">
+                  {t("loading_more_properties")}
+                </p>
               </div>
             )}
 
             {/* No more properties message */}
             {!hasMore && properties.length > 0 && (
               <div className="text-center py-4">
-                <p className="text-muted">No more properties to load</p>
+                <p className="text-muted">{t("no_more_properties")}</p>
               </div>
             )}
 
             {/* No properties found */}
             {!isLoading && properties.length === 0 && (
               <div className="text-center py-5">
-                <p className="text-muted">
-                  No properties found matching your criteria
-                </p>
+                <p className="text-muted">{t("no_properties_found")}</p>
               </div>
             )}
           </div>

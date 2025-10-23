@@ -60,11 +60,11 @@ const Banner = () => {
   };
 
   // handle price change
-  const handlePriceChange = (e: { target: { value: string } }) => {
-    if (e.target.value === "") {
+  const handlePriceChange = (value: string) => {
+    if (value === "") {
       setFilters({ ...filters, price: null });
     } else {
-      setFilters({ ...filters, price: e.target.value });
+      setFilters({ ...filters, price: value });
     }
   };
 
@@ -82,11 +82,11 @@ const Banner = () => {
   };
 
   // handle price change
-  const handleDown_priceChange = (e: { target: { value: string } }) => {
-    if (e.target.value === "") {
+  const handleDown_priceChange = (value: string) => {
+    if (value === "") {
       setFilters({ ...filters, down_price: null });
     } else {
-      setFilters({ ...filters, down_price: e.target.value });
+      setFilters({ ...filters, down_price: value });
     }
   };
 
