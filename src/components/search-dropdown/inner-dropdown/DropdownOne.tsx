@@ -1,10 +1,11 @@
 import NiceSelect from "@/ui/NiceSelect"
 import PriceRange from "../../common/PriceRange";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 const ammenities_data: string[] = ["A/C & Heating", "Garages", "Garden", "Disabled Access", "Swimming Pool", "Parking", "Wifi", "Pet Friendly", "Ceiling Height", "Fireplace", "Play Ground", "Elevator"]
 
-const DropdownOne = ({
+const DropdownOne = async ({
    handleBathroomChange,
    handleBedroomChange,
    handleSearchChange,
@@ -16,6 +17,8 @@ const DropdownOne = ({
    handleAmenityChange,
    handleLocationChange,
    handleStatusChange, }: any) => {
+
+  const t = await getTranslations("endUser");
 
    return (
      <form onSubmit={(e) => e.preventDefault()}>
