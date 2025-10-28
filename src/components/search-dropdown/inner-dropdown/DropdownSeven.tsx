@@ -24,45 +24,12 @@ interface PlacePrediction {
   };
 }
 
-// Type assertion helper for Google Places API response
-interface GooglePlacePrediction {
-  placeId?: string;
-  text?: {
-    text?: string;
-  };
-  structuredFormat?: {
-    mainText?: {
-      text?: string;
-    };
-    secondaryText?: {
-      text?: string;
-    };
-  };
-}
-
-
 const DropdownSeven = ({
-  handleBathroomChange,
-  handleBedroomChange,
   handleLocationChange,
-  handlePriceDropChange,
-  handleTypeChange,
-  handleStatusChange,
-  handleAgentChange,
-  handleSearchChange,
-  handlePriceChange,
-  maxPrice,
-  priceValue,
   handleResetFilter,
-  handleAmenitiesChange,
-  handlePaymentMethodChange,
-  handleFurnishingChange,
-  handleSizeChange,
   filters,
-  showMap = false,
-  onToggleView,
-  isMobile = false,
-}:any) => {
+  setFilters,
+}: any) => {
   // Get default location from localStorage filters.location
   const getDefaultLocationQuery = () => {
     if (typeof window !== "undefined") {
@@ -82,12 +49,8 @@ const DropdownSeven = ({
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [priceRanges, setPriceRanges] = useState<any[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState<boolean>(false);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPriceValue, setMaxPriceValue] = useState("");
   const [showMinPriceSuggestions, setShowMinPriceSuggestions] = useState(false);
   const [showMaxPriceSuggestions, setShowMaxPriceSuggestions] = useState(false);
   const [minPriceSuggestions, setMinPriceSuggestions] = useState<any[]>([]);
@@ -101,13 +64,11 @@ const DropdownSeven = ({
   const maxPriceSuggestionsRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("endUser");
   const locale = useLocale();
-  const [areas, setAreas] = useState<any[]>([]);
   const [types, setTypes] = useState<any[]>([]);
 
-  // Initialize Google Places services (supporting both old and new APIs)
-  const autocompleteService =
-    useRef<google.maps.places.AutocompleteService | null>(null);
-  const placesService = useRef<google.maps.places.PlacesService | null>(null);
+  // Initialize Google Places services (legacy AutocompleteService like DropdownTwo)
+  const autocompleteService = useRef<any>(null);
+  const placesService = useRef<any>(null);
 
   // Default location updated to Egypt (Cairo coordinates)
   const defaultLocation: LocationData = {
@@ -119,11 +80,6 @@ const DropdownSeven = ({
     },
   };
 
-  const fetchAreas = async () => {
-    const response = await getData("areas", {}, { lang: locale });
-    setAreas(response.data.data);
-  };
-
   const fetchAgents = async () => {
     const response = await getData("types", {}, { lang: locale });
     setTypes(response.data.data);
@@ -131,106 +87,51 @@ const DropdownSeven = ({
 
   useEffect(() => {
     fetchAgents();
-    fetchAreas();
   }, []);
 
-  // Function to check if Google Maps is fully loaded
-  const isGoogleMapsReady = (): boolean => {
-    return !!(
-      window.google &&
-      window.google.maps &&
-      window.google.maps.places &&
-      (window.google.maps.places.AutocompleteSuggestion ||
-        window.google.maps.places.AutocompleteService) &&
-      window.google.maps.places.PlacesService
-    );
-  };
-
-  // Function to initialize Google Places services
-  const initializeGoogleServices = () => {
-    if (isGoogleMapsReady()) {
-      try {
-        // Initialize AutocompleteService as fallback if new API is not available
-        if (
-          !window.google.maps.places.AutocompleteSuggestion &&
-          window.google.maps.places.AutocompleteService
-        ) {
+  // Load Google Maps API like DropdownTwo (script with callback)
+  useEffect(() => {
+    const initializeGoogleMapsServices = () => {
+      if (window.google && window.google.maps) {
+        try {
           autocompleteService.current =
             new window.google.maps.places.AutocompleteService();
+          const dummyDiv = document.createElement("div");
+          placesService.current = new window.google.maps.places.PlacesService(
+            dummyDiv
+          );
+          setIsGoogleMapsLoaded(true);
+        } catch (err) {
+          setIsGoogleMapsLoaded(false);
         }
-
-        placesService.current = new window.google.maps.places.PlacesService(
-          document.createElement("div")
-        );
-
-        // Set default location
-        setLocationQuery(getDefaultLocationQuery());
-        setSelectedLocation(getDefaultLocationQuery());
-        setIsGoogleMapsLoaded(true);
-
-        console.log("Google Maps services initialized successfully");
-      } catch (error) {
-        console.error("Error initializing Google Maps services:", error);
-        setIsGoogleMapsLoaded(false);
       }
-    }
-  };
+    };
 
-  // Listen for Google Maps loading and poll as fallback
-  useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 100; // Try for about 10 seconds
-    let pollInterval: NodeJS.Timeout;
-
-    const checkGoogleMaps = () => {
-      attempts++;
-
-      if (isGoogleMapsReady()) {
-        initializeGoogleServices();
-        if (pollInterval) clearInterval(pollInterval);
+    const loadGoogleMapsAPI = () => {
+      if (window.google && window.google.maps) {
+        initializeGoogleMapsServices();
         return;
       }
 
-      if (attempts >= maxAttempts) {
-        console.warn("Google Maps API failed to load after maximum attempts");
-        setIsGoogleMapsLoaded(false);
-        if (pollInterval) clearInterval(pollInterval);
+      if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
+        window.initGoogleMaps = initializeGoogleMapsServices;
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initGoogleMaps`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
       }
     };
 
-    // Listen for custom event from layout
-    const handleGoogleMapsLoaded = () => {
-      console.log("Received googleMapsLoaded event");
-      // Small delay to ensure everything is ready
-      setTimeout(() => {
-        if (isGoogleMapsReady()) {
-          initializeGoogleServices();
-          if (pollInterval) clearInterval(pollInterval);
-        }
-      }, 100);
-    };
-
-    // Add event listener for custom event
-    window.addEventListener("googleMapsLoaded", handleGoogleMapsLoaded);
-
-    // Start polling as fallback
-    checkGoogleMaps();
-    pollInterval = setInterval(checkGoogleMaps, 100);
-
-    return () => {
-      // Cleanup
-      window.removeEventListener("googleMapsLoaded", handleGoogleMapsLoaded);
-      if (pollInterval) clearInterval(pollInterval);
-    };
+    loadGoogleMapsAPI();
   }, []);
 
-  // Handle location input change and fetch suggestions using new or legacy API
+  // Handle location input change and fetch suggestions (match DropdownTwo behavior)
   const handleLocationInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const query = e.target.value;
     setLocationQuery(query);
-    setSelectedLocation(query);
 
     // --- Save location to localStorage filters.location ---
     if (typeof window !== "undefined") {
@@ -245,354 +146,215 @@ const DropdownSeven = ({
     // ------------------------------------------------------
 
     // Only proceed if Google Maps is loaded and query is long enough
-    if (!isGoogleMapsLoaded || query.length <= 2) {
+    if (
+      query.length <= 2 ||
+      !isGoogleMapsLoaded ||
+      !autocompleteService.current
+    ) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
 
     try {
-      // Try to use the new AutocompleteSuggestion API first
-      if (window.google.maps.places.AutocompleteSuggestion) {
-        // Use any type for the request since the exact interface may vary
-        const request: any = {
+      // Legacy AutocompleteService requests parallel (geocode + establishments + specific devs)
+      // Multiple requests to get geographical places and specific real estate companies
+      const requests = [
+        {
           input: query,
-          includedPrimaryTypes: [
-            "locality",
-            "administrative_area_level_1",
-            "administrative_area_level_2",
-            "country",
-          ], // Only geographical places: cities, states, governorates, and countries
-          includedRegionCodes: ["EG"], // Restrict to Egypt only
-          locationBias: {
-            radius: 50000, // 50km radius
-            center: new google.maps.LatLng(
-              defaultLocation?.coordinates?.lat || 0,
-              defaultLocation?.coordinates?.lng || 0
-            ),
-          },
-        };
+          types: ["geocode"], // Geographical places
+          componentRestrictions: { country: "EG" },
+        },
+        {
+          input: query,
+          types: ["establishment"], // Business establishments
+          componentRestrictions: { country: "EG" },
+        },
+        // Specific searches for major Egyptian real estate developers and compounds
+        {
+          input: `${query} SODIC`,
+          types: ["establishment"],
+          componentRestrictions: { country: "EG" },
+        },
+        {
+          input: `${query} Palm Hills`,
+          types: ["establishment"],
+          componentRestrictions: { country: "EG" },
+        },
+        {
+          input: `${query} Talaat Moustafa`,
+          types: ["establishment"],
+          componentRestrictions: { country: "EG" },
+        },
+        {
+          input: `${query} Madinaty`,
+          types: ["establishment"],
+          componentRestrictions: { country: "EG" },
+        },
+        {
+          input: `${query} New Cairo`,
+          types: ["establishment"],
+          componentRestrictions: { country: "EG" },
+        },
+        {
+          input: `${query} compound`,
+          types: ["establishment"],
+          componentRestrictions: { country: "EG" },
+        },
+      ];
 
-        const response = await(
-          window.google.maps.places.AutocompleteSuggestion as any
-        ).fetchAutocompleteSuggestions(request);
+      let allPredictions: any[] = [];
 
-        if (response?.suggestions && response.suggestions.length > 0) {
-          const convertedSuggestions: PlacePrediction[] =
-            response.suggestions.map((suggestion: any) => {
-              // Type assertion to access the nested structure
-              const placePrediction =
-                suggestion.placePrediction as GooglePlacePrediction;
-
-              return {
-                place_id: placePrediction?.placeId || "",
-                description: placePrediction?.text?.text || "",
-                structured_formatting: {
-                  main_text:
-                    placePrediction?.structuredFormat?.mainText?.text ||
-                    placePrediction?.text?.text ||
-                    "",
-                  secondary_text:
-                    placePrediction?.structuredFormat?.secondaryText?.text ||
-                    "",
-                },
-              };
-            });
-
-          setSuggestions(convertedSuggestions);
-          setShowSuggestions(true);
-        } else {
-          setSuggestions([]);
-          setShowSuggestions(false);
-        }
-      }
-      // Fallback to legacy AutocompleteService with enhanced search for specific developers
-      else if (autocompleteService.current) {
-        // Multiple requests to get geographical places and specific real estate companies
-        const requests = [
-          {
-            input: query,
-            types: ["(cities)"], // Focus on cities - geographical places only
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000, // 100km radius from Cairo
-          },
-          {
-            input: query,
-            types: ["establishment"], // Business establishments
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-          // Specific searches for major Egyptian real estate developers and compounds
-          {
-            input: `${query} SODIC`,
-            types: ["establishment"],
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-          {
-            input: `${query} Palm Hills`,
-            types: ["establishment"],
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-          {
-            input: `${query} Talaat Moustafa`,
-            types: ["establishment"],
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-          {
-            input: `${query} Madinaty`,
-            types: ["establishment"],
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-          {
-            input: `${query} New Cairo`,
-            types: ["establishment"],
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-          {
-            input: `${query} compound`,
-            types: ["establishment"],
-            componentRestrictions: { country: ["EG"] },
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000,
-          },
-        ];
-
-        let allPredictions: any[] = [];
-
-        // Execute all requests in parallel
-        const promises = requests.map((request) => {
-          return new Promise<any[]>((resolve) => {
-            if (autocompleteService.current) {
-              autocompleteService.current.getPlacePredictions(
-                request,
-                (predictions: any[] | null, status: any) => {
-                  if (
-                    status ===
-                      window.google.maps.places.PlacesServiceStatus.OK &&
-                    predictions
-                  ) {
-                    resolve(predictions);
-                  } else {
-                    resolve([]);
-                  }
-                }
-              );
-            } else {
-              resolve([]);
-            }
-          });
-        });
-
-        const results = await Promise.all(promises);
-        allPredictions = results.flat();
-
-        // Remove duplicates based on place_id
-        const uniquePredictions = allPredictions.filter(
-          (prediction, index, self) =>
-            index === self.findIndex((p) => p.place_id === prediction.place_id)
-        );
-
-        // Keywords for specific Egyptian real estate companies and compounds
-        const specificRealEstateKeywords = [
-          "sodic",
-          "palm hills",
-          "talaat moustafa",
-          "madinaty",
-          "new cairo",
-          "new capital",
-          "compound",
-          "developer",
-          "real estate",
-          "property",
-          "residential",
-          "villa",
-          "apartment",
-          "townhouse",
-          "community",
-          "housing",
-          "estate",
-          "sodic west",
-          "sodic east",
-          "palm hills new cairo",
-          "palm hills sheikh zayed",
-          "talaat moustafa group",
-          "madinaty compound",
-          "new cairo compound",
-          "سوديك",
-          "بالم هيلز",
-          "طلعت مصطفى",
-          "مدينتي",
-          "القاهرة الجديدة",
-          "العاصمة الإدارية",
-          "مجمع",
-          "مطور",
-          "عقارات",
-          "سكني",
-          "فيلا",
-          "شقة",
-          "تاون هاوس",
-          "مجتمع",
-          "إسكان",
-        ];
-
-        // Keywords for irrelevant business establishments
-        const irrelevantBusinessKeywords = [
-          "restaurant",
-          "cafe",
-          "hotel",
-          "gym",
-          "market",
-          "mall",
-          "shop",
-          "store",
-          "bank",
-          "hospital",
-          "clinic",
-          "school",
-          "university",
-          "mosque",
-          "church",
-          "pharmacy",
-          "supermarket",
-          "gas station",
-          "station",
-          "airport",
-          "bus stop",
-          "مطعم",
-          "كافيه",
-          "فندق",
-          "جيم",
-          "سوق",
-          "مول",
-          "متجر",
-          "بنك",
-          "مستشفى",
-          "عيادة",
-          "مدرسة",
-          "جامعة",
-          "مسجد",
-          "كنيسة",
-          "صيدلية",
-          "محطة وقود",
-        ];
-
-        const filteredPredictions = uniquePredictions.filter((prediction) => {
-          const description = prediction.description.toLowerCase();
-
-          // Always include geographical places (cities)
-          if (
-            prediction.types?.includes("locality") ||
-            prediction.types?.includes("administrative_area_level_1")
-          ) {
-            return true;
-          }
-
-          // For business establishments, check if they're relevant real estate companies
-          if (prediction.types?.includes("establishment")) {
-            const hasRelevantKeywords = specificRealEstateKeywords.some(
-              (keyword) => description.includes(keyword)
-            );
-
-            const hasIrrelevantKeywords = irrelevantBusinessKeywords.some(
-              (keyword) => description.includes(keyword)
-            );
-
-            return hasRelevantKeywords && !hasIrrelevantKeywords;
-          }
-
-          return false;
-        });
-
-        setSuggestions(filteredPredictions);
-        setShowSuggestions(true);
-      }
-    } catch (error) {
-      console.error("Error fetching location suggestions:", error);
-
-      // If new API fails, try fallback to legacy API
-      if (
-        autocompleteService.current &&
-        window.google.maps.places.AutocompleteSuggestion
-      ) {
-        try {
-          const request: google.maps.places.AutocompletionRequest = {
-            input: query,
-            types: ["(cities)"], // Focus on cities - geographical places only
-            componentRestrictions: { country: ["EG"] }, // Restrict to Egypt only
-            // Add location bias to prioritize results near Cairo
-            location: new google.maps.LatLng(
-              defaultLocation.coordinates?.lat || 0,
-              defaultLocation.coordinates?.lng || 0
-            ),
-            radius: 100000, // 100km radius from Cairo
-          };
-
+      // Execute all requests in parallel
+      const promises = requests.map((request) => {
+        return new Promise<any[]>((resolve) => {
           autocompleteService.current.getPlacePredictions(
             request,
-            (predictions, status) => {
+            (predictions: any[] | null, status: any) => {
               if (
                 status === window.google.maps.places.PlacesServiceStatus.OK &&
                 predictions
               ) {
-                setSuggestions(predictions);
-                setShowSuggestions(true);
+                resolve(predictions);
               } else {
-                setSuggestions([]);
-                setShowSuggestions(false);
+                resolve([]);
               }
             }
           );
-        } catch (fallbackError) {
-          console.error("Fallback autocomplete also failed:", fallbackError);
-          setSuggestions([]);
-          setShowSuggestions(false);
+        });
+      });
+
+      const results = await Promise.all(promises);
+      allPredictions = results.flat();
+
+      // Remove duplicates based on place_id
+      const uniquePredictions = allPredictions.filter(
+        (prediction, index, self) =>
+          index === self.findIndex((p) => p.place_id === prediction.place_id)
+      );
+
+      // Keywords for specific Egyptian real estate companies and compounds
+      const specificRealEstateKeywords = [
+        "sodic",
+        "palm hills",
+        "talaat moustafa",
+        "madinaty",
+        "new cairo",
+        "new capital",
+        "compound",
+        "developer",
+        "real estate",
+        "property",
+        "residential",
+        "villa",
+        "apartment",
+        "townhouse",
+        "community",
+        "housing",
+        "estate",
+        "sodic west",
+        "sodic east",
+        "palm hills new cairo",
+        "palm hills sheikh zayed",
+        "talaat moustafa group",
+        "madinaty compound",
+        "new cairo compound",
+        "سوديك",
+        "بالم هيلز",
+        "طلعت مصطفى",
+        "مدينتي",
+        "القاهرة الجديدة",
+        "العاصمة الإدارية",
+        "مجمع",
+        "مطور",
+        "عقارات",
+        "سكني",
+        "فيلا",
+        "شقة",
+        "تاون هاوس",
+        "مجتمع",
+        "إسكان",
+      ];
+
+      // Keywords for irrelevant business establishments
+      const irrelevantBusinessKeywords = [
+        "restaurant",
+        "cafe",
+        "hotel",
+        "gym",
+        "market",
+        "mall",
+        "shop",
+        "store",
+        "bank",
+        "hospital",
+        "clinic",
+        "school",
+        "university",
+        "mosque",
+        "church",
+        "pharmacy",
+        "supermarket",
+        "gas station",
+        "station",
+        "airport",
+        "bus stop",
+        "مطعم",
+        "كافيه",
+        "فندق",
+        "جيم",
+        "سوق",
+        "مول",
+        "متجر",
+        "بنك",
+        "مستشفى",
+        "عيادة",
+        "مدرسة",
+        "جامعة",
+        "مسجد",
+        "كنيسة",
+        "صيدلية",
+        "محطة وقود",
+      ];
+
+      const filteredPredictions = uniquePredictions.filter((prediction) => {
+        const description = prediction.description.toLowerCase();
+
+        // Always include geographical places (cities)
+        if (
+          prediction.types?.includes("locality") ||
+          prediction.types?.includes("administrative_area_level_1")
+        ) {
+          return true;
         }
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
-      }
+
+        // For business establishments, check if they're relevant real estate companies
+        if (prediction.types?.includes("establishment")) {
+          const hasRelevantKeywords = specificRealEstateKeywords.some(
+            (keyword) => description.includes(keyword)
+          );
+
+          const hasIrrelevantKeywords = irrelevantBusinessKeywords.some(
+            (keyword) => description.includes(keyword)
+          );
+
+          return hasRelevantKeywords && !hasIrrelevantKeywords;
+        }
+
+        return false;
+      });
+
+      setSuggestions(filteredPredictions);
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error("Error fetching location suggestions:", error);
+      setSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
   // Handle suggestion selection
   const handleSuggestionSelect = (suggestion: PlacePrediction) => {
-    setSelectedLocation(suggestion.description);
     setLocationQuery(suggestion.description);
     setShowSuggestions(false);
     handleLocationChange(suggestion);
@@ -616,7 +378,7 @@ const DropdownSeven = ({
         fields: ["geometry", "formatted_address", "name"],
       };
 
-      placesService.current.getDetails(request, (place, status) => {
+      placesService.current.getDetails(request, (place: any, status: any) => {
         if (
           status === window.google.maps.places.PlacesServiceStatus.OK &&
           place
@@ -654,10 +416,12 @@ const DropdownSeven = ({
   // Handle min price input change
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setMinPrice(value);
 
     // Trigger the price change handler to send request (min input -> price parameter)
-    handlePriceChange(value);
+    setFilters({
+      ...filters,
+      price: value,
+    });
 
     if (value.length > 0) {
       const filteredRanges = priceRanges.filter(
@@ -674,10 +438,12 @@ const DropdownSeven = ({
   // Handle max price input change
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setMaxPriceValue(value);
 
     // Trigger the down price change handler to send request (max input -> down_price parameter)
-    handlePriceDropChange(value);
+    setFilters({
+      ...filters,
+      down_price: value,
+    });
 
     if (value.length > 0) {
       const filteredRanges = priceRanges.filter(
@@ -735,18 +501,22 @@ const DropdownSeven = ({
 
   // Handle min price suggestion selection
   const handleMinPriceSuggestionSelect = (range: any) => {
-    setMinPrice(range.from.toString());
     setShowMinPriceSuggestions(false);
     // Trigger the price change handler with the selected from value
-    handlePriceChange(range.from.toString());
+    setFilters({
+      ...filters,
+      price: range.from.toString(),
+    });
   };
 
   // Handle max price suggestion selection
   const handleMaxPriceSuggestionSelect = (range: any) => {
-    setMaxPriceValue(range.to.toString());
     setShowMaxPriceSuggestions(false);
     // Trigger the price change handler with the selected to value
-    handlePriceDropChange(range.to.toString());
+    setFilters({
+      ...filters,
+      down_price: range.to.toString(),
+    });
   };
 
   // Handle click outside to close suggestions
@@ -806,8 +576,6 @@ const DropdownSeven = ({
 
     fetchData();
   }, []);
-
-  const selectHandler = (e: any) => {};
 
   return (
     <>
@@ -901,7 +669,7 @@ const DropdownSeven = ({
                 <input
                   ref={locationInputRef}
                   type="text"
-                  className="location-input nice-select fw-normal"
+                  className="location-input nice-select fw-normal "
                   style={{ paddingRight: 32 }}
                   placeholder={
                     isGoogleMapsLoaded
@@ -986,7 +754,13 @@ const DropdownSeven = ({
                   { value: "rent", text: t("rent") },
                 ]}
                 defaultCurrent={filters?.status || "all"}
-                onChange={(event) => handleStatusChange(event.target.value)}
+                onChange={(event) =>
+                  setFilters({
+                    ...filters,
+                    status:
+                      event.target.value === "all" ? null : event.target.value,
+                  })
+                }
                 name="status"
                 placeholder=""
               />
@@ -1016,25 +790,20 @@ const DropdownSeven = ({
                   fontSize: "14px",
                   fontWeight: "400",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#FF6725";
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(255, 103, 37, 0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#d1d5db";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
               >
                 <span
-                  style={{ color: minPrice || maxPriceValue ? "#333" : "#999" }}
+                  style={{
+                    color: "#000",
+                    fontSize: "18px",
+                    fontWeight: "400",
+                  }}
                 >
-                  {minPrice && maxPriceValue
-                    ? `${minPrice} - ${maxPriceValue}`
-                    : minPrice
-                    ? `From ${minPrice}`
-                    : maxPriceValue
-                    ? `Up to ${maxPriceValue}`
+                  {filters.price && filters.down_price
+                    ? `${filters.price} - ${filters.down_price}`
+                    : filters.price
+                    ? `From ${filters.price}`
+                    : filters.down_price
+                    ? `Up to ${filters.down_price}`
                     : t("select_price_range") || "Select Price Range"}
                 </span>
                 <i
@@ -1080,7 +849,7 @@ const DropdownSeven = ({
                         type="text"
                         placeholder={t("min_price") || "Min"}
                         className="type-input"
-                        value={minPrice}
+                        value={filters.price || ""}
                         onChange={handleMinPriceChange}
                         onFocus={handleMinPriceFocus}
                         onBlur={handleMinPriceBlur}
@@ -1182,8 +951,8 @@ const DropdownSeven = ({
                         type="text"
                         placeholder={t("max_price") || "Max"}
                         className="type-input"
-                        value={maxPriceValue}
-                        onChange={handleMaxPriceChange}
+                        value={filters.down_price || ""}
+                        onChange={handleMaxPriceChange || ""}
                         onFocus={handleMaxPriceFocus}
                         onBlur={handleMaxPriceBlur}
                         autoComplete="off"
@@ -1262,12 +1031,65 @@ const DropdownSeven = ({
                       )}
                     </div>
                   </div>
+                  {(filters.price || filters.down_price) && (
+                    <div
+                      className="d-flex justify-content-between gap-2 mt-3"
+                      style={{ marginTop: "12px" }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFilters({
+                            ...filters,
+                            price: null,
+                            down_price: null,
+                          });
+
+                          localStorage.setItem(
+                            "filters",
+                            JSON.stringify({
+                              ...filters,
+                              price: null,
+                              down_price: null,
+                            })
+                          );
+                        }}
+                        style={{
+                          padding: "8px 12px",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "6px",
+                          background: "#fff",
+                          color: "#111827",
+                          fontSize: "14px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {t("clear") || "Clear"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowPriceDropdown(false);
+                        }}
+                        style={{
+                          padding: "8px 12px",
+                          border: "1px solid #ff6725",
+                          borderRadius: "6px",
+                          background: "#ff6725",
+                          color: "#fff",
+                          fontSize: "14px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {t("done") || "Done"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Area filter removed in favor of Type filter */}
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("bed")}</div>
@@ -1280,13 +1102,20 @@ const DropdownSeven = ({
                   { value: "3", text: "3+" },
                   { value: "4", text: "4+" },
                 ]}
-                defaultCurrent={0}
-                onChange={(event) => handleBedroomChange(event.target.value)}
+                defaultCurrent={filters?.bedrooms || "all"}
+                onChange={(event) =>
+                  setFilters({
+                    ...filters,
+                    bedrooms:
+                      event.target.value === "all" ? null : event.target.value,
+                  })
+                }
                 name=""
                 placeholder=""
               />
             </div>
           </div>
+
           <div className="col-xl-1 col-sm-4 col-6">
             <div className="input-box-one border-left">
               <div className="label">{t("bath")}</div>
@@ -1299,13 +1128,20 @@ const DropdownSeven = ({
                   { value: "3", text: "3+" },
                   { value: "4", text: "4+" },
                 ]}
-                defaultCurrent={0}
-                onChange={(event) => handleBathroomChange(event.target.value)}
+                defaultCurrent={filters?.bathrooms || "all"}
+                onChange={(event) =>
+                  setFilters({
+                    ...filters,
+                    bathrooms:
+                      event.target.value === "all" ? null : event.target.value,
+                  })
+                }
                 name=""
                 placeholder=""
               />
             </div>
           </div>
+
           <div className="col-xl-2 col-sm-4">
             <div className="input-box-one border-left">
               <div className="label">{t("type")}</div>
@@ -1318,9 +1154,13 @@ const DropdownSeven = ({
                     text: area.title,
                   })),
                 ]}
-                defaultCurrent={0}
+                defaultCurrent={filters?.type_id || "all"}
                 onChange={(event) =>
-                  handleTypeChange && handleTypeChange(event.target.value)
+                  setFilters({
+                    ...filters,
+                    type_id:
+                      event.target.value === "all" ? null : event.target.value,
+                  })
                 }
                 name="type"
                 placeholder=""
@@ -1348,12 +1188,9 @@ const DropdownSeven = ({
       </form>
 
       <ListingDropdownModal
-        handleAmenitiesChange={handleAmenitiesChange}
-        handlePaymentMethodChange={handlePaymentMethodChange}
-        handleFurnishingChange={handleFurnishingChange}
-        handleSizeChange={handleSizeChange}
         handleResetFilter={handleResetFilter}
         filters={filters}
+        setFilters={setFilters}
       />
     </>
   );

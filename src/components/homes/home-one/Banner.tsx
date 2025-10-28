@@ -50,6 +50,8 @@ const Banner = () => {
     localStorage.setItem("filters", JSON.stringify(filters));
   }, [filters]);
 
+
+
   // handle status change
   const handleSearchChange = (e: { target: { value: string } }) => {
     if (e.target.value === "") {
@@ -202,6 +204,7 @@ const Banner = () => {
                   handlerangeChange={handlerangeChange}
                   filters={filters}
                   popup={false}
+                  setFilters={setFilters}
                 />
               </div>
             </div>

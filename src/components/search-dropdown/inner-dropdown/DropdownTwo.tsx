@@ -20,9 +20,8 @@ const DropdownTwo = ({
   handlePriceChange,
   handleResetFilter,
   handleAgentChange,
-  handlerangeChange,
-  handleLocationChange,
   handleTypesChange,
+  setFilters,
   popup = true,
 }: any) => {
   const t = useTranslations("endUser");
@@ -513,7 +512,7 @@ const DropdownTwo = ({
                   placeholder={
                     t("search_location_placeholder") || "Enter location..."
                   }
-                  className="type-input"
+                  className="type-input font-[400]"
                   value={locationQuery}
                   onChange={handleLocationInputChange}
                   onFocus={() =>
@@ -629,24 +628,6 @@ const DropdownTwo = ({
                     ))}
                   </div>
                 )}
-                {/* {!isGoogleMapsLoaded && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "100%",
-                      left: 0,
-                      right: 0,
-                      padding: "8px 12px",
-                      fontSize: "12px",
-                      color: "#666",
-                      backgroundColor: "#f8f9fa",
-                      border: "1px solid #e0e0e0",
-                      borderRadius: "0 0 4px 4px",
-                    }}
-                  >
-                    {t("loading_location_services")}
-                  </div>
-                )} */}
               </div>
             </div>
           </div>
@@ -655,7 +636,8 @@ const DropdownTwo = ({
             <div className="input-box-one border-left">
               <div className="label">{t("im_looking_to")}</div>
               <NiceSelect
-                className="nice-select"
+                className="nice-select font-[400]"
+                currentClasses="font-[400]"
                 options={[
                   {
                     text: t("all"),
@@ -685,7 +667,6 @@ const DropdownTwo = ({
                 onClick={() => setShowPriceDropdown(!showPriceDropdown)}
                 style={{
                   padding: "12px 16px",
-                  border: "1px solid #d1d5db",
                   borderRadius: "6px",
                   cursor: "pointer",
                   display: "flex",
@@ -695,26 +676,17 @@ const DropdownTwo = ({
                   transition: "all 0.2s ease",
                   position: "relative",
                   minHeight: "44px",
-                  fontSize: "14px",
+                  fontSize: "18px",
                   fontWeight: "400",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#FF6725";
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(255, 103, 37, 0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#d1d5db";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
               >
-                <span style={{ color: minPrice || maxPrice ? "#333" : "#999" }}>
+                <span style={{ color: "#000" }}>
                   {minPrice && maxPrice
-                    ? `${minPrice} - ${maxPrice}`
+                    ? `${minPrice} ${t("EGP")} - ${maxPrice} ${t("EGP")}`
                     : minPrice
-                    ? `From ${minPrice}`
+                    ? `${t("from")} ${minPrice} ${t("EGP")}`
                     : maxPrice
-                    ? `Up to ${maxPrice}`
+                    ? `${t("up_to")} ${maxPrice} ${t("EGP")}`
                     : t("select_price_range") || "Select Price Range"}
                 </span>
                 <i
@@ -942,6 +914,56 @@ const DropdownTwo = ({
                       )}
                     </div>
                   </div>
+                  {(minPrice || maxPrice) && (
+                    <div
+                      className="d-flex justify-content-between  gap-2 mt-3"
+                      style={{ marginTop: "12px" }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMinPrice("");
+                          setMaxPrice("");
+                          setMinPriceSuggestions([]);
+                          setMaxPriceSuggestions([]);
+                          handlePriceChange("");
+                          handleDown_priceChange("");
+                          setShowPriceDropdown(false);
+                          setFilters({
+                            ...filters,
+                            price: null,
+                            down_price: null,
+                          });
+                        }}
+                        style={{
+                          padding: "8px 12px",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "6px",
+                          background: "#fff",
+                          color: "#111827",
+                          fontSize: "14px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {t("clear") || "Clear"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPriceDropdown(false)}
+                        style={{
+                          padding: "8px 12px",
+                          border: "1px solid #ff6725",
+                          borderRadius: "6px",
+                          background: "#ff6725",
+                          color: "#fff",
+                          fontSize: "14px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {t("done") || "Done"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

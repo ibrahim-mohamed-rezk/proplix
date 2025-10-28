@@ -3,25 +3,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
 
 const ListingDropdownModal = ({
-  handleAmenitiesChange,
-  handlePaymentMethodChange,
-  handleFurnishingChange,
-  handleSizeChange,
   handleResetFilter,
   filters,
+  setFilters,
 }: any) => {
   const t = useTranslations("properties");
   const [amenities, setAmenities] = useState([]);
-  const [selectedAmenities, setSelectedAmenities] = useState<number[]>(
-    filters?.amenities || []
-  );
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
-    filters?.payment_method || ""
-  );
-  const [selectedFurnishing, setSelectedFurnishing] = useState<string>(
-    filters?.furnishing || ""
-  );
-  const [size, setSize] = useState<string>(filters?.size || "");
   const locale = useLocale();
 
   const paymentMethodOptions = [
@@ -48,54 +35,28 @@ const ListingDropdownModal = ({
     fetchAmenities();
   }, [locale]);
 
-  // Update selected amenities when filters change
-  useEffect(() => {
-    setSelectedAmenities(filters?.amenities || []);
-  }, [filters?.amenities]);
-
-  // Update selected payment method when filters change
-  useEffect(() => {
-    setSelectedPaymentMethod(filters?.payment_method || "");
-  }, [filters?.payment_method]);
-
-  // Update selected furnishing when filters change
-  useEffect(() => {
-    setSelectedFurnishing(filters?.furnishing || "");
-  }, [filters?.furnishing]);
-
-  // Update size when filters change
-  useEffect(() => {
-    setSize(filters?.size || "");
-  }, [filters?.size]);
-
   const handleAmenityToggle = (amenityId: number) => {
-    const updatedAmenities = selectedAmenities.includes(amenityId)
-      ? selectedAmenities.filter((id) => id !== amenityId)
-      : [...selectedAmenities, amenityId];
+    const updatedAmenities = filters?.amenities?.includes(amenityId)
+      ? filters?.amenities?.filter((id: number) => id !== amenityId)
+      : [...filters?.amenities, amenityId];
 
-    setSelectedAmenities(updatedAmenities);
-    handleAmenitiesChange(updatedAmenities);
+    setFilters({
+      ...filters,
+      amenities: updatedAmenities?.length ? updatedAmenities : [],
+    });
   };
 
   const handlePaymentSelect = (paymentId: string) => {
     // Single select - if clicking the same, deselect it
-    const newSelection = selectedPaymentMethod === paymentId ? "" : paymentId;
-    setSelectedPaymentMethod(newSelection);
-    handlePaymentMethodChange(newSelection);
+    const newSelection = filters?.payment_method === paymentId ? "" : paymentId;
+    setFilters({ ...filters, payment_method: newSelection || null });
   };
 
   const handleFurnishingSelect = (furnishingId: string) => {
     // Single select - if clicking the same, deselect it
     const newSelection =
-      selectedFurnishing === furnishingId ? "" : furnishingId;
-    setSelectedFurnishing(newSelection);
-    handleFurnishingChange(newSelection);
-  };
-
-  const handleSizeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSize(value);
-    handleSizeChange(value);
+      filters?.furnishing === furnishingId ? "" : furnishingId;
+    setFilters({ ...filters, furnishing: newSelection || null });
   };
 
   return (
@@ -154,8 +115,13 @@ const ListingDropdownModal = ({
                                 placeholder={
                                   t("size_placeholder") || "Enter size"
                                 }
-                                value={size}
-                                onChange={handleSizeInput}
+                                value={filters?.size || ""}
+                                onChange={(e) =>
+                                  setFilters({
+                                    ...filters,
+                                    size: e.target.value,
+                                  })
+                                }
                               />
                               <span
                                 className="d-flex align-items-center justify-content-center"
@@ -198,12 +164,12 @@ const ListingDropdownModal = ({
                                       padding: "8px 16px",
                                       border: "1px solid #ddd",
                                       borderRadius: "25px",
-                                      background: selectedAmenities.includes(
+                                      background: filters?.amenities?.includes(
                                         amenity.id
                                       )
                                         ? "#FF6B35"
                                         : "white",
-                                      color: selectedAmenities.includes(
+                                      color: filters?.amenities?.includes(
                                         amenity.id
                                       )
                                         ? "white"
@@ -211,7 +177,7 @@ const ListingDropdownModal = ({
                                       cursor: "pointer",
                                       transition: "all 0.3s ease",
                                       fontSize: "14px",
-                                      fontWeight: selectedAmenities.includes(
+                                      fontWeight: filters?.amenities?.includes(
                                         amenity.id
                                       )
                                         ? "500"
@@ -225,7 +191,9 @@ const ListingDropdownModal = ({
                                     }}
                                     onMouseEnter={(e) => {
                                       if (
-                                        !selectedAmenities.includes(amenity.id)
+                                        !filters?.amenities?.includes(
+                                          amenity.id
+                                        )
                                       ) {
                                         e.currentTarget.style.borderColor =
                                           "#FF6B35";
@@ -234,7 +202,9 @@ const ListingDropdownModal = ({
                                     }}
                                     onMouseLeave={(e) => {
                                       if (
-                                        !selectedAmenities.includes(amenity.id)
+                                        !filters?.amenities?.includes(
+                                          amenity.id
+                                        )
                                       ) {
                                         e.currentTarget.style.borderColor =
                                           "#ddd";
@@ -243,7 +213,9 @@ const ListingDropdownModal = ({
                                     }}
                                   >
                                     {amenity.title}
-                                    {selectedAmenities.includes(amenity.id) && (
+                                    {filters?.amenities?.includes(
+                                      amenity.id
+                                    ) && (
                                       <i
                                         className="fa-solid fa-check"
                                         style={{ fontSize: "12px" }}
@@ -277,18 +249,18 @@ const ListingDropdownModal = ({
                                       border: "1px solid #ddd",
                                       borderRadius: "25px",
                                       background:
-                                        selectedPaymentMethod === method.id
+                                        filters?.payment_method === method.id
                                           ? "#FF6B35"
                                           : "white",
                                       color:
-                                        selectedPaymentMethod === method.id
+                                        filters?.payment_method === method.id
                                           ? "white"
                                           : "#333",
                                       cursor: "pointer",
                                       transition: "all 0.3s ease",
                                       fontSize: "14px",
                                       fontWeight:
-                                        selectedPaymentMethod === method.id
+                                        filters?.payment_method === method.id
                                           ? "500"
                                           : "normal",
                                       display: "inline-flex",
@@ -299,14 +271,18 @@ const ListingDropdownModal = ({
                                       position: "relative",
                                     }}
                                     onMouseEnter={(e) => {
-                                      if (selectedPaymentMethod !== method.id) {
+                                      if (
+                                        filters?.payment_method !== method.id
+                                      ) {
                                         e.currentTarget.style.borderColor =
                                           "#FF6B35";
                                         e.currentTarget.style.color = "#FF6B35";
                                       }
                                     }}
                                     onMouseLeave={(e) => {
-                                      if (selectedPaymentMethod !== method.id) {
+                                      if (
+                                        filters?.payment_method !== method.id
+                                      ) {
                                         e.currentTarget.style.borderColor =
                                           "#ddd";
                                         e.currentTarget.style.color = "#333";
@@ -314,7 +290,7 @@ const ListingDropdownModal = ({
                                     }}
                                   >
                                     {method.title}
-                                    {selectedPaymentMethod === method.id && (
+                                    {filters?.payment_method === method.id && (
                                       <i
                                         className="fa-solid fa-check"
                                         style={{ fontSize: "12px" }}
@@ -348,18 +324,18 @@ const ListingDropdownModal = ({
                                       border: "1px solid #ddd",
                                       borderRadius: "25px",
                                       background:
-                                        selectedFurnishing === option.id
+                                        filters?.furnishing === option.id
                                           ? "#FF6B35"
                                           : "white",
                                       color:
-                                        selectedFurnishing === option.id
+                                        filters?.furnishing === option.id
                                           ? "white"
                                           : "#333",
                                       cursor: "pointer",
                                       transition: "all 0.3s ease",
                                       fontSize: "14px",
                                       fontWeight:
-                                        selectedFurnishing === option.id
+                                        filters?.furnishing === option.id
                                           ? "500"
                                           : "normal",
                                       display: "inline-flex",
@@ -370,14 +346,14 @@ const ListingDropdownModal = ({
                                       position: "relative",
                                     }}
                                     onMouseEnter={(e) => {
-                                      if (selectedFurnishing !== option.id) {
+                                      if (filters?.furnishing !== option.id) {
                                         e.currentTarget.style.borderColor =
                                           "#FF6B35";
                                         e.currentTarget.style.color = "#FF6B35";
                                       }
                                     }}
                                     onMouseLeave={(e) => {
-                                      if (selectedFurnishing !== option.id) {
+                                      if (filters?.furnishing !== option.id) {
                                         e.currentTarget.style.borderColor =
                                           "#ddd";
                                         e.currentTarget.style.color = "#333";
@@ -385,7 +361,7 @@ const ListingDropdownModal = ({
                                     }}
                                   >
                                     {option.title}
-                                    {selectedFurnishing === option.id && (
+                                    {filters?.furnishing === option.id && (
                                       <i
                                         className="fa-solid fa-check"
                                         style={{ fontSize: "12px" }}

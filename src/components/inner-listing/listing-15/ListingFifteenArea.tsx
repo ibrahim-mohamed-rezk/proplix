@@ -56,11 +56,11 @@ const ListingFifteenArea = () => {
   }, []);
 
   // Update localStorage when filters change
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("filters", JSON.stringify(filters));
-    }
-  }, [filters]);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     localStorage.setItem("filters", JSON.stringify(filters));
+  //   }
+  // }, [filters]);
 
   // Function to clear all existing markers
   const clearMarkers = () => {
@@ -417,77 +417,12 @@ const ListingFifteenArea = () => {
       <div className="search-wrapper-three swth !border-none  layout-two position-relative mb-2">
         <div className="bg-wrapper rounded-3 border border-light bg-white p-2">
           <DropdownSeven
-            handleBathroomChange={(value: string) => {
-              setFilters({
-                ...filters,
-                bathrooms: value === "all" ? null : value,
-              });
-            }}
-            handleTypeChange={(value: string) => {
-              setFilters({
-                ...filters,
-                type_id: value === "all" ? null : value,
-              });
-            }}
-            handleBedroomChange={(value: string) => {
-              setFilters({
-                ...filters,
-                bedrooms: value === "all" ? null : value,
-              });
-            }}
-            handleSearchChange={(_: unknown) => {}}
-            handleAgentChange={(value: string) => {
-              if (value === "all") {
-                setFilters({ ...filters, user_id: null });
-              } else {
-                setFilters({ ...filters, user_id: value });
-              }
-            }}
-            handlePriceChange={(value: string) => {
-              setFilters({ ...filters, price: value });
-            }}
-            maxPrice={0}
-            priceValue={0}
             handleResetFilter={handleResetFilter}
-            handleAmenitiesChange={(amenities: number[]) => {
-              setFilters({
-                ...filters,
-                amenities: amenities?.length ? amenities : [],
-              });
-            }}
             filters={filters}
+            setFilters={setFilters}
             handleLocationChange={(location: LocationData) => {
               setFilters({ ...filters, location: location.description });
               setLocationData(location);
-            }}
-            handleStatusChange={handleStatusChange}
-            handlePriceDropChange={(value: string) => {
-              if (value === "all") {
-                setFilters({ ...filters, price: null, down_price: null });
-              } else {
-                setFilters({
-                  ...filters,
-                  down_price: value,
-                });
-              }
-            }}
-            handlePaymentMethodChange={(paymentMethod: string) => {
-              setFilters({
-                ...filters,
-                payment_method: paymentMethod || null,
-              });
-            }}
-            handleFurnishingChange={(furnishing: string) => {
-              setFilters({
-                ...filters,
-                furnishing: furnishing || null,
-              });
-            }}
-            handleSizeChange={(size: string) => {
-              setFilters({
-                ...filters,
-                size: size || null,
-              });
             }}
           />
         </div>

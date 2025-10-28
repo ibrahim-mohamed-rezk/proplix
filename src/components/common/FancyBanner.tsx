@@ -57,8 +57,15 @@ const FancyBanner = ({ style }: any) => {
             </div>
           </div>
           <div className="col-lg-6">
-            <div className="form-wrapper">
-              <form onSubmit={(e) => subscribe(e)}>
+            <div className="form-wrapper" style={{ alignItems: "start" }}>
+              <form
+                className="max-w-full w-100"
+                style={{
+                  maxWidth: "100% !important",
+                  width: "100% !important",
+                }}
+                onSubmit={(e) => subscribe(e)}
+              >
                 <input
                   type="email"
                   placeholder={t("banner_email_placeholder")}
@@ -66,9 +73,7 @@ const FancyBanner = ({ style }: any) => {
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
                 />
-                <button
-                  className={style ? "rounded-0" : ""}
-                >
+                <button className={style ? "rounded-0" : ""}>
                   {t("banner_get_started")}
                 </button>
               </form>

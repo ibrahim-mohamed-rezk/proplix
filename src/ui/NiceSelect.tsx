@@ -19,6 +19,7 @@ type NiceSelectProps = {
   defaultCurrent: string | number;
   placeholder: string;
   className?: string;
+  currentClasses?: string;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   name: string;
 };
@@ -28,6 +29,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
   defaultCurrent,
   placeholder,
   className,
+  currentClasses,
   onChange,
   name,
 }) => {
@@ -75,7 +77,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
       onKeyDown={(e) => e}
       ref={ref}
     >
-      <span className="current">{current?.text || placeholder}</span>
+      <span className={`current ${currentClasses}`}>{current?.text || placeholder}</span>
       <ul
         className="list"
         role="menubar"
