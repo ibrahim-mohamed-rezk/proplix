@@ -100,11 +100,11 @@ const Banner = () => {
       setFilters({ ...filters, user_id: e.target.value });
     }
   };
-  const handleTypesChange = (e: { target: { value: string } }) => {
-    if (e.target.value === "all") {
+  const handleTypesChange = (value: string) => {
+    if (value === "all") {
       setFilters({ ...filters, type_id: null });
     } else {
-      setFilters({ ...filters, type_id: e.target.value });
+      setFilters({ ...filters, type_id: value });
     }
   };
 

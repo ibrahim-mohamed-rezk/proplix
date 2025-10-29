@@ -2,7 +2,7 @@
   "home": {
     "banner": {
       "title": "الحصول على المنزل المثالي لأسرتك",
-      "description": "لدينا أكثر من {count} فيلات ومنازل وأراضي",
+      "description": "لدينا أكثر من {count} فيلات ومنازل ومساحات تجارية",
       "selectSaleType": "اختر نوع البيع",
       "selectRentType": "اختر نوع الإيجار",
       "sale": "بيع",
@@ -883,6 +883,8 @@
     "min_price": "الحد الأدنى للسعر بالجنيه ",
     "max_price": "الحد الأقصى للسعر بالجنيه ",
     "select_price_range": "اختر نطاق السعر",
+    "commercialSale": "بيع تجاري",
+    "commercialRent": "إيجار تجاري",
     "search_placeholder": "مثال: منزل، فيلا",
     "search_placeholder_alt": "شراء، منزل، شقة، شقة",
     "any": "الكل",

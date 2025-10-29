@@ -752,6 +752,8 @@ const DropdownSeven = ({
                   { value: "all", text: t("any") },
                   { value: "sale", text: t("sale") },
                   { value: "rent", text: t("rent") },
+                  { value: "commercial-sale", text: t("commercialSale") },
+                  { value: "commercial-rent", text: t("commercialRent") },
                 ]}
                 defaultCurrent={filters?.status || "all"}
                 onChange={(event) =>
@@ -792,6 +794,7 @@ const DropdownSeven = ({
                 }}
               >
                 <span
+                  className="line-clamp-1 overflow-hidden text-ellipsis"
                   style={{
                     color: "#000",
                     fontSize: "18px",
@@ -799,11 +802,11 @@ const DropdownSeven = ({
                   }}
                 >
                   {filters.price && filters.down_price
-                    ? `${filters.price} - ${filters.down_price}`
+                    ? `${filters.price} - ${filters.down_price} ${t("EGP")}`
                     : filters.price
-                    ? `From ${filters.price}`
+                    ? `From ${filters.price} ${t("EGP")}`
                     : filters.down_price
-                    ? `Up to ${filters.down_price}`
+                    ? `Up to ${filters.down_price} ${t("EGP")}`
                     : t("select_price_range") || "Select Price Range"}
                 </span>
                 <i
@@ -834,12 +837,12 @@ const DropdownSeven = ({
                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                     zIndex: 1000,
                     marginTop: "4px",
-                    padding: "16px",
+                    padding: "16px 5px",
                     borderTopLeftRadius: "0",
                     borderTopRightRadius: "0",
                   }}
                 >
-                  <div className="d-flex align-items-center gap-2">
+                  <div className="d-flex align-items-center">
                     <div
                       className="price-input-field"
                       style={{ position: "relative", flex: 1 }}
@@ -855,10 +858,10 @@ const DropdownSeven = ({
                         onBlur={handleMinPriceBlur}
                         autoComplete="off"
                         style={{
-                          padding: "10px 12px",
+                          padding: "10px 5px",
                           border: "1px solid #d1d5db",
                           borderRadius: "4px",
-                          fontSize: "14px",
+                          fontSize: "12px",
                           fontWeight: "400",
                           transition: "all 0.2s ease",
                           backgroundColor: "#fff",
@@ -957,10 +960,10 @@ const DropdownSeven = ({
                         onBlur={handleMaxPriceBlur}
                         autoComplete="off"
                         style={{
-                          padding: "10px 12px",
+                          padding: "10px 5px",
                           border: "1px solid #d1d5db",
                           borderRadius: "4px",
-                          fontSize: "14px",
+                          fontSize: "12px",
                           fontWeight: "400",
                           transition: "all 0.2s ease",
                           backgroundColor: "#fff",

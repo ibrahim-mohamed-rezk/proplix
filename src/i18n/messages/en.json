@@ -865,6 +865,8 @@
     "min_price": "Min Price EGP",
     "max_price": "Max Price EGP",
     "select_price_range": "Select Price Range",
+    "commercialSale": "Commercial Buy",
+    "commercialRent": "Commercial Rent",
     "search_placeholder": "Ex: home, villa",
     "search_placeholder_alt": "buy, home, loft, apartment",
     "any": "All",

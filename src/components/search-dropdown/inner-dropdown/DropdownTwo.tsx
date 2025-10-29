@@ -1,7 +1,6 @@
 import { Link } from "@/i18n/routing";
 import { getData } from "@/libs/server/backendServer";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
-import NiceSelect from "@/ui/NiceSelect";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
 
@@ -27,7 +26,7 @@ const DropdownTwo = ({
   const t = useTranslations("endUser");
   const locale = useLocale();
   const [ranges, setRanges] = useState([]);
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState<any[]>([]);
   const [locationQuery, setLocationQuery] = useState("");
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
@@ -39,15 +38,19 @@ const DropdownTwo = ({
   const [showMaxPriceSuggestions, setShowMaxPriceSuggestions] = useState(false);
   const [minPriceSuggestions, setMinPriceSuggestions] = useState<any[]>([]);
   const [maxPriceSuggestions, setMaxPriceSuggestions] = useState<any[]>([]);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationSuggestionsRef = useRef<HTMLDivElement>(null);
   const priceDropdownRef = useRef<HTMLDivElement>(null);
+  const typeDropdownRef = useRef<HTMLDivElement>(null);
   const minPriceInputRef = useRef<HTMLInputElement>(null);
   const maxPriceInputRef = useRef<HTMLInputElement>(null);
   const minPriceSuggestionsRef = useRef<HTMLDivElement>(null);
   const maxPriceSuggestionsRef = useRef<HTMLDivElement>(null);
   const autocompleteService = useRef<any>(null);
   const placesService = useRef<any>(null);
+
+  console.log(filters);
 
   // Load Google Maps API
   useEffect(() => {
@@ -475,6 +478,13 @@ const DropdownTwo = ({
       }
 
       if (
+        typeDropdownRef.current &&
+        !typeDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowTypeDropdown(false);
+      }
+
+      if (
         minPriceSuggestionsRef.current &&
         !minPriceSuggestionsRef.current.contains(event.target as Node) &&
         minPriceInputRef.current &&
@@ -520,15 +530,11 @@ const DropdownTwo = ({
                     setShowLocationSuggestions(true)
                   }
                   autoComplete="off"
-                  style={{
-                    paddingRight: "38px", // add space for the icon
-                  }}
                 />
                 {/* Search icon at end of input */}
                 <span
                   style={{
                     position: "absolute",
-                    right: "12px",
                     top: "50%",
                     transform: "translateY(-50%)",
                     pointerEvents: "none",
@@ -633,40 +639,16 @@ const DropdownTwo = ({
           </div>
 
           <div className="col-xl-3 col-lg-4">
-            <div className="input-box-one border-left">
-              <div className="label">{t("im_looking_to")}</div>
-              <NiceSelect
-                className="nice-select font-[400]"
-                currentClasses="font-[400]"
-                options={[
-                  {
-                    text: t("all"),
-                    value: "all",
-                  },
-                  ...types?.map((type: any) => ({
-                    value: type.id,
-                    text: type.title,
-                  })),
-                ]}
-                defaultCurrent={filters.type_id ? filters.type_id : "all"}
-                onChange={handleTypesChange}
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div>
-
-          <div className="col-xl-3 col-lg-4">
             <div
               className="input-box-one border-left"
               style={{ position: "relative" }}
+              ref={typeDropdownRef}
             >
-              <div className="label">{t("price_range")}</div>
+              <div className="label">{t("im_looking_to")}</div>
               <div
-                className="price-range-trigger"
-                onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+                className="type-select-trigger"
+                onClick={() => setShowTypeDropdown(!showTypeDropdown)}
                 style={{
-                  padding: "12px 16px",
                   borderRadius: "6px",
                   cursor: "pointer",
                   display: "flex",
@@ -681,8 +663,137 @@ const DropdownTwo = ({
                 }}
               >
                 <span style={{ color: "#000" }}>
+                  {
+                    types.find((type: any) => type.id === filters.type_id)
+                      ?.title || t("all")
+                  }
+                </span>
+                <i
+                  className={`fa-solid fa-chevron-down ${
+                    showTypeDropdown ? "rotated" : ""
+                  }`}
+                  style={{
+                    transition: "transform 0.2s",
+                    transform: showTypeDropdown
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                  }}
+                ></i>
+              </div>
+
+              {showTypeDropdown && (
+                <div
+                  className="type-dropdown hide-scrollbar"
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    backgroundColor: "#fff",
+                    border: "1px solid rgba(0, 0, 0, 0.05)",
+                    borderRadius: "10px",
+                    maxHeight: "280px",
+                    overflowY: "auto",
+                    zIndex: 1000,
+                    boxShadow: "0 13px 35px -12px rgba(35, 35, 35, 0.1)",
+                    marginTop: "4px",
+                  }}
+                >
+                  <div
+                    className="type-option"
+                    onClick={() => {
+                      handleTypesChange(null);
+                      setShowTypeDropdown(false);
+                    }}
+                    style={{
+                      padding: "12px 15px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      transition: "background-color 0.2s, color 0.2s",
+                      borderBottom: "1px solid #f3f4f6",
+                      backgroundColor:
+                        filters.type_id === null ? "#ff672508" : "#fff",
+                      color: filters.type_id === null ? "#FF6725" : "#333",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.backgroundColor =
+                        "#ff672508";
+                      (e.currentTarget as HTMLElement).style.color = "#FF6725";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.backgroundColor =
+                        filters.type_id === null ? "#ff672508" : "#fff";
+                      (e.currentTarget as HTMLElement).style.color =
+                        filters.type_id === null ? "#FF6725" : "#333";
+                    }}
+                  >
+                    {t("all")}
+                  </div>
+                  {types?.map((type: any) => (
+                    <div
+                      key={type.id}
+                      className="type-option"
+                      onClick={() => {
+                        handleTypesChange(type.id);
+                        setShowTypeDropdown(false);
+                      }}
+                      style={{
+                        padding: "12px 15px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        transition: "background-color 0.2s, color 0.2s",
+                        borderBottom: "1px solid #f3f4f6",
+                        backgroundColor:
+                          filters.type_id === type.id ? "#ff672508" : "#fff",
+                        color: filters.type_id === type.id ? "#FF6725" : "#333",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "#ff672508";
+                        (e.currentTarget as HTMLElement).style.color =
+                          "#FF6725";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          filters.type_id === type.id ? "#ff672508" : "#fff";
+                        (e.currentTarget as HTMLElement).style.color =
+                          filters.type_id === type.id ? "#FF6725" : "#333";
+                      }}
+                    >
+                      {type.title}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="col-xl-3 col-lg-4">
+            <div
+              className="input-box-one border-left"
+              style={{ position: "relative" }}
+            >
+              <div className="label">{t("price_range")}</div>
+              <div
+                className="price-range-trigger"
+                onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+                style={{
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  backgroundColor: "#fff",
+                  transition: "all 0.2s ease",
+                  position: "relative",
+                  minHeight: "44px",
+                  fontSize: "18px",
+                  fontWeight: "400",
+                }}
+              >
+                <span className="line-clamp-1 overflow-hidden text-ellipsis" style={{ color: "#000" }}>
                   {minPrice && maxPrice
-                    ? `${minPrice} ${t("EGP")} - ${maxPrice} ${t("EGP")}`
+                    ? `${minPrice} - ${maxPrice} ${t("EGP")}`
                     : minPrice
                     ? `${t("from")} ${minPrice} ${t("EGP")}`
                     : maxPrice

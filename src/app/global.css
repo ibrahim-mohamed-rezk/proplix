@@ -146,3 +146,221 @@ html[dir="rtl"] .theme-details-one .property-feature-list ul li:before {
     width: 100% !important;
   }
 }
+
+/* Responsive normalization for inputs and icons in mobile screens */
+@media (max-width: 576px) {
+  /* Labels */
+  .input-box-one .label {
+    font-size: 14px !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Text inputs */
+  .input-box-one .type-input,
+  .input-box-one input[type="text"],
+  .input-box-one input[type="search"] {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    min-height: 40px !important;
+  }
+
+  /* Inputs that have trailing icons need right padding */
+  .input-box-one .type-input {
+    padding-inline-end: 36px !important;
+    padding-inline-start: 12px !important;
+  }
+  .input-box-one .nice-select {
+    padding-inline-end: 36px !important;
+    padding-inline-start: 12px !important;
+  }
+  .input-box-one .price-range-trigger {
+    padding-inline-end: 36px !important;
+    padding-inline-start: 12px !important;
+  }
+  .input-box-one .type-select-trigger {
+    padding-inline-end: 36px !important;
+    padding-inline-start: 12px !important;
+  }
+
+  /* NiceSelect control */
+  .input-box-one .nice-select {
+    height: 40px !important;
+    line-height: 40px !important;
+    padding: 0 12px !important;
+    font-size: 14px !important;
+  }
+  .input-box-one .nice-select .current {
+    line-height: 40px !important;
+    font-size: 14px !important;
+  }
+  .input-box-one .nice-select:after {
+    right: 12px !important;
+  }
+
+  /* Price range trigger */
+  .input-box-one .price-range-trigger {
+    padding: 10px 12px !important;
+    min-height: 40px !important;
+    font-size: 14px !important;
+    position: relative !important;
+  }
+  .input-box-one .price-range-trigger span {
+    font-size: 14px !important;
+  }
+  .input-box-one .price-range-trigger i.fa-solid {
+    position: absolute !important;
+    inset-inline-end: 8px !important;
+    inset-inline-start: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #6b7280 !important;
+    font-size: 14px !important;
+    opacity: 1 !important;
+    font-weight: 400 !important;
+  }
+
+  /* Type select trigger */
+  .input-box-one .type-select-trigger {
+    padding: 10px 12px !important;
+    min-height: 40px !important;
+    font-size: 14px !important;
+    position: relative !important;
+  }
+  .input-box-one .type-select-trigger span {
+    font-size: 14px !important;
+  }
+  .input-box-one .type-select-trigger i.fa-solid {
+    position: absolute !important;
+    inset-inline-end: 8px !important;
+    inset-inline-start: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #6b7280 !important;
+    font-size: 14px !important;
+    opacity: 1 !important;
+    font-weight: 400 !important;
+  }
+
+  /* Price dropdown */
+  .input-box-one .price-range-dropdown {
+    padding: 12px !important;
+  }
+  .input-box-one .price-input-field input.type-input {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    min-height: 40px !important;
+  }
+
+  /* Suggestions items */
+  .input-box-one .price-suggestions .suggestion-item,
+  .input-box-one .location-suggestions .suggestion-item,
+  .input-box-one .type-dropdown .type-option {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+  }
+
+  /* Buttons inside dropdowns */
+  .input-box-one .price-range-dropdown button {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+
+  /* Icons size normalization */
+  .input-box-one i,
+  .input-box-one .fa-location-dot,
+  .input-box-one .fa-chevron-down,
+  .input-box-one .price-range-trigger i,
+  .input-box-one .location-suggestions i {
+    font-size: 16px !important;
+  }
+
+  /* Align and style the location icon */
+  .input-box-one span:has(.fa-location-dot) {
+    position: absolute !important;
+    right: 9px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+  }
+
+  .input-box-one .fa-location-dot {
+    color: #6b7280 !important;
+    font-size: 14px !important;
+    opacity: 1 !important;
+    font-weight: 300 !important;
+  }
+
+  /* Ensure nice-select arrow alignment and color */
+  .input-box-one .nice-select {
+    position: relative !important;
+  }
+
+  .input-box-one .nice-select:after {
+    inset-inline-end: 12px !important;
+    inset-inline-start: auto !important;
+    border-color: #6b7280 !important;
+    width: 8px !important;
+    height: 8px !important;
+    margin-top: -4px !important;
+  }
+
+  /* RTL specific adjustments */
+  html[dir="rtl"] .input-box-one .type-input {
+    text-align: right !important;
+    padding-right: 12px !important;
+    padding-left: 36px !important;
+  }
+
+  html[dir="rtl"] .input-box-one .nice-select span.current {
+    padding-inline-start: 0 !important;
+    padding-inline-end: 0 !important;
+    text-align: right !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  html[dir="rtl"] .input-box-one .nice-select {
+    text-align: right !important;
+    direction: rtl !important;
+  }
+
+  html[dir="rtl"] .input-box-one .price-range-trigger span {
+    text-align: right !important;
+  }
+
+  html[dir="rtl"] .input-box-one .type-select-trigger span {
+    text-align: right !important;
+  }
+
+  html[dir="rtl"] .input-box-one .location-suggestions .suggestion-item {
+    text-align: right !important;
+  }
+
+  html[dir="rtl"] .input-box-one .type-dropdown .type-option {
+    text-align: right !important;
+  }
+
+  html[dir="rtl"] .input-box-one .location-suggestions i {
+    margin-right: 0 !important;
+    margin-left: 8px !important;
+  }
+
+  /* RTL: Move location icon to left side */
+  html[dir="rtl"] .input-box-one .fa-location-dot {
+    right: auto !important;
+    left: 12px !important;
+  }
+
+  /* Override inline styles on the span wrapper */
+  html[dir="rtl"] .input-box-one span:has(.fa-location-dot) {
+    right: auto !important;
+    left: 12px !important;
+  }
+  html[dir="rtl"] .input-box-one .price-range-trigger i.fa-solid {
+    inset-inline-end: 11px !important;
+  }
+  html[dir="rtl"] .input-box-one .type-select-trigger i.fa-solid {
+    inset-inline-end: 11px !important;
+  }
+}
