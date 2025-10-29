@@ -30,7 +30,7 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
     token
   );
 
-  const [activeTab, setActiveTab] = useState<TabType>("main");
+  const [activeTab, setActiveTab] = useState<TabType>("images");
 
   const renderTabContent = () => {
     if (!property) return null;

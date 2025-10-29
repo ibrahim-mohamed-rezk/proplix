@@ -53,7 +53,6 @@ type FormInputs = {
   title_ar: string;
   description_ar: string;
   keywords_ar: string;
-  slug_ar: string;
   // New fields
   landing_space: string; // New field in Room Configuration
   starting_day: string; // New field in Property Details
@@ -375,7 +374,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     formData.append("title[ar]", data.title_ar);
     formData.append("description[ar]", descriptionAr);
     formData.append("keywords[ar]", data.keywords_ar);
-    formData.append("slug[ar]", data.slug_ar);
 
     // Cover image
     if (imagePreview && imagePreview.file) {
@@ -1368,26 +1366,13 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                   className="section-content p-4"
                   style={{ borderTop: "1px solid #f8f9fa" }}
                 >
-                  <div className="row g-4">
-                    <div className="col-md-6">
-                      <InputField
-                        label={t("title_ar")}
-                        name="title_ar"
-                        required
-                        dir="rtl"
-                        placeholder={t("title_arabic_placeholder")}
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <InputField
-                        label={t("slug_ar")}
-                        name="slug_ar"
-                        required
-                        dir="rtl"
-                        placeholder={t("slug_arabic_placeholder")}
-                      />
-                    </div>
-                  </div>
+                  <InputField
+                    label={t("title_ar")}
+                    name="title_ar"
+                    required
+                    dir="rtl"
+                    placeholder={t("title_arabic_placeholder")}
+                  />
                   <InputField
                     label={t("keywords_ar")}
                     name="keywords_ar"

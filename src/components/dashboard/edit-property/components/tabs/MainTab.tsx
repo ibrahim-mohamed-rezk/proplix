@@ -149,7 +149,6 @@ export const MainTab: React.FC<MainTabProps> = ({
       // Set Arabic fields
       setValue("title_ar", data.descriptions?.ar?.title || "");
       setValue("keywords_ar", data.descriptions?.ar?.keywords || "");
-      setValue("slug_ar", data.descriptions?.ar?.slug || "");
       setDescriptionAr(data.descriptions?.ar?.description || "");
 
       // Set existing cover image
@@ -854,7 +853,6 @@ export const MainTab: React.FC<MainTabProps> = ({
     formData.append("title[ar]", data.title_ar);
     formData.append("description[ar]", descriptionAr);
     formData.append("keywords[ar]", data.keywords_ar);
-    formData.append("slug[ar]", data.slug_ar);
 
     if (imagePreview && imagePreview.file) {
       formData.append("cover", imagePreview.file);
@@ -1282,26 +1280,13 @@ export const MainTab: React.FC<MainTabProps> = ({
                     className="section-content p-4"
                     style={{ borderTop: "1px solid #f8f9fa" }}
                   >
-                    <div className="row g-4">
-                      <div className="col-md-6">
-                        <InputField
-                          label={t("title_ar")}
-                          name="title_ar"
-                          required
-                          dir="rtl"
-                          placeholder={t("title_arabic_placeholder")}
-                        />
-                      </div>
-                      <div className="col-md-6">
-                        <InputField
-                          label={t("slug_ar")}
-                          name="slug_ar"
-                          required
-                          dir="rtl"
-                          placeholder={t("slug_arabic_placeholder")}
-                        />
-                      </div>
-                    </div>
+                    <InputField
+                      label={t("title_ar")}
+                      name="title_ar"
+                      required
+                      dir="rtl"
+                      placeholder={t("title_arabic_placeholder")}
+                    />
                     <InputField
                       label={t("keywords_ar")}
                       name="keywords_ar"
