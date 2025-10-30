@@ -36,13 +36,17 @@ const ListingDropdownModal = ({
   }, [locale]);
 
   const handleAmenityToggle = (amenityId: number) => {
-    const updatedAmenities = filters?.amenities?.includes(amenityId)
-      ? filters?.amenities?.filter((id: number) => id !== amenityId)
-      : [...filters?.amenities, amenityId];
+    const currentAmenities = Array.isArray(filters?.amenities)
+      ? (filters.amenities as number[])
+      : [];
+
+    const updatedAmenities = currentAmenities.includes(amenityId)
+      ? currentAmenities.filter((id: number) => id !== amenityId)
+      : [...currentAmenities, amenityId];
 
     setFilters({
       ...filters,
-      amenities: updatedAmenities?.length ? updatedAmenities : [],
+      amenities: updatedAmenities,
     });
   };
 
@@ -95,7 +99,7 @@ const ListingDropdownModal = ({
                             </h6>
                             <div
                               className="d-flex align-items-center"
-                              style={{ maxWidth: 320 }}
+                              style={{ maxWidth: 420 }}
                             >
                               <input
                                 type="number"
@@ -112,14 +116,53 @@ const ListingDropdownModal = ({
                                   minWidth: 0,
                                   height: "44px",
                                 }}
-                                placeholder={
-                                  t("size_placeholder") || "Enter size"
-                                }
-                                value={filters?.size || ""}
+                                placeholder={t("min_size") || "Min size"}
+                                value={filters?.min_size || ""}
                                 onChange={(e) =>
                                   setFilters({
                                     ...filters,
-                                    size: e.target.value,
+                                    min_size: e.target.value,
+                                  })
+                                }
+                              />
+                              <span
+                                className="d-flex align-items-center justify-content-center"
+                                style={{
+                                  background: "#fff",
+                                  border: "none",
+                                  borderLeft: "none",
+                                  fontSize: "15px",
+                                  color: "#888",
+                                  fontWeight: 500,
+                                  height: "44px",
+                                  minWidth: "30px",
+                                  padding: "0 8px",
+                                }}
+                              >
+                                -
+                              </span>
+                              <input
+                                type="number"
+                                className="form-control"
+                                style={{
+                                  borderRadius: "0 0 0 0",
+                                  border: "1px solid #ddd",
+                                  borderLeft: "none",
+                                  padding: "10px 20px",
+                                  fontSize: "16px",
+                                  fontWeight: 500,
+                                  outline: "none",
+                                  boxShadow: "none",
+                                  width: "100%",
+                                  minWidth: 0,
+                                  height: "44px",
+                                }}
+                                placeholder={t("max_size") || "Max size"}
+                                value={filters?.max_size || ""}
+                                onChange={(e) =>
+                                  setFilters({
+                                    ...filters,
+                                    max_size: e.target.value,
                                   })
                                 }
                               />
