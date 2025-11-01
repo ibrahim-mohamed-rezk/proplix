@@ -5,6 +5,7 @@ import { LocationData } from "@/libs/types/types";
 import { useLocale, useTranslations } from "next-intl";
 import { getData } from "@/libs/server/backendServer";
 import { Link } from "@/i18n/routing";
+import { priceRanges } from "@/data/price-rnages";
 
 // Extend Window interface to include Google Maps
 declare global {
@@ -48,7 +49,6 @@ const DropdownSeven = ({
   );
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const [priceRanges, setPriceRanges] = useState<any[]>([]);
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState<boolean>(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [showMinPriceSuggestions, setShowMinPriceSuggestions] = useState(false);
@@ -461,8 +461,8 @@ const DropdownSeven = ({
   const handleMinPriceFocus = () => {
     // Show only unique "from" values for min price
     const uniqueFromValues = priceRanges.reduce((acc: any[], range: any) => {
-      if (!acc.find((item) => item.from === range.from)) {
-        acc.push({ from: range.from, label: range.from.toString() });
+      if (!acc.find((item) => item.toString() === range.toString())) {
+        acc.push(range);
       }
       return acc;
     }, []);
@@ -474,8 +474,8 @@ const DropdownSeven = ({
   const handleMaxPriceFocus = () => {
     // Show only unique "to" values for max price
     const uniqueToValues = priceRanges.reduce((acc: any[], range: any) => {
-      if (!acc.find((item) => item.to === range.to)) {
-        acc.push({ to: range.to, label: range.to.toString() });
+      if (!acc.find((item) => item.toString() === range.toString())) {
+        acc.push(range);
       }
       return acc;
     }, []);
@@ -505,7 +505,7 @@ const DropdownSeven = ({
     // Trigger the price change handler with the selected from value
     setFilters({
       ...filters,
-      price: range.from.toString(),
+      price: range.toString(),
     });
   };
 
@@ -515,7 +515,7 @@ const DropdownSeven = ({
     // Trigger the price change handler with the selected to value
     setFilters({
       ...filters,
-      down_price: range.to.toString(),
+      down_price: range.toString(),
     });
   };
 
@@ -561,20 +561,6 @@ const DropdownSeven = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  // fetch price ranges from api
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getData("price-range", {}, { lang: locale });
-        setPriceRanges(response.data.data.ranges);
-      } catch (error) {
-        throw error;
-      }
-    };
-
-    fetchData();
   }, []);
 
   return (
@@ -895,6 +881,8 @@ const DropdownSeven = ({
                             zIndex: 1001,
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             marginTop: "2px",
+                            fontSize: "10px",
+                            width: "fit-content",
                           }}
                         >
                           {minPriceSuggestions.map((range, idx) => (
@@ -925,7 +913,7 @@ const DropdownSeven = ({
                                 ).style.backgroundColor = "#fff";
                               }}
                             >
-                              {range.label}
+                              {range.toString()}
                             </div>
                           ))}
                         </div>
@@ -997,6 +985,8 @@ const DropdownSeven = ({
                             zIndex: 1001,
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             marginTop: "2px",
+                            fontSize: "10px",
+                            width: "fit-content",
                           }}
                         >
                           {maxPriceSuggestions.map((range, idx) => (
@@ -1027,7 +1017,7 @@ const DropdownSeven = ({
                                 ).style.backgroundColor = "#fff";
                               }}
                             >
-                              {range.label}
+                              {range.toString()}
                             </div>
                           ))}
                         </div>

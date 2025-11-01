@@ -3,6 +3,7 @@ import { getData } from "@/libs/server/backendServer";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useRef } from "react";
+import { priceRanges } from "@/data/price-rnages";
 
 // Google Maps types
 declare global {
@@ -25,7 +26,6 @@ const DropdownTwo = ({
 }: any) => {
   const t = useTranslations("endUser");
   const locale = useLocale();
-  const [ranges, setRanges] = useState([]);
   const [types, setTypes] = useState<any[]>([]);
   const [locationQuery, setLocationQuery] = useState("");
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
@@ -85,20 +85,6 @@ const DropdownTwo = ({
     };
 
     loadGoogleMapsAPI();
-  }, []);
-
-  // fetch price ranges from api
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getData("price-range", {}, { lang: locale });
-        setRanges(response.data.data.ranges);
-      } catch (error) {
-        throw error;
-      }
-    };
-
-    fetchData();
   }, []);
 
   // fetch types from api
@@ -369,10 +355,10 @@ const DropdownTwo = ({
     handlePriceChange(value.toString());
 
     if (value.length > 0) {
-      const filteredRanges = ranges.filter(
+      const filteredRanges = priceRanges.filter(
         (range: any) =>
-          range.from.toString().includes(value) ||
-          range.label.toLowerCase().includes(value.toLowerCase())
+          range.toString().includes(value) ||
+          range.toString().toLowerCase().includes(value.toLowerCase())
       );
       setMinPriceSuggestions(filteredRanges);
     } else {
@@ -389,10 +375,10 @@ const DropdownTwo = ({
     handleDown_priceChange(value);
 
     if (value.length > 0) {
-      const filteredRanges = ranges.filter(
+      const filteredRanges = priceRanges.filter(
         (range: any) =>
-          range.to.toString().includes(value) ||
-          range.label.toLowerCase().includes(value.toLowerCase())
+          range.toString().includes(value) ||
+          range.toString().toLowerCase().includes(value.toLowerCase())
       );
       setMaxPriceSuggestions(filteredRanges);
     } else {
@@ -403,9 +389,9 @@ const DropdownTwo = ({
   // Handle min price input focus
   const handleMinPriceFocus = () => {
     // Show only unique "from" values for min price
-    const uniqueFromValues = ranges.reduce((acc: any[], range: any) => {
-      if (!acc.find((item) => item.from === range.from)) {
-        acc.push({ from: range.from, label: range.from.toString() });
+    const uniqueFromValues = priceRanges.reduce((acc: any[], range: any) => {
+      if (!acc.find((item) => item.toString() === range.toString())) {
+        acc.push(range);
       }
       return acc;
     }, []);
@@ -416,9 +402,9 @@ const DropdownTwo = ({
   // Handle max price input focus
   const handleMaxPriceFocus = () => {
     // Show only unique "to" values for max price
-    const uniqueToValues = ranges.reduce((acc: any[], range: any) => {
-      if (!acc.find((item) => item.to === range.to)) {
-        acc.push({ to: range.to, label: range.to.toString() });
+    const uniqueToValues = priceRanges.reduce((acc: any[], range: any) => {
+      if (!acc.find((item) => item.toString() === range.toString())) {
+        acc.push(range);
       }
       return acc;
     }, []);
@@ -444,18 +430,18 @@ const DropdownTwo = ({
 
   // Handle min price suggestion selection
   const handleMinPriceSuggestionSelect = (range: any) => {
-    setMinPrice(range.from.toString());
+    setMinPrice(range.toString());
     setShowMinPriceSuggestions(false);
     // Trigger the price change handler with the selected from value
-    handlePriceChange(range.from.toString());
+    handlePriceChange(range.toString());
   };
 
   // Handle max price suggestion selection
   const handleMaxPriceSuggestionSelect = (range: any) => {
-    setMaxPrice(range.to.toString());
+    setMaxPrice(range.toString());
     setShowMaxPriceSuggestions(false);
     // Trigger the price change handler with the selected to value
-    handleDown_priceChange(range.to.toString());
+    handleDown_priceChange(range.toString());
   };
 
   // Hide suggestions on click outside
@@ -663,10 +649,8 @@ const DropdownTwo = ({
                 }}
               >
                 <span style={{ color: "#000" }}>
-                  {
-                    types.find((type: any) => type.id === filters.type_id)
-                      ?.title || t("all")
-                  }
+                  {types.find((type: any) => type.id === filters.type_id)
+                    ?.title || t("all")}
                 </span>
                 <i
                   className={`fa-solid fa-chevron-down ${
@@ -791,7 +775,10 @@ const DropdownTwo = ({
                   fontWeight: "400",
                 }}
               >
-                <span className="line-clamp-1 overflow-hidden text-ellipsis" style={{ color: "#000" }}>
+                <span
+                  className="line-clamp-1 overflow-hidden text-ellipsis"
+                  style={{ color: "#000" }}
+                >
                   {minPrice && maxPrice
                     ? `${minPrice} - ${maxPrice} ${t("EGP")}`
                     : minPrice
@@ -852,7 +839,7 @@ const DropdownTwo = ({
                           padding: "10px 12px",
                           border: "1px solid #d1d5db",
                           borderRadius: "4px",
-                          fontSize: "14px",
+                          fontSize: "10px",
                           fontWeight: "400",
                           transition: "all 0.2s ease",
                           backgroundColor: "#fff",
@@ -886,6 +873,8 @@ const DropdownTwo = ({
                             zIndex: 1001,
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             marginTop: "2px",
+                            fontSize: "10px",
+                            width: "fit-content",
                           }}
                         >
                           {minPriceSuggestions.map((range, idx) => (
@@ -916,7 +905,7 @@ const DropdownTwo = ({
                                 ).style.backgroundColor = "#fff";
                               }}
                             >
-                              {range.label}
+                              {range.toString()}
                             </div>
                           ))}
                         </div>
@@ -954,7 +943,7 @@ const DropdownTwo = ({
                           padding: "10px 12px",
                           border: "1px solid #d1d5db",
                           borderRadius: "4px",
-                          fontSize: "14px",
+                          fontSize: "10px",
                           fontWeight: "400",
                           transition: "all 0.2s ease",
                           backgroundColor: "#fff",
@@ -988,6 +977,8 @@ const DropdownTwo = ({
                             zIndex: 1001,
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             marginTop: "2px",
+                            fontSize: "10px",
+                            width: "fit-content",
                           }}
                         >
                           {maxPriceSuggestions.map((range, idx) => (
@@ -1018,7 +1009,7 @@ const DropdownTwo = ({
                                 ).style.backgroundColor = "#fff";
                               }}
                             >
-                              {range.label}
+                              {range.toString()}
                             </div>
                           ))}
                         </div>

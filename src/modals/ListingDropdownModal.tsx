@@ -99,86 +99,91 @@ const ListingDropdownModal = ({
                             </h6>
                             <div
                               className="d-flex align-items-center"
-                              style={{ maxWidth: 420 }}
+                              style={{
+                                maxWidth: 420,
+                                position: "relative",
+                              }}
                             >
-                              <input
-                                type="number"
-                                className="form-control"
-                                style={{
-                                  borderRadius: "25px 0 0 25px",
-                                  border: "1px solid #ddd",
-                                  padding: "10px 20px",
-                                  fontSize: "16px",
-                                  fontWeight: 500,
-                                  outline: "none",
-                                  boxShadow: "none",
-                                  width: "100%",
-                                  minWidth: 0,
-                                  height: "44px",
-                                }}
-                                placeholder={t("min_size") || "Min size"}
-                                value={filters?.min_size || ""}
-                                onChange={(e) =>
-                                  setFilters({
-                                    ...filters,
-                                    min_size: e.target.value,
-                                  })
-                                }
-                              />
+                              <div style={{ position: "relative", flex: 1 }}>
+                                <input
+                                  type="number"
+                                  className="form-control size-input"
+                                  style={{
+                                    borderRadius: "25px 0 0 25px",
+                                    border: "2px solid #e8e8e8",
+                                    padding: "12px 20px",
+                                    fontSize: "16px",
+                                    fontWeight: 500,
+                                    outline: "none",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
+                                    width: "100%",
+                                    minWidth: 0,
+                                    height: "50px",
+                                    transition: "all 0.3s ease",
+                                    backgroundColor: "#fff",
+                                  }}
+                                  placeholder={t("min_size") || "Min size"}
+                                  value={filters?.min_size || ""}
+                                  onChange={(e) =>
+                                    setFilters({
+                                      ...filters,
+                                      min_size: e.target.value,
+                                    })
+                                  }
+                                  min={0}
+                                />
+                              </div>
+
+                              <div style={{ position: "relative", flex: 1 }}>
+                                <input
+                                  type="number"
+                                  className="form-control size-input"
+                                  style={{
+                                    borderRadius: "0",
+                                    border: "2px solid #e8e8e8",
+                                    borderLeft: "none",
+                                    padding: "12px 20px",
+                                    fontSize: "16px",
+                                    fontWeight: 500,
+                                    outline: "none",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
+                                    width: "100%",
+                                    minWidth: 0,
+                                    height: "50px",
+                                    transition: "all 0.3s ease",
+                                    backgroundColor: "#fff",
+                                  }}
+                                  placeholder={t("max_size") || "Max size"}
+                                  value={filters?.max_size || ""}
+                                  onChange={(e) =>
+                                    setFilters({
+                                      ...filters,
+                                      max_size: e.target.value,
+                                    })
+                                  }
+                                  min={0}
+                                />
+                              </div>
                               <span
-                                className="d-flex align-items-center justify-content-center"
+                                className="d-flex align-items-center justify-content-center size-unit"
                                 style={{
-                                  background: "#fff",
-                                  border: "none",
-                                  borderLeft: "none",
-                                  fontSize: "15px",
-                                  color: "#888",
-                                  fontWeight: 500,
-                                  height: "44px",
-                                  minWidth: "30px",
-                                  padding: "0 8px",
-                                }}
-                              >
-                                -
-                              </span>
-                              <input
-                                type="number"
-                                className="form-control"
-                                style={{
-                                  borderRadius: "0 0 0 0",
-                                  border: "1px solid #ddd",
-                                  borderLeft: "none",
-                                  padding: "10px 20px",
-                                  fontSize: "16px",
-                                  fontWeight: 500,
-                                  outline: "none",
-                                  boxShadow: "none",
-                                  width: "100%",
-                                  minWidth: 0,
-                                  height: "44px",
-                                }}
-                                placeholder={t("max_size") || "Max size"}
-                                value={filters?.max_size || ""}
-                                onChange={(e) =>
-                                  setFilters({
-                                    ...filters,
-                                    max_size: e.target.value,
-                                  })
-                                }
-                              />
-                              <span
-                                className="d-flex align-items-center justify-content-center"
-                                style={{
-                                  background: "#f7f7f7",
-                                  border: "1px solid #ddd",
+                                  background:
+                                    "linear-gradient(135deg, #FF6B35 0%, #FF8C61 100%)",
+                                  border: "2px solid #FF6B35",
                                   borderLeft: "none",
                                   borderRadius: "0 25px 25px 0",
-                                  fontSize: "15px",
-                                  color: "#888",
-                                  fontWeight: 500,
-                                  height: "44px",
-                                  minWidth: "70px",
+                                  fontSize: "14px",
+                                  color: "#fff",
+                                  fontWeight: 600,
+                                  height: "50px",
+                                  minWidth: "75px",
                                   padding: "0 20px",
+                                  boxShadow:
+                                    "0 2px 8px rgba(255, 107, 53, 0.2)",
+                                  letterSpacing: "0.5px",
+                                  textTransform: "uppercase",
+                                  position: "relative",
+                                  zIndex: 1,
                                 }}
                               >
                                 {t("sqft")}

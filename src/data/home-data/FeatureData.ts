@@ -116,7 +116,7 @@ const feature_data: DataType[] = [
     page: "home_1_feature_3",
     icon: feature3Icon_1,
     title: "Create Account",
-    desc: "It’s very easy to open an account and start your journey",
+    desc: "It very easy to open an account and start your journey",
   },
   {
     id: 2,

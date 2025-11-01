@@ -16,7 +16,7 @@ const CONTACT_INFO = [
     icon: MapMarkerIcon,
     label: "Location",
     value: "Building 238 Second Sector, Fifth Settlement, New Cairo",
-    href: "https://maps.app.goo.gl/PqyFUnvvxPC571iY7",
+    href: "https://maps.app.goo.gl/HC6KnjvuTAjVCsp79",
     isExternal: true,
   },
   {
@@ -108,7 +108,7 @@ const ContactArea = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() =>
                   window.open(
-                    "https://maps.app.goo.gl/PqyFUnvvxPC571iY7",
+                    "https://maps.app.goo.gl/HC6KnjvuTAjVCsp79",
                     "_blank",
                     "noopener,noreferrer"
                   )
@@ -119,7 +119,7 @@ const ContactArea = () => {
                 onKeyPress={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     window.open(
-                      "https://maps.app.goo.gl/PqyFUnvvxPC571iY7",
+                      "https://maps.app.goo.gl/HC6KnjvuTAjVCsp79",
                       "_blank",
                       "noopener,noreferrer"
                     );

@@ -207,11 +207,18 @@ const PropertiesCard = ({
         <div className="property-info p-25">
           <Link
             href={`/properties/${item?.slug}`}
+            title={item?.title}
             className="title no-underline line-clamp-1 !text-[#FF6625] tran3s"
           >
             {item?.title}
           </Link>
-          <div className="address">{item?.area?.name}</div>
+          <div
+            className="address line-clamp-1"
+            title={item?.property_locations[0]?.location}
+          >
+            <i className="bi bi-geo-alt"></i>
+            {item?.property_locations[0]?.location}
+          </div>
           <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
             <li className="d-flex align-items-center">
               <Image

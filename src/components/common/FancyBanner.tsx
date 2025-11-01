@@ -57,7 +57,13 @@ const FancyBanner = ({ style }: any) => {
             </div>
           </div>
           <div className="col-lg-6">
-            <div className="form-wrapper" style={{ alignItems: "start" }}>
+            <div
+              className="form-wrapper"
+              style={{
+                alignItems: "start",
+                padding: "0 clamp(10px,5.208vw,120px)",
+              }}
+            >
               <form
                 className="max-w-full w-100"
                 style={{
@@ -73,11 +79,16 @@ const FancyBanner = ({ style }: any) => {
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
                 />
-                <button className={style ? "rounded-0" : ""}>
+                <button
+                  className={style ? "rounded-0" : ""}
+                  style={{
+                    width: "120px",
+                  }}
+                >
                   {t("banner_get_started")}
                 </button>
               </form>
-              <div className="fs-16 mt-10 flex justify-start text-white">
+              <div className="fs-16 gap-1 mt-10 flex justify-start text-white">
                 {t("banner_already_agent")}{" "}
                 <Link
                   href="#"
