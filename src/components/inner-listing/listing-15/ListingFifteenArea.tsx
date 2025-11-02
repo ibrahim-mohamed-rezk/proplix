@@ -53,6 +53,26 @@ const ListingFifteenArea = () => {
         }
       }
     }
+
+    // Listen for filter updates from footer (when already on properties page)
+    const handleFiltersUpdated = (event: CustomEvent) => {
+      const updatedFilters = (event as CustomEvent).detail?.filters;
+      if (updatedFilters) {
+        setFilters(updatedFilters);
+      }
+    };
+
+    window.addEventListener(
+      "filtersUpdated",
+      handleFiltersUpdated as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "filtersUpdated",
+        handleFiltersUpdated as EventListener
+      );
+    };
   }, []);
 
   // Update localStorage when filters change
@@ -527,9 +547,9 @@ const ListingFifteenArea = () => {
             mobileView === "list" ? "d-none d-lg-block" : "d-block d-lg-block"
           }`}
           style={{
-            position: sticky ? "fixed" : "sticky",
+            position: sticky && properties.length > 0 ? "fixed" : "sticky",
             top: "88px",
-            zIndex: -1,
+            zIndex: properties.length > 0 ? -1 : 0,
             alignSelf: "flex-start",
             height: "calc(100vh - 88px)",
           }}
@@ -553,7 +573,9 @@ const ListingFifteenArea = () => {
           </div>
         </div>
 
-        {sticky && <div className="col-5 hided-in-mobile"> </div>}
+        {sticky && properties.length > 0 && (
+          <div className="col-5 hided-in-mobile"> </div>
+        )}
 
         {/* Properties List Section - Scrollable with infinite scroll */}
         <div
@@ -561,7 +583,13 @@ const ListingFifteenArea = () => {
             mobileView === "map" ? "d-none d-lg-block" : "d-block"
           }`}
         >
-          <div className="bg-light pl-40 pr-40 pt-35 pb-60">
+          <div
+            className="bg-light pl-40 pr-40 pt-35 pb-60"
+            style={{
+              minHeight:
+                properties.length === 0 ? "calc(100vh - 88px - 200px)" : "auto",
+            }}
+          >
             {/* Initial loading state */}
             {isLoading && (
               <div className="text-center py-5">
@@ -590,7 +618,7 @@ const ListingFifteenArea = () => {
 
             {/* Loading more indicator */}
             {isLoadingMore && (
-              <div className="text-center py-4">
+              <div className="text-center  h-[calc(100vh-200px)] py-4">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">{t("loading_more")}</span>
                 </div>
@@ -609,7 +637,7 @@ const ListingFifteenArea = () => {
 
             {/* No properties found */}
             {!isLoading && properties.length === 0 && (
-              <div className="text-center py-5">
+              <div className="text-center py-5 h-[calc(100vh-200px)]">
                 <p className="text-muted">{t("no_properties_found")}</p>
               </div>
             )}

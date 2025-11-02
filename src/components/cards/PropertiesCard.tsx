@@ -208,7 +208,7 @@ const PropertiesCard = ({
           <Link
             href={`/properties/${item?.slug}`}
             title={item?.title}
-            className="title no-underline line-clamp-1 !text-[#FF6625] tran3s"
+            className="title no-underline line-clamp-2 mdline-clamp-1 !text-[#FF6625] tran3s"
           >
             {item?.title}
           </Link>

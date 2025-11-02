@@ -41,9 +41,7 @@ const footer_data: DataType[] = [
     footer_link: [
       { link: "/properties", link_title: "rent" },
       { link: "/properties", link_title: "sale" },
-      { link: "/properties", link_title: "Residentialrent" },
       { link: "/properties", link_title: "Commercialrent" },
-      { link: "/properties", link_title: "Residentialsale" },
       { link: "/properties", link_title: "Commercialsale" },
     ],
   },

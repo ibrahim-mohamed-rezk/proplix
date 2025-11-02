@@ -5,7 +5,7 @@ import footer_data from "@/data/home-data/FooterData";
 import footerShape_1 from "@/assets/images/shape/shape_32.svg";
 import footerShape_2 from "@/assets/images/shape/shape_33.svg";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 
 const icon_1: {
   name: string;
@@ -18,6 +18,52 @@ const icon_1: {
 
 const FooterOne = ({ style }: any) => {
   const t = useTranslations("endUser");
+  const pathname = usePathname();
+
+  // Handler for New Listing links to update filters in localStorage
+  const handleNewListingClick = (linkTitle: string) => {
+    if (typeof window === "undefined") return;
+
+    // Map link_title to status value
+    const statusMap: { [key: string]: string } = {
+      rent: "rent",
+      sale: "sale",
+      Commercialrent: "commercial-rent",
+      Commercialsale: "commercial-sale",
+    };
+
+    const status = statusMap[linkTitle];
+    if (!status) return;
+
+    // Get existing filters from localStorage
+    const storedFilters = localStorage.getItem("filters");
+    const filters = storedFilters
+      ? JSON.parse(storedFilters)
+      : {
+          status: "sale",
+          price: null,
+          down_price: null,
+        };
+
+    // Update status
+    filters.status = status;
+
+    // Save back to localStorage
+    localStorage.setItem("filters", JSON.stringify(filters));
+
+    // Check if we're already on the properties page
+    // If so, dispatch a custom event to notify the component to update filters
+    const isOnPropertiesPage = pathname?.includes("/properties");
+    if (isOnPropertiesPage) {
+      // Dispatch custom event to notify properties page component
+      window.dispatchEvent(
+        new CustomEvent("filtersUpdated", {
+          detail: { filters },
+        })
+      );
+    }
+  };
+
   return (
     <div className={`footer-one ${style ? "dark-bg" : ""}`}>
       <div className="position-relative bg-[#fff] z-10">
@@ -137,7 +183,17 @@ const FooterOne = ({ style }: any) => {
                       <ul className="footer-nav-link style-none">
                         {item.footer_link.map((li, i) => (
                           <li key={i}>
-                            <Link href={li.link}>{t(li.link_title)}</Link>
+                            <Link
+                              href={li.link}
+                              onClick={() => {
+                                // Only handle New Listing section links
+                                if (item.widget_title === "New Listing") {
+                                  handleNewListingClick(li.link_title);
+                                }
+                              }}
+                            >
+                              {t(li.link_title)}
+                            </Link>
                           </li>
                         ))}
                       </ul>
