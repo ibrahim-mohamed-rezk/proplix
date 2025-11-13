@@ -671,7 +671,6 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
     options = [],
     dir = "ltr",
     placeholder = "",
-    defaultValue = "",
   }: {
     label: string;
     name: keyof FormInputs;
@@ -680,7 +679,6 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
     options?: { value: any; label: string }[];
     dir?: string;
     placeholder?: string;
-    defaultValue?: string;
   }) => (
     <div className="mb-4">
       <label className="form-label fw-medium text-dark mb-2">
@@ -692,7 +690,6 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
           {...register(name, { required })}
           className="form-select premium-input"
           dir={dir}
-          value={defaultValue}
           style={{
             border: "2px solid #e9ecef",
             borderRadius: "0.75rem",
@@ -715,7 +712,6 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
           className="form-control premium-input"
           dir={dir}
           placeholder={placeholder}
-          value={defaultValue}
           style={{
             border: "2px solid #e9ecef",
             borderRadius: "0.75rem",
