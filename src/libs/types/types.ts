@@ -79,12 +79,16 @@ export interface PropertyTypes {
     image: string;
     count_of_properties: number;
     name: string;
+    google_maps: string;
+    developer: string;
     description: {
       en: {
         name: string;
+        developer: string;
       };
       ar: {
         name: string;
+        developer: string;
       };
     };
   };

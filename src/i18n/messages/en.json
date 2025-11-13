@@ -746,6 +746,7 @@
   },
   "endUser": {
     "edit_property": "Edit Property",
+    "no_results_found": "No results found",
     "EGP": "EGP",
     "from": "From",
     "done": "Done",
@@ -781,6 +782,7 @@
     "indoor_feature": "Indoor Features",
     "Video Tour": "Video Tour",
     "Location": "Location",
+    "view_on_google_maps": "View on Google Maps",
     "Floor Plans": "Floor Plans",
     "Similar Homes You May Like": "Similar Homes You May Like",
     "Explore Popular Location": "Explore Popular Location",

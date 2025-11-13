@@ -767,6 +767,7 @@
   },
   "endUser": {
     "edit_property": "تعديل العقار",
+    "no_results_found": "لا توجد نتائج",
     "EGP": "جنيه",
     "from": "من",
     "done": "حفظ",
@@ -802,6 +803,7 @@
     "indoor_feature": "المميزات الداخليه",
     "Video Tour": "جولة مرئية",
     "Location": "الموقع",
+    "view_on_google_maps": "عرض على خرائط جوجل",
     "Floor Plans": "مخططات الطوابق",
     "Similar Homes You May Like": "عقارات مشابهة قد تهمك",
 

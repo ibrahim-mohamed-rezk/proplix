@@ -14,7 +14,7 @@ import {
 import { MainTab } from "../components/tabs/MainTab";
 import { AmenitiesTab } from "../components/tabs/AmenitiesTab";
 import { FeaturesTab } from "../components/tabs/FeaturesTab";
-import { LocationTab } from "../components/tabs/LocationsTab";
+// import { LocationTab } from "../components/tabs/LocationsTab";
 import { ImagesTab } from "../components/tabs/ImagesTab";
 import { FloorPlanTab } from "../components/tabs/FloorPlanTab";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
@@ -52,14 +52,14 @@ export default function PropertyDetailsPage({ token }: { token: string }) {
         return (
           <FeaturesTab refetch={refetch} property={property} token={token} />
         );
-      case "locations":
-        return (
-          <LocationTab
-            refetch={refetch}
-            property={property}
-            token={token as string}
-          />
-        );
+      // case "locations":
+      //   return (
+      //     <LocationTab
+      //       refetch={refetch}
+      //       property={property}
+      //       token={token as string}
+      //     />
+      //   );
       case "images":
         return (
           <ImagesTab refetch={refetch} property={property} token={token} />

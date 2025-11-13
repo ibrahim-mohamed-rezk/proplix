@@ -9,10 +9,75 @@ mapboxgl.accessToken =
   process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ||
   "pk.eyJ1IjoicmFzaGFkbnVzaGFkIiwiYSI6ImNseGo1c3E1dDBjeWgybHFlOWp2b3Bsb3UifQ.eG9yV25a_w9Jp-3weVnmPA";
 
+const buildGoogleMapsEmbedUrl = (
+  rawUrl?: string,
+  fallbackQuery?: string
+): string | null => {
+  if (!rawUrl) {
+    if (!fallbackQuery) return null;
+    return `https://www.google.com/maps?q=${encodeURIComponent(
+      fallbackQuery
+    )}&output=embed`;
+  }
+
+  try {
+    const parsed = new URL(rawUrl);
+
+    if (
+      parsed.hostname.includes("google.") &&
+      parsed.pathname.startsWith("/maps/embed")
+    ) {
+      return parsed.toString();
+    }
+
+    if (
+      parsed.hostname.includes("google.") &&
+      parsed.pathname.startsWith("/maps")
+    ) {
+      parsed.searchParams.set("output", "embed");
+      return parsed.toString();
+    }
+  } catch (error) {
+    // noop – fall back below
+  }
+
+  if (rawUrl.includes("output=embed")) {
+    return rawUrl;
+  }
+
+  if (rawUrl.includes("maps.app.goo.gl") || rawUrl.includes("goo.gl/maps")) {
+    if (!fallbackQuery) return null;
+    return `https://www.google.com/maps?q=${encodeURIComponent(
+      fallbackQuery
+    )}&output=embed`;
+  }
+
+  return `${rawUrl}${rawUrl.includes("?") ? "&" : "?"}output=embed`;
+};
+
+const buildGoogleMapsDirectUrl = (
+  rawUrl?: string,
+  fallbackQuery?: string
+): string | null => {
+  if (rawUrl) return rawUrl;
+  if (!fallbackQuery) return null;
+  return `https://www.google.com/maps?q=${encodeURIComponent(fallbackQuery)}`;
+};
+
 const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const t = useTranslations("endUser");
+
+  const googleMapsUrl = property?.area?.google_maps?.trim();
+  const fallbackQuery = property?.area?.name || property?.title;
+  const googleMapsEmbedUrl = googleMapsUrl
+    ? buildGoogleMapsEmbedUrl(googleMapsUrl, fallbackQuery)
+    : null;
+  const googleMapsDirectUrl = buildGoogleMapsDirectUrl(
+    googleMapsUrl,
+    fallbackQuery
+  );
 
   // Check if property has valid locations
   const hasValidLocations = property?.property_locations?.some(
@@ -26,6 +91,7 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
   );
 
   useEffect(() => {
+    if (googleMapsEmbedUrl) return;
     if (map.current || !mapContainer.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -33,9 +99,10 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
       center: [5.2708, 5.2048], // Default center
       zoom: 12,
     });
-  }, []);
+  }, [googleMapsEmbedUrl]);
 
   useEffect(() => {
+    if (googleMapsEmbedUrl) return;
     if (
       !map.current ||
       !property?.property_locations ||
@@ -45,8 +112,6 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
 
     try {
       const locations = property?.property_locations;
-
-      console.log(property);
 
       // Filter out locations with invalid coordinates
       const validLocations = locations.filter(
@@ -98,10 +163,10 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
     } catch (error) {
       console.error("Error setting up map markers:", error);
     }
-  }, [property]);
+  }, [property, googleMapsEmbedUrl]);
 
   // Return null if no valid locations (after hooks)
-  if (!hasValidLocations) {
+  if (!googleMapsEmbedUrl && !hasValidLocations) {
     return null;
   }
 
@@ -110,11 +175,37 @@ const CommonLocation = ({ property }: { property?: PropertyTypes }) => {
       <h4 className="mb-40">{t("Location")}</h4>
       <div className="bg-white shadow4 p-30">
         <div className="map-banner overflow-hidden">
-          <div
-            ref={mapContainer}
-            className="gmap_canvas h-100 w-100"
-            style={{ height: "450px" }}
-          />
+          {googleMapsEmbedUrl ? (
+            <>
+              <iframe
+                src={googleMapsEmbedUrl}
+                className="h-100 w-100"
+                style={{ height: "450px", border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={property?.area?.name || t("Location")}
+              />
+              {googleMapsDirectUrl && (
+                <div className="d-flex justify-content-end mt-20">
+                  <a
+                    href={googleMapsDirectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-three"
+                  >
+                    {t("view_on_google_maps")}
+                  </a>
+                </div>
+              )}
+            </>
+          ) : (
+            <div
+              ref={mapContainer}
+              className="gmap_canvas h-100 w-100"
+              style={{ height: "450px" }}
+            />
+          )}
         </div>
       </div>
     </>

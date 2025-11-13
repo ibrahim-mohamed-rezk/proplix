@@ -12,7 +12,9 @@ import { AxiosHeaders } from "axios";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useTranslations } from "next-intl";
-import GoogleLocationInput from "@/components/common/GoogleLocationInput";
+import AreaLocationInput, {
+  AreaSelectionResult,
+} from "@/components/common/AreaLocationInput";
 
 mapboxgl.accessToken =
   process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "your-mapbox-token-here";
@@ -25,7 +27,7 @@ interface LocationTabProps {
 
 interface LocationData {
   address: string;
-  placeId: string;
+  areaId?: string | number | null;
   lat?: number;
   lng?: number;
   name?: string;
@@ -101,7 +103,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
       if (firstLocation.location && firstLocation.location_place_id) {
         const locationData = {
           address: firstLocation.location,
-          placeId: firstLocation.location_place_id,
+          areaId: firstLocation.location_place_id,
           lat: firstLocation.location_lat
             ? parseFloat(firstLocation.location_lat.toString())
             : undefined,
@@ -437,15 +439,22 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     try {
       setLoading(true);
 
+      const areaIdentifier =
+        selectedLocation.areaId !== undefined &&
+        selectedLocation.areaId !== null
+          ? String(selectedLocation.areaId)
+          : undefined;
+
       // Save the location
       await postData(
         `agent/locations`,
         {
           property_listing_id: propertyId,
           location: selectedLocation.address,
-          location_place_id: selectedLocation.placeId,
+          location_place_id: areaIdentifier ?? selectedLocation.address,
           location_lat: selectedLocation.lat,
           location_lng: selectedLocation.lng,
+          ...(areaIdentifier ? { area_id: areaIdentifier } : {}),
         },
         new AxiosHeaders({
           Authorization: `Bearer ${token}`,
@@ -458,7 +467,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
       // Reset form only if this was a new location (not the initial one)
       const isInitialLocation =
         property?.data?.property_locations?.[0]?.location_place_id ===
-        selectedLocation.placeId;
+        (areaIdentifier ?? selectedLocation.address);
       if (!isInitialLocation) {
         setLocationValue("");
         setSelectedLocation(null);
@@ -503,9 +512,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         existingNewMarkers.forEach((marker) => marker.remove());
 
         // Check if this is the initial location from API
+        const selectedAreaIdentifier =
+          selectedLocation.areaId !== undefined &&
+          selectedLocation.areaId !== null
+            ? String(selectedLocation.areaId)
+            : selectedLocation.address;
         const isInitialLocation =
           property?.data?.property_locations?.[0]?.location_place_id ===
-          selectedLocation.placeId;
+          selectedAreaIdentifier;
         console.log("Is initial location:", isInitialLocation);
 
         // Add new marker for selected location
@@ -610,27 +624,20 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     console.log("=== End Marker Effect Debug ===");
   }, [selectedLocation, property]);
 
-  // Handle location change from GoogleLocationInput
-  const handleLocationChange = (locationData: {
-    description: string;
-    placeId: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  }) => {
-    console.log("Location changed:", locationData);
+  // Handle location change from AreaLocationInput
+  const handleLocationChange = (selection: AreaSelectionResult) => {
+    console.log("Location changed:", selection);
 
     // Update the location value to display
-    setLocationValue(locationData.description);
+    setLocationValue(selection.description);
 
     // Convert the location data format to match our LocationData interface
     const convertedLocationData: LocationData = {
-      address: locationData.description,
-      placeId: locationData.placeId,
-      lat: locationData.coordinates?.lat,
-      lng: locationData.coordinates?.lng,
-      name: locationData.description.split(",")[0].trim(),
+      address: selection.description,
+      areaId: selection.areaId,
+      lat: selection.coordinates?.lat,
+      lng: selection.coordinates?.lng,
+      name: selection.description.split(",")[0].trim(),
     };
 
     setSelectedLocation(convertedLocationData);
@@ -638,15 +645,15 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   return (
     <div className="mb-4">
-      {/* Google Location Search */}
+      {/* Area Location Search */}
       <div className="mb-3">
         <label htmlFor="location" className="form-label">
           {t("location")}
         </label>
-        <GoogleLocationInput
-          onLocationChange={handleLocationChange}
-          defaultValue={locationValue}
-          placeholder={t("enter_your_location") || "Search for a location..."}
+        <AreaLocationInput
+          onSelect={handleLocationChange}
+          defaultValue={property?.data?.area?.name || locationValue}
+          placeholder={t("enter_your_location") || "Search for an area..."}
           disabled={loading}
         />
       </div>

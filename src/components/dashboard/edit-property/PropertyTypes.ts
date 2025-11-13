@@ -1,6 +1,12 @@
 // src/types/PropertyTypes.ts
 
-export type TabType = 'main' | 'amenities' | 'features' | 'locations' | 'images' | 'floorplan';
+export type TabType =
+  | "main"
+  | "amenities"
+  | "features"
+  | "locations"
+  | "images"
+  | "floorplan";
 
 // Full user with role, subscription, etc.
 export type PropertyUser = {
@@ -130,50 +136,47 @@ export type PropertyStatistics = {
 
 // Main Property Data
 export type PropertyData = {
-  data:{
-     starting_day: string | null; // Added starting_day
-  landing_space: number | null; // Added landing_space
-id: number;
-  title: string;
-  approval_status: string;
-  price: number;
-  down_price: number;
-  sqt: number;
-  bedroom: number;
-  bathroom: number;
-  kitichen: number;
-  status: string;
-  immediate_delivery: string;
-  furnishing?: string;
-  payment_method: string;
-  mortgage: string;
-  paid_months: number | null;
-  location?: string;
-  created_at: string;
-  views?: number;
-
-  // Relations
-  user: PropertyUser;
-  type: PropertyType;
-  area?: PropertyArea;
-  descriptions?: Description;
-  features: PropertyFeature[];
-  amenities: PropertyAmenity[];
-  property_listing_images: PropertyImage[];
-  property_floor_plans: PropertyFloorPlan[];
-  property_locations: PropertyLocation[];
-  }
+  data: {
+    starting_day: string | null; // Added starting_day
+    landing_space: number | null; // Added landing_space
+    id: number;
+    title: string;
+    approval_status: string;
+    price: number;
+    down_price: number;
+    sqt: number;
+    bedroom: number;
+    bathroom: number;
+    kitichen: number;
+    status: string;
+    immediate_delivery: string;
+    furnishing?: string;
+    payment_method: string;
+    mortgage: string;
+    paid_months: number | null;
+    location?: string;
+    created_at: string;
+    views?: number;
+    user: PropertyUser;
+    type: PropertyType;
+    area?: PropertyArea;
+    descriptions?: Description;
+    features: PropertyFeature[];
+    amenities: PropertyAmenity[];
+    property_listing_images: PropertyImage[];
+    property_floor_plans: PropertyFloorPlan[];
+    property_locations: PropertyLocation[];
+  };
 };
 
 // Toast
 export type ToastState = {
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: "success" | "error" | "info";
   show: boolean;
 };
 
-
- export type FormInputs = {
+export type FormInputs = {
   starting_day: string;
   landing_space: string;
   type_id: string;
@@ -203,7 +206,7 @@ export type ToastState = {
 
 export interface LocationData {
   description: string;
-  placeId: string;
+  areaId?: string | number | null;
   coordinates?: {
     lat: number;
     lng: number;

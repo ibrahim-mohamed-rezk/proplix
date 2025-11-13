@@ -6,17 +6,14 @@ import featureIcon_2 from "@/assets/images/icon/icon_05.svg";
 import featureIcon_3 from "@/assets/images/icon/icon_06.svg";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { postData } from "@/libs/server/backendServer";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 
 const PropertiesCard = ({
   item,
-  token,
 }: {
   item: PropertyTypes;
-  token: string;
 }) => {
   const t = useTranslations("endUser");
   const [isFavorite, setIsFavorite] = useState(false);
@@ -139,66 +136,12 @@ const PropertiesCard = ({
                 }}
               ></i>
             </button>
-            {/* <div
-                      id={`carousel${item?.carousel}`}
-                      className="carousel slide"
-                    >
-                      <div className="carousel-indicators">
-                        <button
-                          type="button"
-                          data-bs-target={`#carousel${item?.carousel}`}
-                          data-bs-slide-to="0"
-                          className="active"
-                          aria-current="true"
-                          aria-label="Slide 1"
-                        ></button>
-                        <button
-                          type="button"
-                          data-bs-target={`#carousel${item?.carousel}`}
-                          data-bs-slide-to="1"
-                          aria-label="Slide 2"
-                        ></button>
-                        <button
-                          type="button"
-                          data-bs-target={`#carousel${item?.carousel}`}
-                          data-bs-slide-to="2"
-                          aria-label="Slide 3"
-                        ></button>
-                      </div>
-                      <div className="carousel-inner">
-                        {item?.carousel_thumb?.map((item: any, i: any) => (
-                           <div
-                             key={i}
-                             className={`carousel-item ${item?.active}`}
-                             data-bs-interval="1000000"
-                           >
-                             <Link
-                               href={`/properties/${item?.slug}`}
-                               className="d-block"
-                             >
-                               <img
-                                 src={item?.img}
-                                 className="w-100"
-                                 alt="..."
-                               />
-                             </Link>
-                           </div>
-                         ))}
-                        
-                      </div>
-                    </div> */}
-            <div
-            //  className={`carousel-item ${item?.active}`}
-            //  data-bs-interval="1000000"
-            >
+            <div>
               <Link href={`/properties/${item?.slug}`} className="d-block">
                 <img
                   src={item?.cover}
                   className="w-full h-[295px] rounded-[25px]"
                   alt={item?.title}
-                  // style={{
-                  //   height: "clamp(100px,15.365vw,2095px)",
-                  // }}
                 />
               </Link>
             </div>
@@ -212,13 +155,16 @@ const PropertiesCard = ({
           >
             {item?.title}
           </Link>
-          <div
+          <a
+            href={item?.area?.google_maps}
             className="address line-clamp-1"
-            title={item?.property_locations[0]?.location}
+            title={item?.area?.name}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <i className="bi bi-geo-alt"></i>
-            {item?.property_locations[0]?.location}
-          </div>
+            {item?.area?.name}
+          </a>
           <ul className="style-none feature d-flex flex-wrap align-items-center justify-content-between">
             <li className="d-flex align-items-center">
               <Image

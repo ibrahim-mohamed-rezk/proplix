@@ -1,29 +1,11 @@
 import NiceSelect from "@/ui/NiceSelect";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { LocationData } from "@/libs/types/types";
 import { useLocale, useTranslations } from "next-intl";
 import { getData } from "@/libs/server/backendServer";
 import { Link } from "@/i18n/routing";
 import { priceRanges } from "@/data/price-rnages";
-
-// Extend Window interface to include Google Maps
-declare global {
-  interface Window {
-    google: any;
-    initGoogleMaps?: () => void;
-  }
-}
-
-// Types for Google Places API
-interface PlacePrediction {
-  place_id: string;
-  description: string;
-  structured_formatting?: {
-    main_text: string;
-    secondary_text: string;
-  };
-}
 
 const DropdownSeven = ({
   handleLocationChange,
@@ -47,16 +29,17 @@ const DropdownSeven = ({
   const [locationQuery, setLocationQuery] = useState<string>(
     getDefaultLocationQuery()
   );
-  const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState<boolean>(false);
+  const [areas, setAreas] = useState<any[]>([]);
+  const [showAreaSuggestions, setShowAreaSuggestions] =
+    useState<boolean>(false);
+  const [isAreasLoading, setIsAreasLoading] = useState<boolean>(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [showMinPriceSuggestions, setShowMinPriceSuggestions] = useState(false);
   const [showMaxPriceSuggestions, setShowMaxPriceSuggestions] = useState(false);
   const [minPriceSuggestions, setMinPriceSuggestions] = useState<any[]>([]);
   const [maxPriceSuggestions, setMaxPriceSuggestions] = useState<any[]>([]);
   const locationInputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const areaSuggestionsRef = useRef<HTMLDivElement>(null);
   const priceDropdownRef = useRef<HTMLDivElement>(null);
   const minPriceInputRef = useRef<HTMLInputElement>(null);
   const maxPriceInputRef = useRef<HTMLInputElement>(null);
@@ -65,20 +48,6 @@ const DropdownSeven = ({
   const t = useTranslations("endUser");
   const locale = useLocale();
   const [types, setTypes] = useState<any[]>([]);
-
-  // Initialize Google Places services (legacy AutocompleteService like DropdownTwo)
-  const autocompleteService = useRef<any>(null);
-  const placesService = useRef<any>(null);
-
-  // Default location updated to Egypt (Cairo coordinates)
-  const defaultLocation: LocationData = {
-    description: "",
-    placeId: "",
-    coordinates: {
-      lat: 30.0444, // Cairo, Egypt latitude
-      lng: 31.2357, // Cairo, Egypt longitude
-    },
-  };
 
   const fetchAgents = async () => {
     const response = await getData("types", {}, { lang: locale });
@@ -89,327 +58,157 @@ const DropdownSeven = ({
     fetchAgents();
   }, []);
 
-  // Load Google Maps API like DropdownTwo (script with callback)
-  useEffect(() => {
-    const initializeGoogleMapsServices = () => {
-      if (window.google && window.google.maps) {
-        try {
-          autocompleteService.current =
-            new window.google.maps.places.AutocompleteService();
-          const dummyDiv = document.createElement("div");
-          placesService.current = new window.google.maps.places.PlacesService(
-            dummyDiv
-          );
-          setIsGoogleMapsLoaded(true);
-        } catch (err) {
-          setIsGoogleMapsLoaded(false);
-        }
-      }
-    };
-
-    const loadGoogleMapsAPI = () => {
-      if (window.google && window.google.maps) {
-        initializeGoogleMapsServices();
-        return;
+  const getAreaDisplayName = useCallback(
+    (area: any) => {
+      if (!area) return "";
+      if (locale === "ar") {
+        return (
+          area.name_ar ||
+          area.title_ar ||
+          area.title ||
+          area.name_en ||
+          area.name ||
+          ""
+        );
       }
 
-      if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
-        window.initGoogleMaps = initializeGoogleMapsServices;
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initGoogleMaps`;
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
+      return (
+        area.name_en ||
+        area.title_en ||
+        area.title ||
+        area.name_ar ||
+        area.name ||
+        ""
+      );
+    },
+    [locale]
+  );
+
+  const getAreaDeveloperName = useCallback(
+    (area: any) => {
+      if (!area) return "";
+      if (locale === "ar") {
+        return (
+          area.developer_ar ||
+          area.developer_name_ar ||
+          area.developer ||
+          area.developer_en ||
+          ""
+        );
       }
-    };
 
-    loadGoogleMapsAPI();
-  }, []);
+      return (
+        area.developer_en ||
+        area.developer_name_en ||
+        area.developer ||
+        area.developer_ar ||
+        ""
+      );
+    },
+    [locale]
+  );
 
-  // Handle location input change and fetch suggestions (match DropdownTwo behavior)
-  const handleLocationInputChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const query = e.target.value;
-    setLocationQuery(query);
-
-    // --- Save location to localStorage filters.location ---
-    if (typeof window !== "undefined") {
+  const fetchAreas = useCallback(
+    async (searchTerm: string) => {
       try {
-        const filters = JSON.parse(localStorage.getItem("filters") || "{}");
-        filters.location = query;
-        localStorage.setItem("filters", JSON.stringify(filters));
-      } catch (err) {
+        setIsAreasLoading(true);
+        const trimmedTerm = searchTerm.trim();
+        const params = trimmedTerm ? { search: trimmedTerm } : {};
+        const response = await getData("area-search", params, { lang: locale });
+        const list = response?.data?.data;
+        setAreas(Array.isArray(list) ? list : []);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+        setAreas([]);
+      } finally {
+        setIsAreasLoading(false);
+      }
+    },
+    [locale]
+  );
+
+  useEffect(() => {
+    fetchAreas(locationQuery || "");
+  }, [fetchAreas]);
+
+  useEffect(() => {
+    if (
+      typeof filters?.location === "string" &&
+      filters.location !== locationQuery
+    ) {
+      setLocationQuery(filters.location);
+    }
+  }, [filters?.location, locationQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchAreas(locationQuery || "");
+    }, 400);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [locationQuery, fetchAreas]);
+
+  const persistFiltersLocation = useCallback(
+    (value: string, areaId?: string | number | null) => {
+      if (typeof window === "undefined") return;
+      try {
+        const storedFilters = JSON.parse(
+          localStorage.getItem("filters") || "{}"
+        );
+        storedFilters.location = value;
+        if (areaId !== undefined) {
+          storedFilters.area_id = areaId;
+        }
+        localStorage.setItem("filters", JSON.stringify(storedFilters));
+      } catch {
         // ignore
       }
-    }
-    // ------------------------------------------------------
+    },
+    []
+  );
 
-    // Only proceed if Google Maps is loaded and query is long enough
-    if (
-      query.length <= 2 ||
-      !isGoogleMapsLoaded ||
-      !autocompleteService.current
-    ) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
+  const handleAreaInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocationQuery(value);
+    setShowAreaSuggestions(true);
 
-    try {
-      // Legacy AutocompleteService requests parallel (geocode + establishments + specific devs)
-      // Multiple requests to get geographical places and specific real estate companies
-      const requests = [
-        {
-          input: query,
-          types: ["geocode"], // Geographical places
-          componentRestrictions: { country: "EG" },
-        },
-        {
-          input: query,
-          types: ["establishment"], // Business establishments
-          componentRestrictions: { country: "EG" },
-        },
-        // Specific searches for major Egyptian real estate developers and compounds
-        {
-          input: `${query} SODIC`,
-          types: ["establishment"],
-          componentRestrictions: { country: "EG" },
-        },
-        {
-          input: `${query} Palm Hills`,
-          types: ["establishment"],
-          componentRestrictions: { country: "EG" },
-        },
-        {
-          input: `${query} Talaat Moustafa`,
-          types: ["establishment"],
-          componentRestrictions: { country: "EG" },
-        },
-        {
-          input: `${query} Madinaty`,
-          types: ["establishment"],
-          componentRestrictions: { country: "EG" },
-        },
-        {
-          input: `${query} New Cairo`,
-          types: ["establishment"],
-          componentRestrictions: { country: "EG" },
-        },
-        {
-          input: `${query} compound`,
-          types: ["establishment"],
-          componentRestrictions: { country: "EG" },
-        },
-      ];
-
-      let allPredictions: any[] = [];
-
-      // Execute all requests in parallel
-      const promises = requests.map((request) => {
-        return new Promise<any[]>((resolve) => {
-          autocompleteService.current.getPlacePredictions(
-            request,
-            (predictions: any[] | null, status: any) => {
-              if (
-                status === window.google.maps.places.PlacesServiceStatus.OK &&
-                predictions
-              ) {
-                resolve(predictions);
-              } else {
-                resolve([]);
-              }
-            }
-          );
-        });
+    if (typeof setFilters === "function" && filters) {
+      setFilters({
+        ...filters,
+        location: value,
+        area_id: null,
       });
-
-      const results = await Promise.all(promises);
-      allPredictions = results.flat();
-
-      // Remove duplicates based on place_id
-      const uniquePredictions = allPredictions.filter(
-        (prediction, index, self) =>
-          index === self.findIndex((p) => p.place_id === prediction.place_id)
-      );
-
-      // Keywords for specific Egyptian real estate companies and compounds
-      const specificRealEstateKeywords = [
-        "sodic",
-        "palm hills",
-        "talaat moustafa",
-        "madinaty",
-        "new cairo",
-        "new capital",
-        "compound",
-        "developer",
-        "real estate",
-        "property",
-        "residential",
-        "villa",
-        "apartment",
-        "townhouse",
-        "community",
-        "housing",
-        "estate",
-        "sodic west",
-        "sodic east",
-        "palm hills new cairo",
-        "palm hills sheikh zayed",
-        "talaat moustafa group",
-        "madinaty compound",
-        "new cairo compound",
-        "سوديك",
-        "بالم هيلز",
-        "طلعت مصطفى",
-        "مدينتي",
-        "القاهرة الجديدة",
-        "العاصمة الإدارية",
-        "مجمع",
-        "مطور",
-        "عقارات",
-        "سكني",
-        "فيلا",
-        "شقة",
-        "تاون هاوس",
-        "مجتمع",
-        "إسكان",
-      ];
-
-      // Keywords for irrelevant business establishments
-      const irrelevantBusinessKeywords = [
-        "restaurant",
-        "cafe",
-        "hotel",
-        "gym",
-        "market",
-        "mall",
-        "shop",
-        "store",
-        "bank",
-        "hospital",
-        "clinic",
-        "school",
-        "university",
-        "mosque",
-        "church",
-        "pharmacy",
-        "supermarket",
-        "gas station",
-        "station",
-        "airport",
-        "bus stop",
-        "مطعم",
-        "كافيه",
-        "فندق",
-        "جيم",
-        "سوق",
-        "مول",
-        "متجر",
-        "بنك",
-        "مستشفى",
-        "عيادة",
-        "مدرسة",
-        "جامعة",
-        "مسجد",
-        "كنيسة",
-        "صيدلية",
-        "محطة وقود",
-      ];
-
-      const filteredPredictions = uniquePredictions.filter((prediction) => {
-        const description = prediction.description.toLowerCase();
-
-        // Always include geographical places (cities)
-        if (
-          prediction.types?.includes("locality") ||
-          prediction.types?.includes("administrative_area_level_1")
-        ) {
-          return true;
-        }
-
-        // For business establishments, check if they're relevant real estate companies
-        if (prediction.types?.includes("establishment")) {
-          const hasRelevantKeywords = specificRealEstateKeywords.some(
-            (keyword) => description.includes(keyword)
-          );
-
-          const hasIrrelevantKeywords = irrelevantBusinessKeywords.some(
-            (keyword) => description.includes(keyword)
-          );
-
-          return hasRelevantKeywords && !hasIrrelevantKeywords;
-        }
-
-        return false;
-      });
-
-      setSuggestions(filteredPredictions);
-      setShowSuggestions(true);
-    } catch (error) {
-      console.error("Error fetching location suggestions:", error);
-      setSuggestions([]);
-      setShowSuggestions(false);
     }
+
+    persistFiltersLocation(value, null);
   };
 
-  // Handle suggestion selection
-  const handleSuggestionSelect = (suggestion: PlacePrediction) => {
-    setLocationQuery(suggestion.description);
-    setShowSuggestions(false);
-    handleLocationChange(suggestion);
+  const handleAreaSuggestionSelect = (area: any) => {
+    const displayName = getAreaDisplayName(area);
+    const areaId = area?.id ?? area?.value ?? area?.slug ?? null;
 
-    // --- Save location to localStorage filters.location ---
-    if (typeof window !== "undefined") {
-      try {
-        const filters = JSON.parse(localStorage.getItem("filters") || "{}");
-        filters.location = suggestion.description;
-        localStorage.setItem("filters", JSON.stringify(filters));
-      } catch (err) {
-        // ignore
-      }
-    }
-    // ------------------------------------------------------
+    setLocationQuery(displayName);
+    setShowAreaSuggestions(false);
 
-    // Only get place details if Google Places service is available
-    if (placesService.current && isGoogleMapsLoaded) {
-      const request: google.maps.places.PlaceDetailsRequest = {
-        placeId: suggestion.place_id,
-        fields: ["geometry", "formatted_address", "name"],
-      };
-
-      placesService.current.getDetails(request, (place: any, status: any) => {
-        if (
-          status === window.google.maps.places.PlacesServiceStatus.OK &&
-          place
-        ) {
-          const locationData: LocationData = {
-            description: suggestion.description,
-            placeId: suggestion.place_id,
-            coordinates: place.geometry?.location
-              ? {
-                  lat: place.geometry.location.lat(),
-                  lng: place.geometry.location.lng(),
-                }
-              : undefined,
-          };
-
-          // Call the parent handler with the selected location data
-          if (handleLocationChange) {
-            handleLocationChange(locationData);
-          }
-        }
+    if (typeof setFilters === "function" && filters) {
+      setFilters({
+        ...filters,
+        location: displayName,
+        area_id: areaId,
       });
-    } else {
-      // Fallback if places service is not available
-      const locationData: LocationData = {
-        description: suggestion.description,
-        placeId: suggestion.place_id,
-      };
+    }
 
-      if (handleLocationChange) {
-        handleLocationChange(locationData);
-      }
+    persistFiltersLocation(displayName, areaId);
+
+    const locationData: LocationData = {
+      description: displayName,
+      placeId: String(areaId ?? displayName),
+    };
+
+    if (typeof handleLocationChange === "function") {
+      handleLocationChange(locationData);
     }
   };
 
@@ -523,12 +322,12 @@ const DropdownSeven = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
+        areaSuggestionsRef.current &&
+        !areaSuggestionsRef.current.contains(event.target as Node) &&
         locationInputRef.current &&
         !locationInputRef.current.contains(event.target as Node)
       ) {
-        setShowSuggestions(false);
+        setShowAreaSuggestions(false);
       }
 
       if (
@@ -658,16 +457,14 @@ const DropdownSeven = ({
                   className="location-input nice-select fw-normal "
                   style={{ paddingRight: 32 }}
                   placeholder={
-                    isGoogleMapsLoaded
-                      ? t("search_location_placeholder")
-                      : t("loading_location_services")
+                    t("search_location_placeholder") || "Enter location..."
                   }
                   value={locationQuery}
-                  onChange={handleLocationInputChange}
+                  onChange={handleAreaInputChange}
                   onFocus={() =>
-                    suggestions.length > 0 && setShowSuggestions(true)
+                    (areas.length > 0 || isAreasLoading) &&
+                    setShowAreaSuggestions(true)
                   }
-                  disabled={!isGoogleMapsLoaded}
                   autoComplete="off"
                 />
                 <span
@@ -684,48 +481,115 @@ const DropdownSeven = ({
                   <i className="fa-solid fa-location-dot"></i>
                 </span>
 
-                {/* Loading indicator */}
-                {!isGoogleMapsLoaded && (
+                {isAreasLoading && (
                   <div className="loading-indicator">{t("loading")}</div>
                 )}
 
-                {/* Suggestions Dropdown */}
-                {showSuggestions &&
-                  suggestions.length > 0 &&
-                  isGoogleMapsLoaded && (
-                    <div
-                      ref={suggestionsRef}
-                      className="location-suggestions hide-scrollbar"
-                    >
-                      {suggestions.map((suggestion, index) => (
+                {showAreaSuggestions && (
+                  <div
+                    ref={areaSuggestionsRef}
+                    className="location-suggestions hide-scrollbar"
+                  >
+                    {isAreasLoading && (
+                      <div
+                        className="suggestion-item"
+                        style={{ cursor: "default" }}
+                      >
+                        {t("loading") || "Loading..."}
+                      </div>
+                    )}
+                    {!isAreasLoading && areas.length === 0 && (
+                      <div
+                        className="suggestion-item"
+                        style={{ cursor: "default" }}
+                      >
+                        {t("no_results_found") || "No areas found"}
+                      </div>
+                    )}
+                    {!isAreasLoading &&
+                      areas.map((area: any) => (
                         <div
-                          key={suggestion.place_id || index}
+                          key={
+                            area?.id ?? area?.value ?? getAreaDisplayName(area)
+                          }
                           className="suggestion-item"
-                          onClick={() => handleSuggestionSelect(suggestion)}
+                          onClick={() => handleAreaSuggestionSelect(area)}
+                          style={{
+                            padding: "12px 15px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            transition: "background-color 0.2s, color 0.2s",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                          onMouseEnter={(e) => {
+                            (
+                              e.currentTarget as HTMLElement
+                            ).style.backgroundColor = "#ff672508";
+                            Array.from(
+                              e.currentTarget.querySelectorAll("div, i")
+                            ).forEach((el) => {
+                              (el as HTMLElement).style.color = "#FF6725";
+                            });
+                          }}
+                          onMouseLeave={(e) => {
+                            (
+                              e.currentTarget as HTMLElement
+                            ).style.backgroundColor = "#fff";
+                            const mainText =
+                              e.currentTarget.querySelector(".main-text");
+                            if (mainText)
+                              (mainText as HTMLElement).style.color = "#333";
+                            const secondaryText =
+                              e.currentTarget.querySelector(".secondary-text");
+                            if (secondaryText)
+                              (secondaryText as HTMLElement).style.color =
+                                "#666";
+                            const icon =
+                              e.currentTarget.querySelector("i") ?? null;
+                            if (icon)
+                              (icon as HTMLElement).style.color = "#666";
+                          }}
                         >
                           <i
-                            className="fa-regular fa-location-dot"
-                            style={{ color: "#6b7280", fontSize: 16 }}
+                            className="fa-light fa-location-dot"
+                            style={{ marginRight: "8px", color: "#666" }}
                           ></i>
                           <div>
-                            <div className="main-text">
-                              {suggestion.structured_formatting?.main_text ||
-                                suggestion.description}
+                            <div
+                              className="main-text"
+                              style={{ fontWeight: "500", color: "#333" }}
+                            >
+                              {getAreaDisplayName(area)}
                             </div>
-                            {suggestion.structured_formatting
-                              ?.secondary_text && (
-                              <div className="secondary-text">
-                                {
-                                  suggestion.structured_formatting
-                                    .secondary_text
-                                }
+                            {getAreaDeveloperName(area) && (
+                              <div
+                                className="developer-text"
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#888",
+                                }}
+                              >
+                                {getAreaDeveloperName(area)}
+                              </div>
+                            )}
+                            {area?.parent_name && (
+                              <div
+                                className="secondary-text"
+                                style={{
+                                  fontSize: "12px",
+                                  color: "#666",
+                                  marginTop: "2px",
+                                }}
+                              >
+                                {area.parent_name}
                               </div>
                             )}
                           </div>
                         </div>
                       ))}
-                    </div>
-                  )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

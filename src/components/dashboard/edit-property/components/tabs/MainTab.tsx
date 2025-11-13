@@ -30,7 +30,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import defaultAvatar from "@/assets/images/loader.gif";
-import GoogleLocationInput from "@/components/common/GoogleLocationInput";
+import AreaLocationInput from "@/components/common/AreaLocationInput";
 import { useForm, useWatch, useController } from "react-hook-form";
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
@@ -50,11 +50,7 @@ interface MainTabProps {
   propertystat?: PropertyStatistics;
 }
 
-export const MainTab: React.FC<MainTabProps> = ({
-  property,
-  token,
-  propertystat,
-}) => {
+export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
   const t = useTranslations("properties");
   const locale = useLocale();
   const [isEditing, setIsEditing] = useState(false);
@@ -168,7 +164,7 @@ export const MainTab: React.FC<MainTabProps> = ({
         const location = data.property_locations[0];
         setLocationData({
           description: location.location,
-          placeId: location.location_place_id,
+          areaId: location.location_place_id,
           coordinates: {
             lat: location.location_lat,
             lng: location.location_lng,
@@ -675,14 +671,16 @@ export const MainTab: React.FC<MainTabProps> = ({
     options = [],
     dir = "ltr",
     placeholder = "",
+    defaultValue = "",
   }: {
     label: string;
     name: keyof FormInputs;
     type?: string;
     required?: boolean;
-    options?: { value: string; label: string }[];
+    options?: { value: any; label: string }[];
     dir?: string;
     placeholder?: string;
+    defaultValue?: string;
   }) => (
     <div className="mb-4">
       <label className="form-label fw-medium text-dark mb-2">
@@ -694,6 +692,7 @@ export const MainTab: React.FC<MainTabProps> = ({
           {...register(name, { required })}
           className="form-select premium-input"
           dir={dir}
+          value={defaultValue}
           style={{
             border: "2px solid #e9ecef",
             borderRadius: "0.75rem",
@@ -716,6 +715,7 @@ export const MainTab: React.FC<MainTabProps> = ({
           className="form-control premium-input"
           dir={dir}
           placeholder={placeholder}
+          value={defaultValue}
           style={{
             border: "2px solid #e9ecef",
             borderRadius: "0.75rem",
@@ -833,7 +833,12 @@ export const MainTab: React.FC<MainTabProps> = ({
 
     if (locationData) {
       formData.append("location", locationData.description);
-      formData.append("location_place_id", locationData.placeId);
+      if (locationData.areaId !== undefined && locationData.areaId !== null) {
+        formData.append("area_id", String(locationData.areaId));
+        formData.append("location_place_id", String(locationData.areaId));
+      } else {
+        formData.append("location_place_id", locationData.description);
+      }
       if (locationData.coordinates) {
         formData.append(
           "location_lat",
@@ -976,10 +981,7 @@ export const MainTab: React.FC<MainTabProps> = ({
                           name="type_id"
                           type="select"
                           required
-                          options={propertyTypes.map((type) => ({
-                            value: type.id.toString(),
-                            label: type.descriptions?.en?.title || type.title,
-                          }))}
+                          options ={propertyTypes.map((type) => ({ value: type.id, label: type.title }))}
                           placeholder={t("select_type")}
                         />
                       </div>
@@ -987,10 +989,12 @@ export const MainTab: React.FC<MainTabProps> = ({
                         <label className="form-label fw-medium text-dark mb-2">
                           {t("location")}
                         </label>
-                        <GoogleLocationInput
-                          onLocationChange={(data) => setLocationData(data)}
+                        <AreaLocationInput
+                          onSelect={(selection) => setLocationData(selection)}
                           defaultValue={
-                            locationData?.description || "Colorado, USA"
+                            property?.data?.area?.name ||
+                            locationData?.description ||
+                            ""
                           }
                           placeholder={t("search_for_a_location")}
                         />
@@ -1025,27 +1029,6 @@ export const MainTab: React.FC<MainTabProps> = ({
                             { value: "sale", label: t("sale") },
                           ]}
                           placeholder={t("select_status")}
-                        />
-                      </div>
-                      <div className="col-md-6 col-lg-4">
-                        <InputField
-                          label={t("type")}
-                          name="type"
-                          type="select"
-                          required
-                          options={[
-                            { value: "apartment", label: t("apartment") },
-                            { value: "villa", label: t("villa") },
-                            { value: "townhouse", label: t("townhouse") },
-                            { value: "stand_alone", label: t("stand_alone") },
-                            { value: "duplex", label: t("duplex") },
-                            { value: "penthouse", label: t("penthouse") },
-                            { value: "office", label: t("office") },
-                            { value: "shop", label: t("shop") },
-                            { value: "warehouse", label: t("warehouse") },
-                            { value: "building", label: t("building") },
-                          ]}
-                          placeholder={t("select_type")}
                         />
                       </div>
                       <div className="col-md-6 col-lg-4">

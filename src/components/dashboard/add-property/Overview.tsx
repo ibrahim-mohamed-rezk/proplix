@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import GoogleLocationInput from "@/components/common/GoogleLocationInput";
+import AreaLocationInput, {
+  AreaSelectionResult,
+} from "@/components/common/AreaLocationInput";
 import { useForm, useWatch, useController } from "react-hook-form";
 import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
@@ -80,14 +82,7 @@ type SelectOption = {
 //   };
 // };
 
-interface LocationData {
-  description: string;
-  placeId: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
-}
+type LocationData = AreaSelectionResult;
 
 type AgentOption = {
   id: number;
@@ -351,7 +346,12 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
     // Location
     if (locationData) {
       formData.append("location", locationData.description);
-      formData.append("location_place_id", locationData.placeId);
+      if (locationData.areaId !== undefined && locationData.areaId !== null) {
+        formData.append("area_id", String(locationData.areaId));
+        formData.append("location_place_id", String(locationData.areaId));
+      } else {
+        formData.append("location_place_id", locationData.description);
+      }
       if (locationData.coordinates) {
         formData.append(
           "location_lat",
@@ -1074,9 +1074,9 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       <label className="form-label fw-medium text-dark mb-2">
                         {t("location")}
                       </label>
-                      <GoogleLocationInput
-                        onLocationChange={(data) => setLocationData(data)}
-                        defaultValue="Colorado, USA"
+                      <AreaLocationInput
+                        onSelect={(selection) => setLocationData(selection)}
+                        defaultValue={locationData?.description || ""}
                         placeholder={t("search_for_a_location")}
                       />
                     </div>
@@ -1110,27 +1110,6 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                           { value: "sale", label: t("sale") },
                         ]}
                         placeholder={t("select_status")}
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                      <InputField
-                        label={t("type")}
-                        name="type"
-                        type="select"
-                        required
-                        options={[
-                          { value: "apartment", label: t("apartment") },
-                          { value: "villa", label: t("villa") },
-                          { value: "townhouse", label: t("townhouse") },
-                          { value: "stand_alone", label: t("stand_alone") },
-                          { value: "duplex", label: t("duplex") },
-                          { value: "penthouse", label: t("penthouse") },
-                          { value: "office", label: t("office") },
-                          { value: "shop", label: t("shop") },
-                          { value: "warehouse", label: t("warehouse") },
-                          { value: "building", label: t("building") },
-                        ]}
-                        placeholder={t("select_type")}
                       />
                     </div>
                     <div className="col-md-6 col-lg-4">

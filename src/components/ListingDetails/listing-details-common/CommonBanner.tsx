@@ -11,7 +11,6 @@ const CommonBanner = ({
   user?: UserTypes;
 }) => {
   const t = useTranslations("endUser");
-
   const locale = useLocale();
 
   return (
@@ -20,6 +19,16 @@ const CommonBanner = ({
         <h3 className="property-titlee !text-[clamp(20px,1.823vw,35px)] ">
           {property?.title}
         </h3>
+        <a
+            href={property?.area?.google_maps}
+            className="address line-clamp-1"
+            title={property?.area?.name}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="bi bi-geo-alt"></i>
+            {property?.area?.name}
+          </a>
         <div className="d-flex flex-wrap flex-col mt-10">
           <div className="d-flex items-center justify-start">
             <div
