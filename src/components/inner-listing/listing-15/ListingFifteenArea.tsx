@@ -611,7 +611,7 @@ const ListingFifteenArea = () => {
                       : null
                   }
                 >
-                  <PropertiesCard item={property} token="" />
+                  <PropertiesCard item={property} />
                 </div>
               ))}
             </div>

@@ -56,7 +56,7 @@ const CommonSimilarProperty = ({
       <Slider {...setting} className="similar-listing-slider-one">
         {similar?.map((item: PropertyTypes) => (
           <div key={item?.id} className="item">
-            <PropertiesCard item={item} token={token} />
+            <PropertiesCard item={item} />
           </div>
         ))}
       </Slider>

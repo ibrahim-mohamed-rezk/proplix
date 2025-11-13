@@ -69,7 +69,6 @@ const Property = ({
                 listings.map((item, index) => (
                   <div key={index} className="col-lg-4 col-sm-6">
                     <PropertiesCard
-                      token={token as string}
                       key={index}
                       item={item}
                     />
