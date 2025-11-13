@@ -120,7 +120,7 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
     if (property?.data && isEditing) {
       const data = property.data;
       // Set basic fields
-      setValue("type_id", data.type?.id?.toString() || "");
+      setValue("type_id", data.property_type?.id?.toString() || "");
       setValue("price", data.price?.toString() || "");
       setValue("down_price", data.down_price?.toString() || "");
       setValue("sqt", data.sqt?.toString() || "");

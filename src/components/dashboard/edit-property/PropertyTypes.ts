@@ -159,6 +159,7 @@ export type PropertyData = {
     views?: number;
     user: PropertyUser;
     type: PropertyType;
+    property_type: PropertyType;
     area?: PropertyArea;
     descriptions?: Description;
     features: PropertyFeature[];
