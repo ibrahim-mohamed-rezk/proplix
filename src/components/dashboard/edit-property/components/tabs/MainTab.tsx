@@ -36,7 +36,6 @@ import { postData, getData } from "@/libs/server/backendServer";
 import { AxiosHeaders } from "axios";
 import { useLocale } from "next-intl";
 import { toast } from "react-toastify";
-import RichTextEditor from "@/components/RichTextEditor";
 
 // Extend the FormInputs type to include the new fields
 interface FormInputsExtended extends FormInputs {
@@ -1278,16 +1277,22 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
                         {t("description_ar")}{" "}
                         <span className="text-danger">*</span>
                       </label>
-                      <div
-                        className="border rounded-3"
-                        style={{ borderWidth: "2px", borderColor: "#e9ecef" }}
-                      >
-                        <RichTextEditor
-                          value={descriptionAr}
-                          onChange={setDescriptionAr}
-                          label=""
-                        />
-                      </div>
+                      <textarea
+                        value={descriptionAr}
+                        onChange={(e) => setDescriptionAr(e.target.value)}
+                        className="form-control premium-input"
+                        dir="rtl"
+                        rows={6}
+                        placeholder={t("description_ar")}
+                        style={{
+                          border: "2px solid #e9ecef",
+                          borderRadius: "0.75rem",
+                          padding: "0.75rem 1rem",
+                          fontSize: "0.95rem",
+                          background: "#ffffff",
+                          resize: "vertical",
+                        }}
+                      />
                     </div>
                   </div>
                 )}
@@ -1335,16 +1340,21 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
                         {t("description_en")}{" "}
                         <span className="text-danger">*</span>
                       </label>
-                      <div
-                        className="border rounded-3"
-                        style={{ borderWidth: "2px", borderColor: "#e9ecef" }}
-                      >
-                        <RichTextEditor
-                          value={descriptionEn}
-                          onChange={setDescriptionEn}
-                          label=""
-                        />
-                      </div>
+                      <textarea
+                        value={descriptionEn}
+                        onChange={(e) => setDescriptionEn(e.target.value)}
+                        className="form-control premium-input"
+                        rows={6}
+                        placeholder={t("description_en")}
+                        style={{
+                          border: "2px solid #e9ecef",
+                          borderRadius: "0.75rem",
+                          padding: "0.75rem 1rem",
+                          fontSize: "0.95rem",
+                          background: "#ffffff",
+                          resize: "vertical",
+                        }}
+                      />
                     </div>
                   </div>
                 )}

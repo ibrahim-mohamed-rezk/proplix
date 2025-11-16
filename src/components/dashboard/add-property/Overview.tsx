@@ -9,7 +9,6 @@ import { AxiosHeaders } from "axios";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
-import RichTextEditor from "@/components/RichTextEditor";
 import {
   ChevronDown,
   ChevronUp,
@@ -1364,16 +1363,23 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       {t("description_ar")}{" "}
                       <span className="text-danger">*</span>
                     </label>
-                    <div
-                      className="border rounded-3"
-                      style={{ borderWidth: "2px", borderColor: "#e9ecef" }}
-                    >
-                      <RichTextEditor
-                        value={descriptionAr}
-                        onChange={setDescriptionAr}
-                        label=""
-                      />
-                    </div>
+                    <textarea
+                      value={descriptionAr}
+                      onChange={(e) => setDescriptionAr(e.target.value)}
+                      className="form-control premium-input"
+                      dir="rtl"
+                      rows={6}
+                      placeholder={t("description_ar")}
+                      style={{
+                        border: "2px solid #e9ecef",
+                        borderRadius: "0.75rem",
+                        padding: "0.75rem 1rem",
+                        fontSize: "0.95rem",
+                        transition: "all 0.3s ease",
+                        background: "#ffffff",
+                        resize: "vertical",
+                      }}
+                    />
                   </div>
                 </div>
               )}
@@ -1421,16 +1427,22 @@ const CreatePropertyPage = ({ token }: { token: string }) => {
                       {t("description_en")}{" "}
                       <span className="text-danger">*</span>
                     </label>
-                    <div
-                      className="border rounded-3"
-                      style={{ borderWidth: "2px", borderColor: "#e9ecef" }}
-                    >
-                      <RichTextEditor
-                        value={descriptionEn}
-                        onChange={setDescriptionEn}
-                        label=""
-                      />
-                    </div>
+                    <textarea
+                      value={descriptionEn}
+                      onChange={(e) => setDescriptionEn(e.target.value)}
+                      className="form-control premium-input"
+                      rows={6}
+                      placeholder={t("description_en")}
+                      style={{
+                        border: "2px solid #e9ecef",
+                        borderRadius: "0.75rem",
+                        padding: "0.75rem 1rem",
+                        fontSize: "0.95rem",
+                        transition: "all 0.3s ease",
+                        background: "#ffffff",
+                        resize: "vertical",
+                      }}
+                    />
                   </div>
                 </div>
               )}
