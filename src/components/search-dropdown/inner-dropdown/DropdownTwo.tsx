@@ -809,40 +809,54 @@ const DropdownTwo = ({
                   >
                     {t("all")}
                   </div>
-                  {types?.map((type: any) => (
-                    <div
-                      key={type.id}
-                      className="type-option"
-                      onClick={() => {
-                        handleTypesChange(type.id);
-                        setShowTypeDropdown(false);
-                      }}
-                      style={{
-                        padding: "12px 15px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        transition: "background-color 0.2s, color 0.2s",
-                        borderBottom: "1px solid #f3f4f6",
-                        backgroundColor:
-                          filters.type_id === type.id ? "#ff672508" : "#fff",
-                        color: filters.type_id === type.id ? "#FF6725" : "#333",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          "#ff672508";
-                        (e.currentTarget as HTMLElement).style.color =
-                          "#FF6725";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          filters.type_id === type.id ? "#ff672508" : "#fff";
-                        (e.currentTarget as HTMLElement).style.color =
-                          filters.type_id === type.id ? "#FF6725" : "#333";
-                      }}
-                    >
-                      {type.title}
-                    </div>
-                  ))}
+                  {types?.map((type: any) => {
+                    if (
+                      filters.status &&
+                      !(
+                        type.status.includes(filters.status || "all") ||
+                        type.status.includes("all")
+                      )
+                    )
+                      return null;
+                    return (
+                      <div
+                        key={type.id}
+                        className="type-option"
+                        onClick={() => {
+                          handleTypesChange(type.id);
+                          setShowTypeDropdown(false);
+                        }}
+                        style={{
+                          padding: "12px 15px",
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          transition: "background-color 0.2s, color 0.2s",
+                          borderBottom: "1px solid #f3f4f6",
+                          backgroundColor:
+                            filters.type_id === type.id ? "#ff672508" : "#fff",
+                          color:
+                            filters.type_id === type.id ? "#FF6725" : "#333",
+                        }}
+                        onMouseEnter={(e) => {
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = "#ff672508";
+                          (e.currentTarget as HTMLElement).style.color =
+                            "#FF6725";
+                        }}
+                        onMouseLeave={(e) => {
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor =
+                            filters.type_id === type.id ? "#ff672508" : "#fff";
+                          (e.currentTarget as HTMLElement).style.color =
+                            filters.type_id === type.id ? "#FF6725" : "#333";
+                        }}
+                      >
+                        {type.title}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

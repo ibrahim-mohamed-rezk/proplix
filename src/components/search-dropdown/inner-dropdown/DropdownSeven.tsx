@@ -1736,10 +1736,24 @@ const DropdownSeven = ({
                 className="nice-select fw-normal"
                 options={[
                   { value: "all", text: t("any") },
-                  ...types?.map((area: any) => ({
-                    value: area.id,
-                    text: area.title,
-                  })),
+                  ...types
+                    ?.map((area: any) => {
+                      if (
+                        filters.status  &&
+                        !(
+                          area.status.includes(filters.status || "all") ||
+                          area.status.includes("all")
+                        )
+                      )
+                        return null;
+                      return {
+                        value: area.id,
+                        text: area.title,
+                      };
+                    })
+                    .filter(
+                      (item): item is { value: any; text: any } => item !== null
+                    ),
                 ]}
                 defaultCurrent={filters?.type_id || "all"}
                 onChange={(event) =>
