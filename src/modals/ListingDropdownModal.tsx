@@ -10,6 +10,18 @@ const ListingDropdownModal = ({
   const t = useTranslations("properties");
   const [amenities, setAmenities] = useState([]);
   const locale = useLocale();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Handle window resize for responsive behavior
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 576);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const paymentMethodOptions = [
     { id: "cash", title: t("cash") || "Cash" },
@@ -72,22 +84,47 @@ const ListingDropdownModal = ({
       style={{ zIndex: 1051 }}
     >
       <div
-        className="modal-dialog modal-dialog-centered"
-        style={{ zIndex: 1052 }}
+        className="modal-dialog modal-dialog-centered modal-lg"
+        style={{
+          zIndex: 1052,
+          maxWidth: "90%",
+          margin: "1rem auto",
+        }}
       >
-        <div className="container">
+        <div className="container-fluid px-2 px-md-3 px-lg-4">
           <div className="row">
-            <div className="col-xl-8 m-auto">
-              <div className="modal-content">
+            <div className="col-12 col-lg-10 col-xl-8 m-auto">
+              <div
+                className="modal-content"
+                style={{
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  maxHeight: "90vh",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <button
                   type="button"
-                  className="btn-close ms-auto mt-20 me-4"
+                  className="btn-close ms-auto mt-3 mt-md-4 mt-lg-5 me-3 me-md-4"
                   data-bs-dismiss="modal"
                   aria-label="Close"
+                  style={{
+                    fontSize: "1.25rem",
+                    padding: "0.5rem",
+                    flexShrink: 0,
+                  }}
                 >
                   <i className="fa-regular fa-xmark"></i>
                 </button>
-                <div className="advance-search-panel">
+                <div
+                  className="advance-search-panel px-3 px-md-4 px-lg-5 pb-4 pb-md-5"
+                  style={{
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    maxHeight: "calc(90vh - 80px)",
+                  }}
+                >
                   <div className="main-bg border-0">
                     <form onSubmit={(e) => e.preventDefault()}>
                       <div className="row gx-lg-5">
@@ -194,12 +231,20 @@ const ListingDropdownModal = ({
 
                         {/* amenities */}
                         <div className="col-12">
-                          <div className="w-full mt-30">
-                            <h6 className="block-title fw-bold mb-20">
+                          <div className="w-full mt-3 mt-md-4 mt-lg-5">
+                            <h6
+                              className="block-title fw-bold mb-3 mb-md-4"
+                              style={{
+                                fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
+                              }}
+                            >
                               {t("amenities")}
                             </h6>
                             <div className="amenities-list">
-                              <div className="d-flex flex-wrap gap-2">
+                              <div
+                                className="d-flex flex-wrap gap-2"
+                                style={{ gap: "clamp(0.5rem, 1.5vw, 0.75rem)" }}
+                              >
                                 {amenities?.map((amenity: any) => (
                                   <button
                                     key={amenity.id}
@@ -209,7 +254,8 @@ const ListingDropdownModal = ({
                                     }
                                     className="amenity-tag"
                                     style={{
-                                      padding: "8px 16px",
+                                      padding:
+                                        "clamp(6px, 1.5vw, 8px) clamp(12px, 2.5vw, 16px)",
                                       border: "1px solid #ddd",
                                       borderRadius: "25px",
                                       background: filters?.amenities?.includes(
@@ -224,7 +270,7 @@ const ListingDropdownModal = ({
                                         : "#333",
                                       cursor: "pointer",
                                       transition: "all 0.3s ease",
-                                      fontSize: "14px",
+                                      fontSize: "clamp(12px, 2vw, 14px)",
                                       fontWeight: filters?.amenities?.includes(
                                         amenity.id
                                       )
@@ -232,10 +278,12 @@ const ListingDropdownModal = ({
                                         : "normal",
                                       display: "inline-flex",
                                       alignItems: "center",
-                                      gap: "6px",
+                                      gap: "clamp(4px, 1vw, 6px)",
                                       userSelect: "none",
                                       outline: "none",
                                       position: "relative",
+                                      minHeight: "36px",
+                                      whiteSpace: "nowrap",
                                     }}
                                     onMouseEnter={(e) => {
                                       if (
@@ -266,7 +314,9 @@ const ListingDropdownModal = ({
                                     ) && (
                                       <i
                                         className="fa-solid fa-check"
-                                        style={{ fontSize: "12px" }}
+                                        style={{
+                                          fontSize: "clamp(10px, 1.5vw, 12px)",
+                                        }}
                                       ></i>
                                     )}
                                   </button>
@@ -278,12 +328,20 @@ const ListingDropdownModal = ({
 
                         {/* payment methods - single select */}
                         <div className="col-12">
-                          <div className="w-full mt-30">
-                            <h6 className="block-title fw-bold mb-20">
+                          <div className="w-full mt-3 mt-md-4 mt-lg-5">
+                            <h6
+                              className="block-title fw-bold mb-3 mb-md-4"
+                              style={{
+                                fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
+                              }}
+                            >
                               {t("payment_method")}
                             </h6>
                             <div className="payment-methods-list">
-                              <div className="d-flex flex-wrap gap-2">
+                              <div
+                                className="d-flex flex-wrap gap-2"
+                                style={{ gap: "clamp(0.5rem, 1.5vw, 0.75rem)" }}
+                              >
                                 {paymentMethodOptions.map((method: any) => (
                                   <button
                                     key={method.id}
@@ -293,7 +351,8 @@ const ListingDropdownModal = ({
                                     }
                                     className="payment-method-tag"
                                     style={{
-                                      padding: "8px 16px",
+                                      padding:
+                                        "clamp(6px, 1.5vw, 8px) clamp(12px, 2.5vw, 16px)",
                                       border: "1px solid #ddd",
                                       borderRadius: "25px",
                                       background:
@@ -306,17 +365,19 @@ const ListingDropdownModal = ({
                                           : "#333",
                                       cursor: "pointer",
                                       transition: "all 0.3s ease",
-                                      fontSize: "14px",
+                                      fontSize: "clamp(12px, 2vw, 14px)",
                                       fontWeight:
                                         filters?.payment_method === method.id
                                           ? "500"
                                           : "normal",
                                       display: "inline-flex",
                                       alignItems: "center",
-                                      gap: "6px",
+                                      gap: "clamp(4px, 1vw, 6px)",
                                       userSelect: "none",
                                       outline: "none",
                                       position: "relative",
+                                      minHeight: "36px",
+                                      whiteSpace: "nowrap",
                                     }}
                                     onMouseEnter={(e) => {
                                       if (
@@ -341,7 +402,9 @@ const ListingDropdownModal = ({
                                     {filters?.payment_method === method.id && (
                                       <i
                                         className="fa-solid fa-check"
-                                        style={{ fontSize: "12px" }}
+                                        style={{
+                                          fontSize: "clamp(10px, 1.5vw, 12px)",
+                                        }}
                                       ></i>
                                     )}
                                   </button>
@@ -353,12 +416,20 @@ const ListingDropdownModal = ({
 
                         {/* furnishing - single select */}
                         <div className="col-12">
-                          <div className="w-full mt-30">
-                            <h6 className="block-title fw-bold mb-20">
+                          <div className="w-full mt-3 mt-md-4 mt-lg-5">
+                            <h6
+                              className="block-title fw-bold mb-3 mb-md-4"
+                              style={{
+                                fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
+                              }}
+                            >
                               {t("furnishing")}
                             </h6>
                             <div className="furnishing-list">
-                              <div className="d-flex flex-wrap gap-2">
+                              <div
+                                className="d-flex flex-wrap gap-2"
+                                style={{ gap: "clamp(0.5rem, 1.5vw, 0.75rem)" }}
+                              >
                                 {furnishingOptions.map((option: any) => (
                                   <button
                                     key={option.id}
@@ -368,7 +439,8 @@ const ListingDropdownModal = ({
                                     }
                                     className="furnishing-tag"
                                     style={{
-                                      padding: "8px 16px",
+                                      padding:
+                                        "clamp(6px, 1.5vw, 8px) clamp(12px, 2.5vw, 16px)",
                                       border: "1px solid #ddd",
                                       borderRadius: "25px",
                                       background:
@@ -381,17 +453,19 @@ const ListingDropdownModal = ({
                                           : "#333",
                                       cursor: "pointer",
                                       transition: "all 0.3s ease",
-                                      fontSize: "14px",
+                                      fontSize: "clamp(12px, 2vw, 14px)",
                                       fontWeight:
                                         filters?.furnishing === option.id
                                           ? "500"
                                           : "normal",
                                       display: "inline-flex",
                                       alignItems: "center",
-                                      gap: "6px",
+                                      gap: "clamp(4px, 1vw, 6px)",
                                       userSelect: "none",
                                       outline: "none",
                                       position: "relative",
+                                      minHeight: "36px",
+                                      whiteSpace: "nowrap",
                                     }}
                                     onMouseEnter={(e) => {
                                       if (filters?.furnishing !== option.id) {
@@ -412,7 +486,9 @@ const ListingDropdownModal = ({
                                     {filters?.furnishing === option.id && (
                                       <i
                                         className="fa-solid fa-check"
-                                        style={{ fontSize: "12px" }}
+                                        style={{
+                                          fontSize: "clamp(10px, 1.5vw, 12px)",
+                                        }}
                                       ></i>
                                     )}
                                   </button>
@@ -425,9 +501,16 @@ const ListingDropdownModal = ({
                         {/* search */}
                         <div className="col-12">
                           <button
-                            className="fw-500 text-uppercase tran3s apply-search w-full mt-40 mb-25"
+                            className="fw-500 text-uppercase tran3s apply-search w-100 mt-4 mt-md-5 mb-3 mb-md-4"
                             data-bs-dismiss="modal"
                             aria-label="Close"
+                            style={{
+                              padding:
+                                "clamp(12px, 2.5vw, 16px) clamp(20px, 4vw, 32px)",
+                              fontSize: "clamp(14px, 2vw, 16px)",
+                              minHeight: "clamp(44px, 8vw, 50px)",
+                              borderRadius: "25px",
+                            }}
                           >
                             <i className="fa-light fa-magnifying-glass"></i>
                             <span>{t("search")}</span>
@@ -439,7 +522,13 @@ const ListingDropdownModal = ({
                           <div className="d-flex justify-content-between form-widget">
                             <button
                               onClick={handleResetFilter}
-                              style={{ cursor: "pointer" }}
+                              style={{
+                                cursor: "pointer",
+                                padding:
+                                  "clamp(8px, 1.5vw, 12px) clamp(16px, 3vw, 24px)",
+                                fontSize: "clamp(13px, 1.8vw, 15px)",
+                                minHeight: "clamp(40px, 7vw, 44px)",
+                              }}
                               className="tran3s"
                               type="button"
                             >

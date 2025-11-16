@@ -193,7 +193,7 @@ const PropertiesCard = ({
           </ul>
           <div className="pl-footer top-border d-flex align-items-center justify-content-between">
             <strong
-              className="price fw-500 color-[#000]"
+              className="price fw-500 color-[#000] truncate"
               style={{ fontSize: "clamp(20px,1.458vw,28px)" }}
             >
               {Number(item?.price).toLocaleString()}

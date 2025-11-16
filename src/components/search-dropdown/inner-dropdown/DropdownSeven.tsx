@@ -1,11 +1,12 @@
 import NiceSelect from "@/ui/NiceSelect";
 import ListingDropdownModal from "@/modals/ListingDropdownModal";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { LocationData } from "@/libs/types/types";
 import { useLocale, useTranslations } from "next-intl";
 import { getData } from "@/libs/server/backendServer";
 import { Link } from "@/i18n/routing";
-import { priceRanges } from "@/data/price-rnages";
+import { priceRanges, rentPriceRanges } from "@/data/price-rnages";
+import { areaRanges } from "@/data/area-ranges";
 
 const DropdownSeven = ({
   handleLocationChange,
@@ -33,21 +34,77 @@ const DropdownSeven = ({
   const [showAreaSuggestions, setShowAreaSuggestions] =
     useState<boolean>(false);
   const [isAreasLoading, setIsAreasLoading] = useState<boolean>(false);
+  const [selectedAreas, setSelectedAreas] = useState<
+    Array<{ id: string | number; name: string }>
+  >([]);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [showMinPriceSuggestions, setShowMinPriceSuggestions] = useState(false);
   const [showMaxPriceSuggestions, setShowMaxPriceSuggestions] = useState(false);
   const [minPriceSuggestions, setMinPriceSuggestions] = useState<any[]>([]);
   const [maxPriceSuggestions, setMaxPriceSuggestions] = useState<any[]>([]);
+  const [showSpaceDropdown, setShowSpaceDropdown] = useState(false);
+  const [showMinSpaceSuggestions, setShowMinSpaceSuggestions] = useState(false);
+  const [showMaxSpaceSuggestions, setShowMaxSpaceSuggestions] = useState(false);
+  const [minSpaceSuggestions, setMinSpaceSuggestions] = useState<any[]>([]);
+  const [maxSpaceSuggestions, setMaxSpaceSuggestions] = useState<any[]>([]);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const areaSuggestionsRef = useRef<HTMLDivElement>(null);
   const priceDropdownRef = useRef<HTMLDivElement>(null);
+  const spaceDropdownRef = useRef<HTMLDivElement>(null);
   const minPriceInputRef = useRef<HTMLInputElement>(null);
   const maxPriceInputRef = useRef<HTMLInputElement>(null);
   const minPriceSuggestionsRef = useRef<HTMLDivElement>(null);
   const maxPriceSuggestionsRef = useRef<HTMLDivElement>(null);
+  const minSpaceInputRef = useRef<HTMLInputElement>(null);
+  const maxSpaceInputRef = useRef<HTMLInputElement>(null);
+  const minSpaceSuggestionsRef = useRef<HTMLDivElement>(null);
+  const maxSpaceSuggestionsRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("endUser");
   const locale = useLocale();
   const [types, setTypes] = useState<any[]>([]);
+
+  // Check if status is commercial
+  const isCommercial =
+    filters?.status === "commercial-sale" ||
+    filters?.status === "commercial-rent";
+
+  // Determine which price ranges to use based on status
+  const activePriceRanges = useMemo(() => {
+    const status = filters?.status;
+    if (status === "rent" || status === "commercial-rent") {
+      return rentPriceRanges;
+    }
+    return priceRanges;
+  }, [filters?.status]);
+
+  // Clear filters when switching between commercial and non-commercial
+  useEffect(() => {
+    const currentStatus = filters?.status;
+    const wasCommercial =
+      currentStatus === "commercial-sale" ||
+      currentStatus === "commercial-rent";
+
+    if (wasCommercial) {
+      // Clear beds and baths when switching to commercial
+      if (filters?.bedrooms || filters?.bathrooms) {
+        setFilters((prev: any) => ({
+          ...prev,
+          bedrooms: null,
+          bathrooms: null,
+        }));
+      }
+    } else {
+      // Clear space filters when switching away from commercial
+      if (filters?.space_min || filters?.space_max) {
+        setFilters((prev: any) => ({
+          ...prev,
+          space_min: null,
+          space_max: null,
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.status]);
 
   const fetchAgents = async () => {
     const response = await getData("types", {}, { lang: locale });
@@ -131,14 +188,47 @@ const DropdownSeven = ({
     fetchAreas(locationQuery || "");
   }, [fetchAreas]);
 
+  // Initialize selected areas from filters
+  useEffect(() => {
+    if (filters?.area_id) {
+      if (Array.isArray(filters.area_id) && filters.area_id.length > 0) {
+        // If we have area IDs but no selected areas, we need to fetch area names
+        // For now, we'll use the location string if available
+        if (selectedAreas.length === 0 && filters?.location) {
+          const locationNames = filters.location.split(", ").filter(Boolean);
+          if (locationNames.length === filters.area_id.length) {
+            const areas = locationNames.map((name: string, idx: number) => ({
+              id: filters.area_id[idx],
+              name: name.trim(),
+            }));
+            setSelectedAreas(areas);
+          }
+        }
+      } else if (!Array.isArray(filters.area_id)) {
+        // Convert single area_id to array format for backward compatibility
+        if (typeof setFilters === "function") {
+          setFilters((prev: any) => ({
+            ...prev,
+            area_id: [filters.area_id],
+          }));
+        }
+      }
+    } else if (!filters?.area_id && selectedAreas.length > 0) {
+      // Clear selected areas if area_id is cleared
+      setSelectedAreas([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.area_id, filters?.location]);
+
   useEffect(() => {
     if (
       typeof filters?.location === "string" &&
-      filters.location !== locationQuery
+      filters.location !== locationQuery &&
+      !selectedAreas.length
     ) {
       setLocationQuery(filters.location);
     }
-  }, [filters?.location, locationQuery]);
+  }, [filters?.location, locationQuery, selectedAreas.length]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -151,65 +241,115 @@ const DropdownSeven = ({
   }, [locationQuery, fetchAreas]);
 
   const persistFiltersLocation = useCallback(
-    (value: string, areaId?: string | number | null) => {
+    (areaIds: Array<string | number> | null) => {
       if (typeof window === "undefined") return;
       try {
         const storedFilters = JSON.parse(
           localStorage.getItem("filters") || "{}"
         );
-        storedFilters.location = value;
-        if (areaId !== undefined) {
-          storedFilters.area_id = areaId;
+        if (selectedAreas.length > 0) {
+          storedFilters.location = selectedAreas.map((a) => a.name).join(", ");
+        } else {
+          storedFilters.location = "";
         }
+        storedFilters.area_id = areaIds;
         localStorage.setItem("filters", JSON.stringify(storedFilters));
       } catch {
         // ignore
       }
     },
-    []
+    [selectedAreas]
   );
 
   const handleAreaInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setLocationQuery(value);
     setShowAreaSuggestions(true);
-
-    if (typeof setFilters === "function" && filters) {
-      setFilters({
-        ...filters,
-        location: value,
-        area_id: null,
-      });
-    }
-
-    persistFiltersLocation(value, null);
   };
 
   const handleAreaSuggestionSelect = (area: any) => {
     const displayName = getAreaDisplayName(area);
     const areaId = area?.id ?? area?.value ?? area?.slug ?? null;
 
-    setLocationQuery(displayName);
-    setShowAreaSuggestions(false);
+    if (!areaId) return;
 
+    // Check if area is already selected
+    const isAlreadySelected = selectedAreas.some(
+      (a) => String(a.id) === String(areaId)
+    );
+    if (isAlreadySelected) {
+      setShowAreaSuggestions(false);
+      setLocationQuery("");
+      return;
+    }
+
+    // Add to selected areas
+    const newSelectedArea = { id: areaId, name: displayName };
+    const updatedSelectedAreas = [...selectedAreas, newSelectedArea];
+    setSelectedAreas(updatedSelectedAreas);
+
+    // Update filters with array of area IDs
+    const areaIds = updatedSelectedAreas.map((a) => a.id);
     if (typeof setFilters === "function" && filters) {
       setFilters({
         ...filters,
-        location: displayName,
-        area_id: areaId,
+        location: updatedSelectedAreas.map((a) => a.name).join(", "),
+        area_id: areaIds,
       });
     }
 
-    persistFiltersLocation(displayName, areaId);
+    persistFiltersLocation(areaIds);
+
+    setLocationQuery("");
+    setShowAreaSuggestions(false);
 
     const locationData: LocationData = {
       description: displayName,
-      placeId: String(areaId ?? displayName),
+      placeId: String(areaId),
     };
 
     if (typeof handleLocationChange === "function") {
       handleLocationChange(locationData);
     }
+  };
+
+  const handleRemoveArea = (areaId: string | number) => {
+    const updatedSelectedAreas = selectedAreas.filter(
+      (a) => String(a.id) !== String(areaId)
+    );
+    setSelectedAreas(updatedSelectedAreas);
+
+    const areaIds =
+      updatedSelectedAreas.length > 0
+        ? updatedSelectedAreas.map((a) => a.id)
+        : null;
+
+    if (typeof setFilters === "function" && filters) {
+      setFilters({
+        ...filters,
+        location:
+          updatedSelectedAreas.length > 0
+            ? updatedSelectedAreas.map((a) => a.name).join(", ")
+            : "",
+        area_id: areaIds,
+      });
+    }
+
+    persistFiltersLocation(areaIds);
+  };
+
+  const handleEmptyarea = () => {
+    setShowAreaSuggestions(false);
+    setLocationQuery("");
+    setSelectedAreas([]);
+    if (typeof setFilters === "function" && filters) {
+      setFilters({
+        ...filters,
+        location: "",
+        area_id: null,
+      });
+    }
+    persistFiltersLocation(null);
   };
 
   // Handle min price input change
@@ -223,10 +363,10 @@ const DropdownSeven = ({
     });
 
     if (value.length > 0) {
-      const filteredRanges = priceRanges.filter(
+      const filteredRanges = activePriceRanges.filter(
         (range: any) =>
-          range.from.toString().includes(value) ||
-          range.label.toLowerCase().includes(value.toLowerCase())
+          range.toString().includes(value) ||
+          range.toString().toLowerCase().includes(value.toLowerCase())
       );
       setMinPriceSuggestions(filteredRanges);
     } else {
@@ -245,10 +385,10 @@ const DropdownSeven = ({
     });
 
     if (value.length > 0) {
-      const filteredRanges = priceRanges.filter(
+      const filteredRanges = activePriceRanges.filter(
         (range: any) =>
-          range.to.toString().includes(value) ||
-          range.label.toLowerCase().includes(value.toLowerCase())
+          range.toString().includes(value) ||
+          range.toString().toLowerCase().includes(value.toLowerCase())
       );
       setMaxPriceSuggestions(filteredRanges);
     } else {
@@ -259,12 +399,15 @@ const DropdownSeven = ({
   // Handle min price input focus
   const handleMinPriceFocus = () => {
     // Show only unique "from" values for min price
-    const uniqueFromValues = priceRanges.reduce((acc: any[], range: any) => {
-      if (!acc.find((item) => item.toString() === range.toString())) {
-        acc.push(range);
-      }
-      return acc;
-    }, []);
+    const uniqueFromValues = activePriceRanges.reduce(
+      (acc: any[], range: any) => {
+        if (!acc.find((item) => item.toString() === range.toString())) {
+          acc.push(range);
+        }
+        return acc;
+      },
+      []
+    );
     setMinPriceSuggestions(uniqueFromValues);
     setShowMinPriceSuggestions(true);
   };
@@ -272,12 +415,15 @@ const DropdownSeven = ({
   // Handle max price input focus
   const handleMaxPriceFocus = () => {
     // Show only unique "to" values for max price
-    const uniqueToValues = priceRanges.reduce((acc: any[], range: any) => {
-      if (!acc.find((item) => item.toString() === range.toString())) {
-        acc.push(range);
-      }
-      return acc;
-    }, []);
+    const uniqueToValues = activePriceRanges.reduce(
+      (acc: any[], range: any) => {
+        if (!acc.find((item) => item.toString() === range.toString())) {
+          acc.push(range);
+        }
+        return acc;
+      },
+      []
+    );
     setMaxPriceSuggestions(uniqueToValues);
     setShowMaxPriceSuggestions(true);
   };
@@ -318,6 +464,100 @@ const DropdownSeven = ({
     });
   };
 
+  // Handle min space input change
+  const handleMinSpaceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Trigger the space change handler to send request (min input -> space_min parameter)
+    setFilters({
+      ...filters,
+      space_min: value,
+    });
+
+    if (value.length > 0) {
+      const filteredRanges = areaRanges.filter(
+        (range: any) =>
+          range.toString().includes(value) ||
+          range.toString().toLowerCase().includes(value.toLowerCase())
+      );
+      setMinSpaceSuggestions(filteredRanges);
+    } else {
+      setMinSpaceSuggestions([]);
+    }
+  };
+
+  // Handle max space input change
+  const handleMaxSpaceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Trigger the space change handler to send request (max input -> space_max parameter)
+    setFilters({
+      ...filters,
+      space_max: value,
+    });
+
+    if (value.length > 0) {
+      const filteredRanges = areaRanges.filter(
+        (range: any) =>
+          range.toString().includes(value) ||
+          range.toString().toLowerCase().includes(value.toLowerCase())
+      );
+      setMaxSpaceSuggestions(filteredRanges);
+    } else {
+      setMaxSpaceSuggestions([]);
+    }
+  };
+
+  // Handle min space input focus
+  const handleMinSpaceFocus = () => {
+    // Show all space ranges for min space
+    setMinSpaceSuggestions(areaRanges);
+    setShowMinSpaceSuggestions(true);
+  };
+
+  // Handle max space input focus
+  const handleMaxSpaceFocus = () => {
+    // Show all space ranges for max space
+    setMaxSpaceSuggestions(areaRanges);
+    setShowMaxSpaceSuggestions(true);
+  };
+
+  // Handle min space input blur
+  const handleMinSpaceBlur = () => {
+    // Small delay to allow clicking on suggestions
+    setTimeout(() => {
+      setShowMinSpaceSuggestions(false);
+    }, 150);
+  };
+
+  // Handle max space input blur
+  const handleMaxSpaceBlur = () => {
+    // Small delay to allow clicking on suggestions
+    setTimeout(() => {
+      setShowMaxSpaceSuggestions(false);
+    }, 150);
+  };
+
+  // Handle min space suggestion selection
+  const handleMinSpaceSuggestionSelect = (range: any) => {
+    setShowMinSpaceSuggestions(false);
+    // Trigger the space change handler with the selected from value
+    setFilters({
+      ...filters,
+      space_min: range.toString(),
+    });
+  };
+
+  // Handle max space suggestion selection
+  const handleMaxSpaceSuggestionSelect = (range: any) => {
+    setShowMaxSpaceSuggestions(false);
+    // Trigger the space change handler with the selected to value
+    setFilters({
+      ...filters,
+      space_max: range.toString(),
+    });
+  };
+
   // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -353,6 +593,31 @@ const DropdownSeven = ({
         !maxPriceInputRef.current.contains(event.target as Node)
       ) {
         setShowMaxPriceSuggestions(false);
+      }
+
+      if (
+        spaceDropdownRef.current &&
+        !spaceDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowSpaceDropdown(false);
+      }
+
+      if (
+        minSpaceSuggestionsRef.current &&
+        !minSpaceSuggestionsRef.current.contains(event.target as Node) &&
+        minSpaceInputRef.current &&
+        !minSpaceInputRef.current.contains(event.target as Node)
+      ) {
+        setShowMinSpaceSuggestions(false);
+      }
+
+      if (
+        maxSpaceSuggestionsRef.current &&
+        !maxSpaceSuggestionsRef.current.contains(event.target as Node) &&
+        maxSpaceInputRef.current &&
+        !maxSpaceInputRef.current.contains(event.target as Node)
+      ) {
+        setShowMaxSpaceSuggestions(false);
       }
     };
 
@@ -451,13 +716,72 @@ const DropdownSeven = ({
                 className="location-input-container"
                 style={{ position: "relative" }}
               >
+                {selectedAreas.length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "6px",
+                      marginBottom: "8px",
+                      padding: "8px",
+                      backgroundColor: "#f9fafb",
+                      borderRadius: "6px",
+                      minHeight: "36px",
+                    }}
+                  >
+                    {selectedAreas.map((area) => (
+                      <span
+                        key={area.id}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          padding: "4px 8px",
+                          backgroundColor: "#FF6725",
+                          color: "#fff",
+                          borderRadius: "4px",
+                          fontSize: "13px",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {area.name}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveArea(area.id);
+                          }}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#fff",
+                            cursor: "pointer",
+                            padding: 0,
+                            margin: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            fontSize: "14px",
+                            lineHeight: 1,
+                          }}
+                          aria-label={`Remove ${area.name}`}
+                        >
+                          <i className="fa-light fa-xmark"></i>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <input
                   ref={locationInputRef}
                   type="text"
                   className="location-input nice-select fw-normal "
-                  style={{ paddingRight: 32 }}
+                  style={{
+                    paddingInlineEnd: "38px", // add space for the icon button
+                  }}
                   placeholder={
-                    t("search_location_placeholder") || "Enter location..."
+                    selectedAreas.length > 0
+                      ? t("add_more_locations") || "Add more locations..."
+                      : t("search_location_placeholder") || "Enter location..."
                   }
                   value={locationQuery}
                   onChange={handleAreaInputChange}
@@ -467,19 +791,71 @@ const DropdownSeven = ({
                   }
                   autoComplete="off"
                 />
-                <span
-                  style={{
-                    position: "absolute",
-                    right: 10,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#6b7280",
-                    pointerEvents: "none",
-                    zIndex: 2,
-                  }}
-                >
-                  <i className="fa-solid fa-location-dot"></i>
-                </span>
+                {/* Absolute clickable icon over the input */}
+                {selectedAreas.length > 0 || locationQuery.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocationQuery("");
+                      if (selectedAreas.length === 0) {
+                        handleEmptyarea();
+                      }
+                      locationInputRef.current?.focus();
+                    }}
+                    style={{
+                      position: "absolute",
+                      top:
+                        selectedAreas.length > 0 ? "calc(50% + 18px)" : "50%",
+                      insetInlineEnd: "8px",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      margin: 0,
+                      cursor: "pointer",
+                      zIndex: 120,
+                      color: "#999",
+                      fontSize: "18px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    tabIndex={0}
+                    aria-label="Clear location filter"
+                  >
+                    {locationQuery.length > 0 ? (
+                      <i className="fa-light fa-xmark"></i>
+                    ) : (
+                      <i className="fa-light fa-location-dot"></i>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => locationInputRef.current?.focus()}
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      insetInlineEnd: "8px",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      margin: 0,
+                      cursor: "pointer",
+                      zIndex: 120,
+                      color: "#999",
+                      fontSize: "18px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    tabIndex={0}
+                    aria-label="Focus to search location"
+                  >
+                    <i className="fa-light fa-location-dot"></i>
+                  </button>
+                )}
 
                 {isAreasLoading && (
                   <div className="loading-indicator">{t("loading")}</div>
@@ -507,87 +883,99 @@ const DropdownSeven = ({
                       </div>
                     )}
                     {!isAreasLoading &&
-                      areas.map((area: any) => (
-                        <div
-                          key={
-                            area?.id ?? area?.value ?? getAreaDisplayName(area)
-                          }
-                          className="suggestion-item"
-                          onClick={() => handleAreaSuggestionSelect(area)}
-                          style={{
-                            padding: "12px 15px",
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            transition: "background-color 0.2s, color 0.2s",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                          onMouseEnter={(e) => {
-                            (
-                              e.currentTarget as HTMLElement
-                            ).style.backgroundColor = "#ff672508";
-                            Array.from(
-                              e.currentTarget.querySelectorAll("div, i")
-                            ).forEach((el) => {
-                              (el as HTMLElement).style.color = "#FF6725";
-                            });
-                          }}
-                          onMouseLeave={(e) => {
-                            (
-                              e.currentTarget as HTMLElement
-                            ).style.backgroundColor = "#fff";
-                            const mainText =
-                              e.currentTarget.querySelector(".main-text");
-                            if (mainText)
-                              (mainText as HTMLElement).style.color = "#333";
-                            const secondaryText =
-                              e.currentTarget.querySelector(".secondary-text");
-                            if (secondaryText)
-                              (secondaryText as HTMLElement).style.color =
-                                "#666";
-                            const icon =
-                              e.currentTarget.querySelector("i") ?? null;
-                            if (icon)
-                              (icon as HTMLElement).style.color = "#666";
-                          }}
-                        >
-                          <i
-                            className="fa-light fa-location-dot"
-                            style={{ marginRight: "8px", color: "#666" }}
-                          ></i>
-                          <div>
-                            <div
-                              className="main-text"
-                              style={{ fontWeight: "500", color: "#333" }}
-                            >
-                              {getAreaDisplayName(area)}
+                      areas
+                        .filter((area: any) => {
+                          const areaId =
+                            area?.id ?? area?.value ?? area?.slug ?? null;
+                          return !selectedAreas.some(
+                            (a) => String(a.id) === String(areaId)
+                          );
+                        })
+                        .map((area: any) => (
+                          <div
+                            key={
+                              area?.id ??
+                              area?.value ??
+                              getAreaDisplayName(area)
+                            }
+                            className="suggestion-item"
+                            onClick={() => handleAreaSuggestionSelect(area)}
+                            style={{
+                              padding: "12px 15px",
+                              cursor: "pointer",
+                              fontSize: "14px",
+                              transition: "background-color 0.2s, color 0.2s",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                            onMouseEnter={(e) => {
+                              (
+                                e.currentTarget as HTMLElement
+                              ).style.backgroundColor = "#ff672508";
+                              Array.from(
+                                e.currentTarget.querySelectorAll("div, i")
+                              ).forEach((el) => {
+                                (el as HTMLElement).style.color = "#FF6725";
+                              });
+                            }}
+                            onMouseLeave={(e) => {
+                              (
+                                e.currentTarget as HTMLElement
+                              ).style.backgroundColor = "#fff";
+                              const mainText =
+                                e.currentTarget.querySelector(".main-text");
+                              if (mainText)
+                                (mainText as HTMLElement).style.color = "#333";
+                              const secondaryText =
+                                e.currentTarget.querySelector(
+                                  ".secondary-text"
+                                );
+                              if (secondaryText)
+                                (secondaryText as HTMLElement).style.color =
+                                  "#666";
+                              const icon =
+                                e.currentTarget.querySelector("i") ?? null;
+                              if (icon)
+                                (icon as HTMLElement).style.color = "#666";
+                            }}
+                          >
+                            <i
+                              className="fa-light fa-location-dot"
+                              style={{ marginRight: "8px", color: "#666" }}
+                            ></i>
+                            <div>
+                              <div
+                                className="main-text"
+                                style={{ fontWeight: "500", color: "#333" }}
+                              >
+                                {getAreaDisplayName(area)}
+                              </div>
+                              {getAreaDeveloperName(area) && (
+                                <div
+                                  className="developer-text"
+                                  style={{
+                                    fontSize: "11px",
+                                    color: "#888",
+                                  }}
+                                >
+                                  {getAreaDeveloperName(area)}
+                                </div>
+                              )}
+                              {area?.parent_name && (
+                                <div
+                                  className="secondary-text"
+                                  style={{
+                                    fontSize: "12px",
+                                    color: "#666",
+                                    marginTop: "2px",
+                                  }}
+                                >
+                                  {area.parent_name}
+                                </div>
+                              )}
                             </div>
-                            {getAreaDeveloperName(area) && (
-                              <div
-                                className="developer-text"
-                                style={{
-                                  fontSize: "11px",
-                                  color: "#888",
-                                }}
-                              >
-                                {getAreaDeveloperName(area)}
-                              </div>
-                            )}
-                            {area?.parent_name && (
-                              <div
-                                className="secondary-text"
-                                style={{
-                                  fontSize: "12px",
-                                  color: "#666",
-                                  marginTop: "2px",
-                                }}
-                              >
-                                {area.parent_name}
-                              </div>
-                            )}
                           </div>
-                        </div>
-                      ))}
+                        ))}
                   </div>
                 )}
               </div>
@@ -947,57 +1335,399 @@ const DropdownSeven = ({
             </div>
           </div>
 
-          <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-left">
-              <div className="label">{t("bed")}</div>
-              <NiceSelect
-                className="nice-select fw-normal"
-                options={[
-                  { value: "all", text: t("any") },
-                  { value: "1", text: "1+" },
-                  { value: "2", text: "2+" },
-                  { value: "3", text: "3+" },
-                  { value: "4", text: "4+" },
-                ]}
-                defaultCurrent={filters?.bedrooms || "all"}
-                onChange={(event) =>
-                  setFilters({
-                    ...filters,
-                    bedrooms:
-                      event.target.value === "all" ? null : event.target.value,
-                  })
-                }
-                name=""
-                placeholder=""
-              />
-            </div>
-          </div>
+          {!isCommercial ? (
+            <>
+              <div className="col-xl-1 col-sm-4 col-6">
+                <div className="input-box-one border-left">
+                  <div className="label">{t("bed")}</div>
+                  <NiceSelect
+                    className="nice-select fw-normal"
+                    options={[
+                      { value: "all", text: t("any") },
+                      { value: "1", text: "1+" },
+                      { value: "2", text: "2+" },
+                      { value: "3", text: "3+" },
+                      { value: "4", text: "4+" },
+                    ]}
+                    defaultCurrent={filters?.bedrooms || "all"}
+                    onChange={(event) =>
+                      setFilters({
+                        ...filters,
+                        bedrooms:
+                          event.target.value === "all"
+                            ? null
+                            : event.target.value,
+                      })
+                    }
+                    name=""
+                    placeholder=""
+                  />
+                </div>
+              </div>
 
-          <div className="col-xl-1 col-sm-4 col-6">
-            <div className="input-box-one border-left">
-              <div className="label">{t("bath")}</div>
-              <NiceSelect
-                className="nice-select fw-normal"
-                options={[
-                  { value: "all", text: t("any") },
-                  { value: "1", text: "1+" },
-                  { value: "2", text: "2+" },
-                  { value: "3", text: "3+" },
-                  { value: "4", text: "4+" },
-                ]}
-                defaultCurrent={filters?.bathrooms || "all"}
-                onChange={(event) =>
-                  setFilters({
-                    ...filters,
-                    bathrooms:
-                      event.target.value === "all" ? null : event.target.value,
-                  })
-                }
-                name=""
-                placeholder=""
-              />
+              <div className="col-xl-1 col-sm-4 col-6">
+                <div className="input-box-one border-left">
+                  <div className="label">{t("bath")}</div>
+                  <NiceSelect
+                    className="nice-select fw-normal"
+                    options={[
+                      { value: "all", text: t("any") },
+                      { value: "1", text: "1+" },
+                      { value: "2", text: "2+" },
+                      { value: "3", text: "3+" },
+                      { value: "4", text: "4+" },
+                    ]}
+                    defaultCurrent={filters?.bathrooms || "all"}
+                    onChange={(event) =>
+                      setFilters({
+                        ...filters,
+                        bathrooms:
+                          event.target.value === "all"
+                            ? null
+                            : event.target.value,
+                      })
+                    }
+                    name=""
+                    placeholder=""
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="col-xl-2 col-sm-4 col-6">
+              <div
+                className="input-box-one border-left"
+                style={{ position: "relative" }}
+              >
+                <div className="label">{t("space_range")}</div>
+                <div
+                  className="space-range-trigger"
+                  onClick={() => setShowSpaceDropdown(!showSpaceDropdown)}
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: "#fff",
+                    transition: "all 0.2s ease",
+                    position: "relative",
+                    minHeight: "44px",
+                    fontSize: "14px",
+                    fontWeight: "400",
+                  }}
+                >
+                  <span
+                    className="line-clamp-1 overflow-hidden text-ellipsis"
+                    style={{
+                      color: "#000",
+                      fontSize: "18px",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {filters.space_min && filters.space_max
+                      ? `${filters.space_min} - ${filters.space_max} ${t(
+                          "sqm"
+                        )}`
+                      : filters.space_min
+                      ? `${t("min_area")}: ${filters.space_min} ${t("sqm")}`
+                      : filters.space_max
+                      ? `${t("max_area")}: ${filters.space_max} ${t("sqm")}`
+                      : t("select_space_range")}
+                  </span>
+                  <i
+                    className={`fa-solid fa-chevron-down ${
+                      showSpaceDropdown ? "rotated" : ""
+                    }`}
+                    style={{
+                      transition: "transform 0.2s",
+                      transform: showSpaceDropdown
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                    }}
+                  ></i>
+                </div>
+
+                {showSpaceDropdown && (
+                  <div
+                    ref={spaceDropdownRef}
+                    className="space-range-dropdown"
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      backgroundColor: "#fff",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "6px",
+                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      zIndex: 1000,
+                      marginTop: "4px",
+                      padding: "16px 5px",
+                      borderTopLeftRadius: "0",
+                      borderTopRightRadius: "0",
+                    }}
+                  >
+                    <div className="d-flex align-items-center">
+                      <div
+                        className="space-input-field"
+                        style={{ position: "relative", flex: 1 }}
+                      >
+                        <input
+                          ref={minSpaceInputRef}
+                          type="text"
+                          placeholder={t("min_area")}
+                          className="type-input"
+                          value={filters.space_min || ""}
+                          onChange={handleMinSpaceChange}
+                          onFocus={handleMinSpaceFocus}
+                          onBlur={handleMinSpaceBlur}
+                          autoComplete="off"
+                          style={{
+                            padding: "10px 5px",
+                            border: "1px solid #d1d5db",
+                            borderRadius: "4px",
+                            fontSize: "12px",
+                            fontWeight: "400",
+                            transition: "all 0.2s ease",
+                            backgroundColor: "#fff",
+                            width: "100%",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = "#FF6725";
+                            e.currentTarget.style.boxShadow =
+                              "0 1px 3px rgba(255, 103, 37, 0.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#d1d5db";
+                            e.currentTarget.style.backgroundColor = "#fff";
+                            e.currentTarget.style.boxShadow = "none";
+                          }}
+                        />
+                        {showMinSpaceSuggestions && (
+                          <div
+                            ref={minSpaceSuggestionsRef}
+                            className="space-suggestions"
+                            style={{
+                              position: "absolute",
+                              top: "100%",
+                              left: 0,
+                              right: 0,
+                              backgroundColor: "#fff",
+                              border: "1px solid rgba(0, 0, 0, 0.05)",
+                              borderRadius: "4px",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                              zIndex: 1001,
+                              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                              marginTop: "2px",
+                              fontSize: "10px",
+                              width: "fit-content",
+                            }}
+                          >
+                            {minSpaceSuggestions.map(
+                              (range: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="suggestion-item"
+                                  onClick={() =>
+                                    handleMinSpaceSuggestionSelect(range)
+                                  }
+                                  style={{
+                                    padding: "10px 12px",
+                                    cursor: "pointer",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                    transition: "all 0.2s ease",
+                                    borderBottom: "1px solid #f3f4f6",
+                                    borderRadius: "2px",
+                                    margin: "1px 0",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    (
+                                      e.currentTarget as HTMLElement
+                                    ).style.backgroundColor = "#ff672508";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    (
+                                      e.currentTarget as HTMLElement
+                                    ).style.backgroundColor = "#fff";
+                                  }}
+                                >
+                                  {range.toString()} {t("sqm")}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <span
+                        style={{
+                          color: "#6b7280",
+                          fontSize: "14px",
+                          fontWeight: "400",
+                          padding: "0 6px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: "16px",
+                        }}
+                      >
+                        -
+                      </span>
+                      <div
+                        className="space-input-field"
+                        style={{ position: "relative", flex: 1 }}
+                      >
+                        <input
+                          ref={maxSpaceInputRef}
+                          type="text"
+                          placeholder={t("max_area")}
+                          className="type-input"
+                          value={filters.space_max || ""}
+                          onChange={handleMaxSpaceChange}
+                          onFocus={handleMaxSpaceFocus}
+                          onBlur={handleMaxSpaceBlur}
+                          autoComplete="off"
+                          style={{
+                            padding: "10px 5px",
+                            border: "1px solid #d1d5db",
+                            borderRadius: "4px",
+                            fontSize: "12px",
+                            fontWeight: "400",
+                            transition: "all 0.2s ease",
+                            backgroundColor: "#fff",
+                            width: "100%",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = "#FF6725";
+                            e.currentTarget.style.boxShadow =
+                              "0 1px 3px rgba(255, 103, 37, 0.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#d1d5db";
+                            e.currentTarget.style.backgroundColor = "#fff";
+                            e.currentTarget.style.boxShadow = "none";
+                          }}
+                        />
+                        {showMaxSpaceSuggestions && (
+                          <div
+                            ref={maxSpaceSuggestionsRef}
+                            className="space-suggestions"
+                            style={{
+                              position: "absolute",
+                              top: "100%",
+                              left: 0,
+                              right: 0,
+                              backgroundColor: "#fff",
+                              border: "1px solid rgba(0, 0, 0, 0.05)",
+                              borderRadius: "4px",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                              zIndex: 1001,
+                              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                              marginTop: "2px",
+                              fontSize: "10px",
+                              width: "fit-content",
+                            }}
+                          >
+                            {maxSpaceSuggestions.map(
+                              (range: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="suggestion-item"
+                                  onClick={() =>
+                                    handleMaxSpaceSuggestionSelect(range)
+                                  }
+                                  style={{
+                                    padding: "10px 12px",
+                                    cursor: "pointer",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                    transition: "all 0.2s ease",
+                                    borderBottom: "1px solid #f3f4f6",
+                                    borderRadius: "2px",
+                                    margin: "1px 0",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    (
+                                      e.currentTarget as HTMLElement
+                                    ).style.backgroundColor = "#ff672508";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    (
+                                      e.currentTarget as HTMLElement
+                                    ).style.backgroundColor = "#fff";
+                                  }}
+                                >
+                                  {range.toString()} {t("sqm")}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {(filters.space_min || filters.space_max) && (
+                      <div
+                        className="d-flex justify-content-between gap-2 mt-3"
+                        style={{ marginTop: "12px" }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFilters({
+                              ...filters,
+                              space_min: null,
+                              space_max: null,
+                            });
+
+                            localStorage.setItem(
+                              "filters",
+                              JSON.stringify({
+                                ...filters,
+                                space_min: null,
+                                space_max: null,
+                              })
+                            );
+                          }}
+                          style={{
+                            padding: "8px 12px",
+                            border: "1px solid #e5e7eb",
+                            borderRadius: "6px",
+                            background: "#fff",
+                            color: "#111827",
+                            fontSize: "14px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {t("clear")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowSpaceDropdown(false);
+                          }}
+                          style={{
+                            padding: "8px 12px",
+                            border: "1px solid #ff6725",
+                            borderRadius: "6px",
+                            background: "#ff6725",
+                            color: "#fff",
+                            fontSize: "14px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {t("done")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="col-xl-2 col-sm-4">
             <div className="input-box-one border-left">
