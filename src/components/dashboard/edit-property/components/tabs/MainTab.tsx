@@ -976,7 +976,10 @@ export const MainTab = ({ property, token, propertystat }: MainTabProps) => {
                           name="type_id"
                           type="select"
                           required
-                          options ={propertyTypes.map((type) => ({ value: type.id, label: type.title }))}
+                          options={propertyTypes.map((type) => ({
+                            value: type.id,
+                            label: type.title,
+                          }))}
                           placeholder={t("select_type")}
                         />
                       </div>
