@@ -251,7 +251,7 @@ const ListingFifteenArea = () => {
             <div className="row">
               {properties.map((property: any, index: number) => (
                 <div
-                  className="col-md-6 col-lg-4 col-xl-3"
+                  className="col-md-6 col-lg-4 col-xl-4"
                   key={property.id}
                   ref={
                     index === properties.length - 1
